@@ -229,10 +229,10 @@ export default function DepartureEngineDemo() {
                                 <p className="text-xs text-gray-400 uppercase tracking-wider mb-1 font-medium">Leave Home At</p>
                                 <h3 className="text-4xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">{calculateDepartureTime()}</h3>
                                 <p className="text-gray-400 mt-1.5 text-sm">{currentProfile.desc}</p>
-                                <div className="flex items-center gap-2.5 mt-1.5">
-                                    <p className="text-xs text-gray-500">Journey: {times.total} min</p>
+                                <div className="flex items-center gap-3 mt-3 mb-1">
+                                    <p className="text-xs text-gray-500">Journey: <span className="text-sm font-bold text-white">{times.total} min</span></p>
                                     <span className="text-gray-600">→</span>
-                                    <p className="text-xs text-gray-400">Gate: {calculateArrivalTime()}</p>
+                                    <p className="text-xs text-gray-500">Gate: <span className="text-sm font-bold text-white">{calculateArrivalTime()}</span></p>
                                 </div>
                             </motion.div>
 
