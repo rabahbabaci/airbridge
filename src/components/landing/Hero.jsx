@@ -35,7 +35,7 @@ export default function Hero() {
                                 <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                                     Just Fly
                                 </span>
-                                <Plane className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 text-blue-600" />
+                                <Plane className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-blue-600" />
                             </div>
                         </h1>
 
