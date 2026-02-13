@@ -205,7 +205,80 @@ export default function DepartureEngineDemo() {
                                         </div>
                                     </div>
                                 ))}
-                            </div>
+                                </motion.div>
+                            )}
+
+                            {/* Timeline View */}
+                            {viewMode === 'timeline' && (
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="mb-8"
+                                >
+                                    {/* Timeline Visualization */}
+                                    <div className="py-6">
+                                        <div className="flex items-center justify-between relative">
+                                            {/* Connecting Line */}
+                                            <div className="absolute top-6 left-0 right-0 h-0.5 bg-gray-700/50" />
+                                            
+                                            {/* Stages */}
+                                            <div className="flex justify-between w-full relative z-10">
+                                                {/* Home */}
+                                                <div className="flex flex-col items-center">
+                                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mb-2">
+                                                        <MapPin className="w-5 h-5 text-white" />
+                                                    </div>
+                                                    <span className="text-xs text-gray-400 font-medium">Home</span>
+                                                </div>
+
+                                                {/* Traffic */}
+                                                <div className="flex flex-col items-center">
+                                                    <div className="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center mb-2">
+                                                        <Car className="w-5 h-5 text-blue-400" />
+                                                    </div>
+                                                    <span className="text-xs text-gray-400 font-medium">Traffic</span>
+                                                    <span className="text-xs text-gray-500 mt-0.5">63 min</span>
+                                                </div>
+
+                                                {/* Security */}
+                                                <div className="flex flex-col items-center">
+                                                    <div className="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center mb-2">
+                                                        <Users className="w-5 h-5 text-purple-400" />
+                                                    </div>
+                                                    <span className="text-xs text-gray-400 font-medium">Security</span>
+                                                    <span className="text-xs text-gray-500 mt-0.5">41 min</span>
+                                                </div>
+
+                                                {/* Walk */}
+                                                <div className="flex flex-col items-center">
+                                                    <div className="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center mb-2">
+                                                        <Footprints className="w-5 h-5 text-gray-400" />
+                                                    </div>
+                                                    <span className="text-xs text-gray-400 font-medium">Walk</span>
+                                                    <span className="text-xs text-gray-500 mt-0.5">17 min</span>
+                                                </div>
+
+                                                {/* Gate */}
+                                                <div className="flex flex-col items-center">
+                                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center mb-2">
+                                                        <Plane className="w-5 h-5 text-white" />
+                                                    </div>
+                                                    <span className="text-xs text-gray-400 font-medium">Gate</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Total Time Summary */}
+                                    <div className="text-center pt-4 border-t border-gray-700/50">
+                                        <p className="text-sm text-gray-400">
+                                            Total estimated time to gate: <span className="font-medium text-white">137 minutes</span>
+                                        </p>
+                                    </div>
+                                </motion.div>
+                            )}
 
                             {/* Model Insight */}
                             <div className="mb-6">
