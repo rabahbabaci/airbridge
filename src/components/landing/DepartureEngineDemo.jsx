@@ -110,7 +110,7 @@ export default function DepartureEngineDemo() {
     };
 
     return (
-        <section className="py-24 lg:py-32 bg-gradient-to-b from-gray-50 to-white">
+        <section id="engine-demo" className="py-24 lg:py-32 bg-gradient-to-b from-gray-50 to-white">
             <div className="max-w-7xl mx-auto px-6">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
