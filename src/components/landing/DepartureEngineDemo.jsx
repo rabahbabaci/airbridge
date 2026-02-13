@@ -112,7 +112,7 @@ export default function DepartureEngineDemo() {
                     className="grid lg:grid-cols-2 gap-6 max-w-5xl mx-auto"
                 >
                     {/* Left Panel - Departure Engine */}
-                    <div className="bg-white rounded-3xl border border-gray-200 shadow-xl shadow-gray-200/50 p-5">
+                    <div className="bg-white rounded-3xl border border-gray-200 shadow-xl shadow-gray-200/50 p-5 flex flex-col">
                         <div className="flex items-center gap-2 mb-4">
                             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                                 <Clock className="w-3.5 h-3.5 text-white" />
@@ -206,7 +206,7 @@ export default function DepartureEngineDemo() {
                         </div>
 
                         {/* CTA Button */}
-                        <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/25 text-sm">
+                        <button className="w-full mt-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/25 text-sm">
                             Lock In My Departure Time
                             <ArrowRight className="w-4 h-4" />
                         </button>
