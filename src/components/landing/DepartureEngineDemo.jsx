@@ -113,37 +113,37 @@ export default function DepartureEngineDemo() {
                 >
                     {/* Left Panel - Departure Engine */}
                     <div className="bg-white rounded-3xl border border-gray-200 shadow-xl shadow-gray-200/50 p-5 flex flex-col">
-                        <div className="flex items-center gap-2 mb-5">
+                        <div className="flex items-center gap-2 mb-6">
                             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                                 <Clock className="w-3.5 h-3.5 text-white" />
                             </div>
-                            <span className="text-gray-900 font-semibold">Departure Engine</span>
+                            <span className="text-gray-900 font-semibold text-sm">Departure Engine</span>
                         </div>
 
                         {/* Flight Number Input */}
-                        <div className="mb-4">
-                            <label className="text-xs text-gray-500 uppercase tracking-wider mb-1.5 block font-medium">Flight Number</label>
-                            <div className="bg-gray-50 rounded-xl border border-gray-200 px-3 py-2 flex items-center gap-2">
+                        <div className="mb-5">
+                            <label className="text-xs text-gray-500 uppercase tracking-wider mb-2 block font-medium">Flight Number</label>
+                            <div className="bg-gray-50 rounded-xl border border-gray-200 px-3 py-2.5 flex items-center gap-2">
                                 <Plane className="w-4 h-4 text-gray-400" />
                                 <Input
                                     value={flightNumber}
                                     onChange={(e) => setFlightNumber(e.target.value)}
-                                    className="border-0 bg-transparent p-0 h-auto text-gray-900 font-medium focus-visible:ring-0"
+                                    className="border-0 bg-transparent p-0 h-auto text-gray-900 font-medium focus-visible:ring-0 text-sm"
                                     placeholder="UA 452"
                                 />
                             </div>
                         </div>
 
                         {/* Airport & Date */}
-                        <div className="grid grid-cols-2 gap-3 mb-4">
+                        <div className="grid grid-cols-2 gap-3 mb-5">
                             <div>
-                                <label className="text-xs text-gray-500 uppercase tracking-wider mb-1.5 block font-medium">Airport</label>
-                                <div className="bg-gray-50 rounded-xl border border-gray-200 px-3 py-2 flex items-center gap-2">
+                                <label className="text-xs text-gray-500 uppercase tracking-wider mb-2 block font-medium">Airport</label>
+                                <div className="bg-gray-50 rounded-xl border border-gray-200 px-3 py-2.5 flex items-center gap-2">
                                     <MapPin className="w-4 h-4 text-gray-400" />
                                     <select
                                         value={airport}
                                         onChange={(e) => setAirport(e.target.value)}
-                                        className="border-0 bg-transparent w-full text-gray-900 font-medium focus:outline-none"
+                                        className="border-0 bg-transparent w-full text-gray-900 font-medium focus:outline-none text-sm"
                                     >
                                         <option value="SFO">SFO</option>
                                         <option value="LAX">LAX</option>
@@ -155,13 +155,13 @@ export default function DepartureEngineDemo() {
                                 </div>
                             </div>
                             <div>
-                                <label className="text-xs text-gray-500 uppercase tracking-wider mb-1.5 block font-medium">Date</label>
-                                <div className="bg-gray-50 rounded-xl border border-gray-200 px-3 py-2 flex items-center gap-2">
+                                <label className="text-xs text-gray-500 uppercase tracking-wider mb-2 block font-medium">Date</label>
+                                <div className="bg-gray-50 rounded-xl border border-gray-200 px-3 py-2.5 flex items-center gap-2">
                                     <Calendar className="w-4 h-4 text-gray-400" />
                                     <Input
                                         value={date}
                                         onChange={(e) => setDate(e.target.value)}
-                                        className="border-0 bg-transparent p-0 h-auto text-gray-400 focus-visible:ring-0"
+                                        className="border-0 bg-transparent p-0 h-auto text-gray-400 focus-visible:ring-0 text-sm"
                                         placeholder="Mar 15, 2026"
                                     />
                                 </div>
@@ -169,20 +169,20 @@ export default function DepartureEngineDemo() {
                         </div>
 
                         {/* Confidence Profile */}
-                        <div className="flex-1 mb-4">
-                            <label className="text-xs text-gray-500 uppercase tracking-wider mb-2 block font-medium">Confidence Profile</label>
-                            <div className="space-y-1.5">
+                        <div className="flex-1 mb-6">
+                            <label className="text-xs text-gray-500 uppercase tracking-wider mb-2.5 block font-medium">Confidence Profile</label>
+                            <div className="space-y-2.5">
                                 {confidenceProfiles.map((profile) => (
                                     <button
                                         key={profile.id}
                                         onClick={() => setSelectedProfile(profile.id)}
-                                        className={`w-full flex items-center justify-between p-2 rounded-lg border transition-all ${
+                                        className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all ${
                                             selectedProfile === profile.id
                                                 ? 'bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200'
                                                 : 'bg-gray-50 border-gray-200 hover:border-gray-300'
                                         }`}
                                     >
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-2.5">
                                             <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${
                                                 selectedProfile === profile.id ? 'bg-gradient-to-br from-blue-500 to-purple-600' : 'bg-gray-200'
                                             }`}>
@@ -206,7 +206,7 @@ export default function DepartureEngineDemo() {
                         </div>
 
                         {/* CTA Button */}
-                        <button className="w-full mt-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/25">
+                        <button className="w-full mt-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/25 text-sm">
                             Lock In My Departure Time
                             <ArrowRight className="w-4 h-4" />
                         </button>
