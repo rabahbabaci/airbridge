@@ -32,7 +32,7 @@ export default function Hero() {
                                 Seat Ready.
                             </div>
                             <div className="text-5xl sm:text-6xl lg:text-7xl font-bold flex items-center gap-4">
-                                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent pb-2">
                                     Just Fly
                                 </span>
                                 <Plane className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-blue-600" />
