@@ -59,7 +59,7 @@ export default function Hero() {
                                 onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
                             >
                                 <Play className="mr-2 w-4 h-4" />
-                                See How It Works
+                                Live Preview
                             </Button>
                         </div>
 
