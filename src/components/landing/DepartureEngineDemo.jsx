@@ -152,7 +152,7 @@ export default function DepartureEngineDemo() {
                                     onChange={(e) => handleFlightNumberChange(e.target.value)}
                                     onFocus={() => setFlightInputFocused(true)}
                                     onBlur={() => setTimeout(() => setFlightInputFocused(false), 200)}
-                                    className="border-0 bg-transparent p-0 h-auto text-gray-900 font-medium focus-visible:ring-0 text-base"
+                                    className="border-0 bg-transparent p-0 h-auto text-gray-900 font-medium focus-visible:ring-0 !text-base"
                                     placeholder="UA 452"
                                 />
                             </div>
