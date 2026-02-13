@@ -21,7 +21,7 @@ export default function CTA() {
     };
 
     return (
-        <section className="py-24 lg:py-32">
+        <section id="cta" className="py-24 lg:py-32">
             <div className="max-w-7xl mx-auto px-6">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.98 }}
