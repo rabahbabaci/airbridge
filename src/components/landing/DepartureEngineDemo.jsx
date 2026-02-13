@@ -134,25 +134,25 @@ export default function DepartureEngineDemo() {
                     className="grid lg:grid-cols-2 gap-6 max-w-5xl mx-auto"
                 >
                     {/* Left Panel - Departure Engine */}
-                    <div className="bg-white rounded-3xl border border-gray-200 shadow-xl shadow-gray-200/50 p-5 flex flex-col">
-                        <div className="flex items-center gap-2 mb-6">
-                            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                                <Clock className="w-3.5 h-3.5 text-white" />
+                    <div className="bg-white rounded-3xl border border-gray-200 shadow-xl shadow-gray-200/50 p-6 flex flex-col">
+                        <div className="flex items-center gap-2.5 mb-8">
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                                <Clock className="w-4 h-4 text-white" />
                             </div>
-                            <span className="text-gray-900 font-semibold text-sm">Departure Engine</span>
+                            <span className="text-gray-900 font-semibold text-base">Departure Engine</span>
                         </div>
 
                         {/* Flight Number Input */}
-                        <div className="mb-5 relative">
-                            <label className="text-xs text-gray-500 uppercase tracking-wider mb-2 block font-medium">Flight Number</label>
-                            <div className="bg-gray-50 rounded-xl border border-gray-200 px-3 py-2.5 flex items-center gap-2">
+                        <div className="mb-6 relative">
+                            <label className="text-xs text-gray-500 uppercase tracking-wider mb-2.5 block font-medium">Flight Number</label>
+                            <div className="bg-gray-50 rounded-xl border border-gray-200 px-4 py-3 flex items-center gap-2.5">
                                 <Plane className="w-4 h-4 text-gray-400" />
                                 <Input
                                     value={flightNumber}
                                     onChange={(e) => handleFlightNumberChange(e.target.value)}
                                     onFocus={() => setFlightInputFocused(true)}
                                     onBlur={() => setTimeout(() => setFlightInputFocused(false), 200)}
-                                    className="border-0 bg-transparent p-0 h-auto text-gray-900 font-medium focus-visible:ring-0 text-sm"
+                                    className="border-0 bg-transparent p-0 h-auto text-gray-900 font-medium focus-visible:ring-0 text-base"
                                     placeholder="UA 452"
                                 />
                             </div>
@@ -175,15 +175,15 @@ export default function DepartureEngineDemo() {
                         </div>
 
                         {/* Airport & Date */}
-                        <div className="grid grid-cols-2 gap-3 mb-5">
+                        <div className="grid grid-cols-2 gap-4 mb-6">
                             <div>
-                                <label className="text-xs text-gray-500 uppercase tracking-wider mb-2 block font-medium">Airport</label>
-                                <div className="bg-gray-50 rounded-xl border border-gray-200 px-3 py-2.5 flex items-center gap-2">
+                                <label className="text-xs text-gray-500 uppercase tracking-wider mb-2.5 block font-medium">Airport</label>
+                                <div className="bg-gray-50 rounded-xl border border-gray-200 px-4 py-3 flex items-center gap-2.5">
                                     <MapPin className="w-4 h-4 text-gray-400" />
                                     <select
                                         value={airport}
                                         onChange={(e) => setAirport(e.target.value)}
-                                        className="border-0 bg-transparent w-full text-gray-900 font-medium focus:outline-none text-sm"
+                                        className="border-0 bg-transparent w-full text-gray-900 font-medium focus:outline-none text-base"
                                     >
                                         <option value="SFO">SFO</option>
                                         <option value="LAX">LAX</option>
@@ -195,12 +195,12 @@ export default function DepartureEngineDemo() {
                                 </div>
                             </div>
                             <div>
-                                <label className="text-xs text-gray-500 uppercase tracking-wider mb-2 block font-medium">Date</label>
+                                <label className="text-xs text-gray-500 uppercase tracking-wider mb-2.5 block font-medium">Date</label>
                                 <Popover>
                                     <PopoverTrigger asChild>
-                                        <button className="w-full bg-gray-50 rounded-xl border border-gray-200 px-3 py-2.5 flex items-center gap-2 hover:bg-gray-100 transition-colors">
+                                        <button className="w-full bg-gray-50 rounded-xl border border-gray-200 px-4 py-3 flex items-center gap-2.5 hover:bg-gray-100 transition-colors">
                                             <CalendarIcon className="w-4 h-4 text-gray-400" />
-                                            <span className="text-sm text-gray-900 font-medium">
+                                            <span className="text-base text-gray-900 font-medium">
                                                 {date ? format(date, 'MMM d, yyyy') : 'Pick a date'}
                                             </span>
                                         </button>
@@ -218,29 +218,29 @@ export default function DepartureEngineDemo() {
                         </div>
 
                         {/* Confidence Profile */}
-                        <div className="flex-1 mb-6">
-                            <label className="text-xs text-gray-500 uppercase tracking-wider mb-2.5 block font-medium">Confidence Profile</label>
-                            <div className="space-y-2.5">
+                        <div className="flex-1 mb-8">
+                            <label className="text-xs text-gray-500 uppercase tracking-wider mb-3 block font-medium">Confidence Profile</label>
+                            <div className="space-y-3">
                                 {confidenceProfiles.map((profile) => (
                                     <button
                                         key={profile.id}
                                         onClick={() => setSelectedProfile(profile.id)}
-                                        className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all ${
+                                        className={`w-full flex items-center justify-between p-3.5 rounded-lg border transition-all ${
                                             selectedProfile === profile.id
                                                 ? 'bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200'
                                                 : 'bg-gray-50 border-gray-200 hover:border-gray-300'
                                         }`}
                                     >
-                                        <div className="flex items-center gap-2.5">
-                                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                                                 selectedProfile === profile.id ? 'bg-gradient-to-br from-blue-500 to-purple-600' : 'bg-gray-200'
                                             }`}>
-                                                <profile.icon className={`w-3.5 h-3.5 ${
+                                                <profile.icon className={`w-4 h-4 ${
                                                     selectedProfile === profile.id ? 'text-white' : 'text-gray-500'
                                                 }`} />
                                             </div>
                                             <div className="text-left">
-                                                <p className={`text-xs font-medium ${
+                                                <p className={`text-sm font-medium ${
                                                     selectedProfile === profile.id ? 'text-blue-600' : 'text-gray-900'
                                                 }`}>{profile.name}</p>
                                                 <p className="text-xs text-gray-500">{profile.desc}</p>
@@ -255,7 +255,7 @@ export default function DepartureEngineDemo() {
                         </div>
 
                         {/* CTA Button */}
-                        <button className="w-full mt-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/25 text-sm">
+                        <button className="w-full mt-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/25 text-base">
                             Lock In My Departure Time
                             <ArrowRight className="w-4 h-4" />
                         </button>
