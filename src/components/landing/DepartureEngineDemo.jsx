@@ -318,9 +318,9 @@ export default function DepartureEngineDemo() {
                             </div>
 
                             {/* Model Insight */}
-                            <div className="mb-6">
+                            <div className="mb-3">
                                 <p className="text-xs text-gray-500 italic">Model insight: Traffic is the main driver today.</p>
-                                <button className="text-xs text-blue-400 flex items-center gap-1 mt-1 hover:text-blue-300 transition-colors">
+                                <button className="text-xs text-blue-400 flex items-center gap-1 mt-0.5 hover:text-blue-300 transition-colors">
                                     Why this time? <ChevronDown className="w-3 h-3" />
                                 </button>
                             </div>
@@ -331,18 +331,18 @@ export default function DepartureEngineDemo() {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ duration: 0.3 }}
-                                className="flex items-center justify-between pt-4 border-t border-gray-700/50"
+                                className="flex items-center justify-between pt-3 border-t border-gray-700/50"
                             >
-                                <span className="text-[10px] text-gray-500 uppercase tracking-wider font-medium">Confidence Score</span>
-                                <div className="flex items-center gap-3">
-                                    <span className={`text-xs px-2 py-1 rounded font-medium ${
+                                <span className="text-xs text-gray-500 uppercase tracking-wider font-medium">Confidence Score</span>
+                                <div className="flex items-center gap-2.5">
+                                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                                         currentProfile.confidenceScore >= 95 ? 'bg-green-500/20 text-green-400' :
                                         currentProfile.confidenceScore >= 85 ? 'bg-blue-500/20 text-blue-400' :
                                         'bg-amber-500/20 text-amber-400'
                                     }`}>
                                         {currentProfile.riskLabel}
                                     </span>
-                                    <span className="text-3xl font-bold">{currentProfile.confidenceScore}%</span>
+                                    <span className="text-2xl font-bold">{currentProfile.confidenceScore}%</span>
                                 </div>
                             </motion.div>
                         </div>
