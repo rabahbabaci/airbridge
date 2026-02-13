@@ -17,6 +17,7 @@ const timeBreakdown = [
 
 export default function DepartureEngineDemo() {
     const [selectedProfile, setSelectedProfile] = useState('sweet');
+    const [viewMode, setViewMode] = useState('breakdown'); // 'breakdown' or 'timeline'
 
     return (
         <section className="py-24 lg:py-32 bg-gradient-to-b from-gray-50 to-white">
@@ -145,8 +146,42 @@ export default function DepartureEngineDemo() {
                                 <span>Mar 15</span>
                             </div>
 
-                            {/* Time Breakdown */}
-                            <div className="space-y-4 mb-8">
+                            {/* View Toggle */}
+                            <div className="mb-6">
+                                <p className="text-xs text-gray-400 uppercase tracking-wider mb-3 font-medium">Journey Breakdown</p>
+                                <div className="inline-flex rounded-lg border border-gray-700/50 bg-gray-800/50 p-1">
+                                    <button
+                                        onClick={() => setViewMode('breakdown')}
+                                        className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                                            viewMode === 'breakdown'
+                                                ? 'bg-gray-700 text-white'
+                                                : 'text-gray-400 hover:text-gray-300'
+                                        }`}
+                                    >
+                                        Breakdown
+                                    </button>
+                                    <button
+                                        onClick={() => setViewMode('timeline')}
+                                        className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                                            viewMode === 'timeline'
+                                                ? 'bg-gray-700 text-white'
+                                                : 'text-gray-400 hover:text-gray-300'
+                                        }`}
+                                    >
+                                        Timeline
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Breakdown View */}
+                            {viewMode === 'breakdown' && (
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="space-y-4 mb-8"
+                                >
                                 {timeBreakdown.map((item, index) => (
                                     <div key={item.label}>
                                         <div className="flex items-center justify-between mb-2">
