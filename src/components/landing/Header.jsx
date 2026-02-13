@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Plane } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Header() {
@@ -31,7 +31,7 @@ export default function Header() {
                 <div className="flex items-center justify-between">
                     <a href="#" className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                            <span className="text-white font-bold text-sm">A</span>
+                            <Plane className="w-4 h-4 text-white" />
                         </div>
                         <span className="font-semibold text-lg text-gray-900">AirBridge</span>
                     </a>

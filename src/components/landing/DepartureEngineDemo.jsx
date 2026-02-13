@@ -1,23 +1,86 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Clock, Plane, MapPin, Calendar, Shield, Zap, AlertCircle, ChevronDown, ArrowRight, Car, Users, Footprints, Timer } from 'lucide-react';
+import { Input } from "@/components/ui/input";
 
 const confidenceProfiles = [
-    { id: 'safety', name: 'Safety Net', desc: 'Zero stress. Maximum buffer.', range: '95-99%', icon: Shield, active: false },
-    { id: 'sweet', name: 'Sweet Spot', desc: 'Balanced. The smart traveler.', range: '90-95%', icon: Zap, active: true },
-    { id: 'risk', name: 'Risk Taker', desc: 'Maximize reclaimed time.', range: '70-88%', icon: AlertCircle, active: false }
+    { 
+        id: 'safety', 
+        name: 'Safety Net', 
+        desc: 'Zero stress. Maximum buffer.', 
+        range: '95-99%', 
+        icon: Shield, 
+        bufferMultiplier: 1.5,
+        confidenceScore: 97,
+        riskLabel: 'Low risk'
+    },
+    { 
+        id: 'sweet', 
+        name: 'Sweet Spot', 
+        desc: 'Balanced. The smart traveler.', 
+        range: '90-95%', 
+        icon: Zap, 
+        bufferMultiplier: 1.0,
+        confidenceScore: 91,
+        riskLabel: 'Low risk'
+    },
+    { 
+        id: 'risk', 
+        name: 'Risk Taker', 
+        desc: 'Maximize reclaimed time.', 
+        range: '70-88%', 
+        icon: AlertCircle, 
+        bufferMultiplier: 0.4,
+        confidenceScore: 79,
+        riskLabel: 'Tight window'
+    }
 ];
 
-const timeBreakdown = [
-    { label: 'Traffic', time: '63 min', percent: 46, color: 'bg-gradient-to-r from-blue-500 to-blue-400' },
-    { label: 'TSA Wait', time: '41 min', percent: 30, color: 'bg-gradient-to-r from-purple-500 to-purple-400' },
-    { label: 'Walking', time: '17 min', percent: 12, color: 'bg-gradient-to-r from-gray-400 to-gray-300' },
-    { label: 'Buffer', time: '16 min', percent: 12, color: 'bg-gradient-to-r from-green-500 to-green-400' }
-];
+const calculateTimes = (airport, profile) => {
+    // Base times vary by airport size
+    const airportProfiles = {
+        'SFO': { traffic: 63, tsa: 41, walking: 17, baseBuffer: 16 },
+        'LAX': { traffic: 58, tsa: 48, walking: 22, baseBuffer: 16 },
+        'JFK': { traffic: 72, tsa: 52, walking: 19, baseBuffer: 16 },
+        'ORD': { traffic: 54, tsa: 38, walking: 15, baseBuffer: 16 },
+        'ATL': { traffic: 48, tsa: 45, walking: 18, baseBuffer: 16 },
+        'DFW': { traffic: 51, tsa: 35, walking: 20, baseBuffer: 16 }
+    };
+
+    const base = airportProfiles[airport] || airportProfiles['SFO'];
+    const buffer = Math.round(base.baseBuffer * profile.bufferMultiplier);
+    
+    return {
+        traffic: base.traffic,
+        tsa: base.tsa,
+        walking: base.walking,
+        buffer: buffer,
+        total: base.traffic + base.tsa + base.walking + buffer
+    };
+};
 
 export default function DepartureEngineDemo() {
     const [selectedProfile, setSelectedProfile] = useState('sweet');
-    const [viewMode, setViewMode] = useState('breakdown'); // 'breakdown' or 'timeline'
+    const [viewMode, setViewMode] = useState('breakdown');
+    const [airport, setAirport] = useState('SFO');
+    const [flightNumber, setFlightNumber] = useState('UA 452');
+    const [date, setDate] = useState('Mar 15, 2026');
+    
+    const currentProfile = confidenceProfiles.find(p => p.id === selectedProfile);
+    const times = calculateTimes(airport, currentProfile);
+    
+    const timeBreakdown = [
+        { label: 'Traffic', time: `${times.traffic} min`, percent: Math.round((times.traffic / times.total) * 100), color: 'bg-gradient-to-r from-blue-500 to-blue-400' },
+        { label: 'TSA Wait', time: `${times.tsa} min`, percent: Math.round((times.tsa / times.total) * 100), color: 'bg-gradient-to-r from-purple-500 to-purple-400' },
+        { label: 'Walking', time: `${times.walking} min`, percent: Math.round((times.walking / times.total) * 100), color: 'bg-gradient-to-r from-gray-400 to-gray-300' },
+        { label: 'Buffer', time: `${times.buffer} min`, percent: Math.round((times.buffer / times.total) * 100), color: 'bg-gradient-to-r from-green-500 to-green-400' }
+    ];
+    
+    const calculateDepartureTime = () => {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - times.total);
+        return now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    };
 
     return (
         <section className="py-24 lg:py-32 bg-gradient-to-b from-gray-50 to-white">
@@ -57,7 +120,12 @@ export default function DepartureEngineDemo() {
                             <label className="text-xs text-gray-500 uppercase tracking-wider mb-2 block font-medium">Flight Number</label>
                             <div className="bg-gray-50 rounded-xl border border-gray-200 px-4 py-3.5 flex items-center gap-3">
                                 <Plane className="w-4 h-4 text-gray-400" />
-                                <span className="text-gray-900 font-medium">UA 452</span>
+                                <Input
+                                    value={flightNumber}
+                                    onChange={(e) => setFlightNumber(e.target.value)}
+                                    className="border-0 bg-transparent p-0 h-auto text-gray-900 font-medium focus-visible:ring-0"
+                                    placeholder="UA 452"
+                                />
                             </div>
                         </div>
 
@@ -67,14 +135,30 @@ export default function DepartureEngineDemo() {
                                 <label className="text-xs text-gray-500 uppercase tracking-wider mb-2 block font-medium">Airport</label>
                                 <div className="bg-gray-50 rounded-xl border border-gray-200 px-4 py-3.5 flex items-center gap-3">
                                     <MapPin className="w-4 h-4 text-gray-400" />
-                                    <span className="text-gray-900 font-medium">SFO</span>
+                                    <select
+                                        value={airport}
+                                        onChange={(e) => setAirport(e.target.value)}
+                                        className="border-0 bg-transparent w-full text-gray-900 font-medium focus:outline-none"
+                                    >
+                                        <option value="SFO">SFO</option>
+                                        <option value="LAX">LAX</option>
+                                        <option value="JFK">JFK</option>
+                                        <option value="ORD">ORD</option>
+                                        <option value="ATL">ATL</option>
+                                        <option value="DFW">DFW</option>
+                                    </select>
                                 </div>
                             </div>
                             <div>
                                 <label className="text-xs text-gray-500 uppercase tracking-wider mb-2 block font-medium">Date</label>
                                 <div className="bg-gray-50 rounded-xl border border-gray-200 px-4 py-3.5 flex items-center gap-3">
                                     <Calendar className="w-4 h-4 text-gray-400" />
-                                    <span className="text-gray-400">Mar 15, 2026</span>
+                                    <Input
+                                        value={date}
+                                        onChange={(e) => setDate(e.target.value)}
+                                        className="border-0 bg-transparent p-0 h-auto text-gray-400 focus-visible:ring-0"
+                                        placeholder="Mar 15, 2026"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -130,20 +214,26 @@ export default function DepartureEngineDemo() {
                         
                         <div className="relative">
                             {/* Leave Time */}
-                            <div className="mb-8">
+                            <motion.div 
+                                key={`${selectedProfile}-${airport}`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.3 }}
+                                className="mb-8"
+                            >
                                 <p className="text-xs text-gray-400 uppercase tracking-wider mb-2 font-medium">Leave Home At</p>
-                                <h3 className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">6:03 PM</h3>
-                                <p className="text-gray-400 mt-2">Balanced. Efficient but not rushed.</p>
-                                <p className="text-sm text-gray-500 mt-1">Recommended window: 6:01-6:05 PM</p>
-                            </div>
+                                <h3 className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">{calculateDepartureTime()}</h3>
+                                <p className="text-gray-400 mt-2">{currentProfile.desc}</p>
+                                <p className="text-sm text-gray-500 mt-1">Total journey time: {times.total} minutes</p>
+                            </motion.div>
 
                             {/* Flight Info */}
                             <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
-                                <span className="px-2 py-1 bg-gray-800 rounded">UA 452</span>
+                                <span className="px-2 py-1 bg-gray-800 rounded">{flightNumber}</span>
                                 <span>•</span>
-                                <span>SFO</span>
+                                <span>{airport}</span>
                                 <span>•</span>
-                                <span>Mar 15</span>
+                                <span>{date.split(',')[0]}</span>
                             </div>
 
                             {/* View Toggle */}
@@ -176,10 +266,11 @@ export default function DepartureEngineDemo() {
                             {/* Breakdown View */}
                             {viewMode === 'breakdown' && (
                                 <motion.div
+                                    key={`breakdown-${selectedProfile}-${airport}`}
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
-                                    transition={{ duration: 0.2 }}
+                                    transition={{ duration: 0.3 }}
                                     className="space-y-4 mb-8"
                                 >
                                     {timeBreakdown.map((item, index) => (
@@ -197,9 +288,8 @@ export default function DepartureEngineDemo() {
                                             <div className="h-2 bg-gray-700/50 rounded-full overflow-hidden">
                                                 <motion.div
                                                     initial={{ width: 0 }}
-                                                    whileInView={{ width: `${item.percent}%` }}
-                                                    viewport={{ once: true }}
-                                                    transition={{ duration: 0.8, delay: index * 0.1 }}
+                                                    animate={{ width: `${item.percent}%` }}
+                                                    transition={{ duration: 0.3 }}
                                                     className={`h-full ${item.color} rounded-full`}
                                                 />
                                             </div>
@@ -239,7 +329,7 @@ export default function DepartureEngineDemo() {
                                                         <Car className="w-5 h-5 text-blue-400" />
                                                     </div>
                                                     <span className="text-xs text-gray-400 font-medium">Traffic</span>
-                                                    <span className="text-xs text-gray-500 mt-0.5">63 min</span>
+                                                    <span className="text-xs text-gray-500 mt-0.5">{times.traffic} min</span>
                                                 </div>
 
                                                 {/* Security */}
@@ -248,7 +338,7 @@ export default function DepartureEngineDemo() {
                                                         <Users className="w-5 h-5 text-purple-400" />
                                                     </div>
                                                     <span className="text-xs text-gray-400 font-medium">Security</span>
-                                                    <span className="text-xs text-gray-500 mt-0.5">41 min</span>
+                                                    <span className="text-xs text-gray-500 mt-0.5">{times.tsa} min</span>
                                                 </div>
 
                                                 {/* Walk */}
@@ -257,7 +347,7 @@ export default function DepartureEngineDemo() {
                                                         <Footprints className="w-5 h-5 text-gray-400" />
                                                     </div>
                                                     <span className="text-xs text-gray-400 font-medium">Walk</span>
-                                                    <span className="text-xs text-gray-500 mt-0.5">17 min</span>
+                                                    <span className="text-xs text-gray-500 mt-0.5">{times.walking} min</span>
                                                 </div>
 
                                                 {/* Gate */}
@@ -274,7 +364,7 @@ export default function DepartureEngineDemo() {
                                     {/* Total Time Summary */}
                                     <div className="text-center pt-4 border-t border-gray-700/50">
                                         <p className="text-sm text-gray-400">
-                                            Total estimated time to gate: <span className="font-medium text-white">137 minutes</span>
+                                            Total estimated time to gate: <span className="font-medium text-white">{times.total} minutes</span>
                                         </p>
                                     </div>
                                 </motion.div>
@@ -289,13 +379,25 @@ export default function DepartureEngineDemo() {
                             </div>
 
                             {/* Confidence Score */}
-                            <div className="flex items-center justify-between pt-6 border-t border-gray-700/50">
+                            <motion.div 
+                                key={`score-${selectedProfile}`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.3 }}
+                                className="flex items-center justify-between pt-6 border-t border-gray-700/50"
+                            >
                                 <span className="text-xs text-gray-500 uppercase tracking-wider font-medium">Confidence Score</span>
                                 <div className="flex items-center gap-3">
-                                    <span className="text-xs px-2.5 py-1 rounded-full bg-green-500/20 text-green-400 font-medium">Low risk</span>
-                                    <span className="text-3xl font-bold">91%</span>
+                                    <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
+                                        currentProfile.confidenceScore >= 95 ? 'bg-green-500/20 text-green-400' :
+                                        currentProfile.confidenceScore >= 85 ? 'bg-blue-500/20 text-blue-400' :
+                                        'bg-amber-500/20 text-amber-400'
+                                    }`}>
+                                        {currentProfile.riskLabel}
+                                    </span>
+                                    <span className="text-3xl font-bold">{currentProfile.confidenceScore}%</span>
                                 </div>
-                            </div>
+                            </motion.div>
                         </div>
                     </div>
                 </motion.div>
