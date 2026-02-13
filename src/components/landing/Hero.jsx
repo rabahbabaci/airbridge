@@ -25,11 +25,13 @@ export default function Hero() {
                         </div>
 
                         <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 leading-[1.1] tracking-tight">
-                            Never Miss a{' '}
+                            Exact Departure Timing
+                            <br />
+                            <span className="text-gray-700">No Rushing. No Waiting</span>
+                            <br />
                             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                                Flight
-                            </span>{' '}
-                            Again.
+                                Just Fly ✈️
+                            </span>
                         </h1>
 
                         <p className="mt-6 text-xl text-gray-600 leading-relaxed max-w-lg">
