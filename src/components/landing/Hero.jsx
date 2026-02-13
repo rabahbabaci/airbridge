@@ -47,6 +47,7 @@ export default function Hero() {
                             <Button
                                 size="lg"
                                 className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8 h-14 text-base shadow-lg shadow-gray-900/20"
+                                onClick={() => document.getElementById('cta')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
                             >
                                 Get Early Access
                                 <ArrowRight className="ml-2 w-4 h-4" />
@@ -55,6 +56,7 @@ export default function Hero() {
                                 size="lg"
                                 variant="outline"
                                 className="rounded-full px-8 h-14 text-base border-gray-200 hover:bg-gray-50"
+                                onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
                             >
                                 <Play className="mr-2 w-4 h-4" />
                                 See How It Works

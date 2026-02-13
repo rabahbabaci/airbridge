@@ -41,6 +41,10 @@ export default function Header() {
                             <a
                                 key={link.name}
                                 href={link.href}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    document.getElementById(link.href.substring(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }}
                                 className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
                             >
                                 {link.name}
@@ -52,7 +56,10 @@ export default function Header() {
                         <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
                             Sign In
                         </Button>
-                        <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6">
+                        <Button 
+                            className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6"
+                            onClick={() => document.getElementById('cta')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                        >
                             Get Early Access
                         </Button>
                     </div>
@@ -80,14 +87,24 @@ export default function Header() {
                                     key={link.name}
                                     href={link.href}
                                     className="block text-gray-600 hover:text-gray-900"
-                                    onClick={() => setMobileMenuOpen(false)}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setMobileMenuOpen(false);
+                                        document.getElementById(link.href.substring(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    }}
                                 >
                                     {link.name}
                                 </a>
                             ))}
                             <div className="pt-4 space-y-3">
                                 <Button variant="outline" className="w-full">Sign In</Button>
-                                <Button className="w-full bg-gray-900 hover:bg-gray-800 text-white">
+                                <Button 
+                                    className="w-full bg-gray-900 hover:bg-gray-800 text-white"
+                                    onClick={() => {
+                                        setMobileMenuOpen(false);
+                                        document.getElementById('cta')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    }}
+                                >
                                     Get Early Access
                                 </Button>
                             </div>
