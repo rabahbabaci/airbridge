@@ -26,14 +26,14 @@ export default function Hero() {
 
                         <h1 className="leading-tight">
                             <div className="text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 mb-4">
-                                Perfect Timing.
+                                Never Wait.
                             </div>
                             <div className="text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-600 mb-6">
-                                Seat Ready.
+                                Never Rush.
                             </div>
                             <div className="text-5xl sm:text-6xl lg:text-7xl font-bold flex items-center gap-4">
                                 <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent pb-2">
-                                    Just Fly
+                                    Just Board
                                 </span>
                                 <Plane className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-blue-600" />
                             </div>
