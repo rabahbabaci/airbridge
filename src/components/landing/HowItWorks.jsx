@@ -18,7 +18,7 @@ const steps = [
     {
         icon: Smile,
         number: "03",
-        title: "Arrive stress-free — guaranteed",
+        title: "Arrive stres-free guaranteed",
         description: "Follow our timing and enjoy peace of mind with our protection."
     }
 ];
