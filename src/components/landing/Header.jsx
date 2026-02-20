@@ -26,28 +26,28 @@ export default function Header() {
             initial={{ y: -100 }}
             animate={{ y: 0 }}
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-                scrolled ? 'bg-white/80 backdrop-blur-xl shadow-sm' : 'bg-transparent'
+                scrolled ? 'bg-white/90 backdrop-blur-xl shadow-sm' : 'bg-transparent'
             }`}
         >
             <div className="max-w-7xl mx-auto px-6 py-4">
                 <div className="flex items-center justify-between">
                     <a href="#" className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
                             <Plane className="w-4 h-4 text-white" />
                         </div>
-                        <span className="font-semibold text-lg text-gray-900">AirBridge</span>
+                        <span className="font-bold text-lg text-gray-900">AirBridge</span>
                     </a>
 
                     <nav className="hidden md:flex items-center gap-8">
                         {navLinks.map((link) => (
                             <a
                                 key={link.name}
-                                href={link.href}
+                                href={link.href || '#'}
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    document.getElementById(link.href.substring(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    if (link.action) link.action();
                                 }}
-                                className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                                className="text-sm text-gray-600 hover:text-gray-900 transition-colors font-medium"
                             >
                                 {link.name}
                             </a>
@@ -55,14 +55,14 @@ export default function Header() {
                     </nav>
 
                     <div className="hidden md:flex items-center gap-3">
-                        <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
-                            Sign In
+                        <Button variant="ghost" className="text-gray-600 hover:text-gray-900 font-medium">
+                            Sign in
                         </Button>
-                        <Button 
-                            className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6"
-                            onClick={() => document.getElementById('cta')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                        <Button
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-6 font-semibold"
+                            onClick={() => navigate(createPageUrl('Engine'))}
                         >
-                            Get Early Access
+                            Get Started
                         </Button>
                     </div>
 
