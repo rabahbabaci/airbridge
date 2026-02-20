@@ -3,14 +3,13 @@ import { motion } from 'framer-motion';
 import { Car, Building2, Shield, Luggage, Clock, SlidersHorizontal, Footprints, CheckCircle2 } from 'lucide-react';
 
 const steps = [
-    { icon: Car, number: '01', title: 'Choose transport mode', desc: 'Uber, driving, train, bus — each has a different timing profile.' },
-    { icon: Building2, number: '02', title: 'Arrive at airport', desc: 'Drop-off, parking, or transit — we account for the approach.' },
-    { icon: Shield, number: '03', title: 'Security checkpoint', desc: 'TSA PreCheck, standard lane, or CLEAR — we know the difference.' },
-    { icon: Luggage, number: '04', title: 'Baggage logic', desc: 'Checked bags add time. Tell us how many — we factor it in.' },
-    { icon: Clock, number: '05', title: 'TSA timing layer', desc: 'Live wait time data layered with historical patterns by airport.' },
-    { icon: SlidersHorizontal, number: '06', title: 'Personal preference buffers', desc: 'Your confidence profile sets how much cushion you want.' },
-    { icon: Footprints, number: '07', title: 'Post-security gate walk', desc: 'Terminal size and gate distance are calculated per airport.' },
-    { icon: CheckCircle2, number: '08', title: 'Final gate arrival', desc: 'Confidence-scored output so you know exactly how safe your timing is.' },
+    { icon: Car,              number: '01', title: 'Select Your Departure Mode',         desc: 'Uber, drive, or train — each mode has a precise timing profile. We account for pickup waits, parking, and transit schedules so your start time is always accurate.' },
+    { icon: Building2,        number: '02', title: 'Seamless Airport Arrival',            desc: 'Drop-off zones, parking structures, terminal entry — every approach is modeled. You arrive knowing exactly how much time you have.' },
+    { icon: Luggage,          number: '03', title: 'Smart Check-In & Baggage Handling',   desc: 'Carry-on or checked bags — we factor the difference. Bag drop queues are built into your timeline, not left as guesswork.' },
+    { icon: Shield,           number: '04', title: 'Security & TSA Optimization',         desc: 'PreCheck, CLEAR, or standard lane — each is modeled accurately using live wait data and historical patterns by airport and time of day.' },
+    { icon: SlidersHorizontal,number: '05', title: 'Personal Timing Confidence',          desc: 'Set your comfort level. Whether you want efficiency or extra cushion, your departure time adapts to the confidence profile you choose.' },
+    { icon: Footprints,       number: '06', title: 'Gate Access & Walk Time',             desc: 'Terminal size and gate distance are calculated per airport. You\'ll know exactly how long the walk takes — no surprises.' },
+    { icon: CheckCircle2,     number: '07', title: 'Confident Boarding',                  desc: 'Arrive at the gate ready — never rushed, never late. AirBridge gives you a departure time you can actually trust.' },
 ];
 
 export default function JourneyFlow() {
