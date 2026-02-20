@@ -115,6 +115,13 @@ function StepNode({ stepId, time, dur, revealed, TransportIcon, stepNumber }) {
                     border: `2px solid ${meta.color}77`,
                 }}
             >
+                {/* Step number badge */}
+                {stepNumber && (
+                    <div className="absolute top-1 right-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold z-20"
+                        style={{ background: meta.color, color: '#000' }}>
+                        {stepNumber}
+                    </div>
+                )}
                 {/* Subtle inner shimmer for travel node */}
                 {stepId === 'travel' && revealed && (
                     <motion.div
