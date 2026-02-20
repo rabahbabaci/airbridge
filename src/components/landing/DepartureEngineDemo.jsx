@@ -111,8 +111,8 @@ export default function DepartureEngineDemo() {
                     viewport={{ once: true }}
                     className="flex flex-col gap-6"
                 >
-                    {/* ── LEFT: Inputs (~30%) ── */}
-                    <div className="lg:w-[34%] bg-white rounded-3xl border border-gray-200 shadow-xl shadow-gray-200/50 p-6 flex flex-col gap-5">
+                    {/* ── TOP: Inputs ── */}
+                    <div className="bg-white rounded-3xl border border-gray-200 shadow-xl shadow-gray-200/50 p-6 flex flex-col gap-5">
                         <div className="flex items-center gap-2.5">
                             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                                 <Clock className="w-4 h-4 text-white" />
