@@ -64,27 +64,29 @@ export default function DepartureEngineDemo() {
     const base    = airportData[airport] || airportData['SFO'];
 
     const trafficTime = base.traffic + (transportOffsets[transport] ?? 0);
+    const baggageTime = hasBaggage ? baggageCount * 7 : 0; // baggage drop adds time before security
     const buffer = Math.round(base.baseBuffer * profile.bufferMultiplier)
         + (withChildren ? 10 : 0)
-        + (extraTime === '+15' ? 15 : extraTime === '+30' ? 30 : 0)
-        + (hasBaggage ? baggageCount * 5 : 0);
-    const total = trafficTime + base.tsa + base.walking + buffer;
+        + (extraTime === '+15' ? 15 : extraTime === '+30' ? 30 : 0);
+    const total = trafficTime + baggageTime + base.tsa + base.walking + buffer;
 
     // Fixed gate arrival at 10:00 AM; work backwards
     const gate = new Date(); gate.setHours(10, 0, 0, 0);
 
-    const leaveTime    = fmt(gate, -total);
-    const arriveAirport = fmt(gate, -(base.tsa + base.walking + buffer));
-    const tsaClear     = fmt(gate, -(base.walking + buffer));
-    const arriveGate   = fmt(gate, -buffer);
-    const boarding     = fmt(gate, 0);
+    const leaveTime     = fmt(gate, -total);
+    const arriveAirport = fmt(gate, -(baggageTime + base.tsa + base.walking + buffer));
+    const dropBaggage   = hasBaggage ? fmt(gate, -(base.tsa + base.walking + buffer)) : null;
+    const tsaClear      = fmt(gate, -(base.walking + buffer));
+    const arriveGate    = fmt(gate, -buffer);
+    const boarding      = fmt(gate, 0);
 
     const timelineSteps = [
-        { label: 'Leave Home',       time: leaveTime,     dot: 'bg-blue-500'   },
-        { label: 'Arrive Airport',   time: arriveAirport, dot: 'bg-purple-500' },
-        { label: 'Clear Security',   time: tsaClear,      dot: 'bg-indigo-500' },
-        { label: 'Arrive Gate',      time: arriveGate,    dot: 'bg-teal-500'   },
-        { label: 'Boarding',         time: boarding,      dot: 'bg-green-500'  },
+        { label: 'Leave Home',     time: leaveTime,     dot: 'bg-blue-500'   },
+        { label: 'Arrive Airport', time: arriveAirport, dot: 'bg-purple-500' },
+        ...(hasBaggage ? [{ label: 'Drop Baggage', time: dropBaggage, dot: 'bg-orange-400' }] : []),
+        { label: 'Clear Security', time: tsaClear,      dot: 'bg-indigo-500' },
+        { label: 'Arrive Gate',    time: arriveGate,    dot: 'bg-teal-500'   },
+        { label: 'Boarding',       time: boarding,      dot: 'bg-green-500'  },
     ];
 
     const animKey = `${selectedProfile}-${airport}-${transport}-${withChildren}-${extraTime}-${hasBaggage}-${baggageCount}`;
