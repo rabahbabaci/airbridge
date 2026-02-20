@@ -393,31 +393,55 @@ export default function JourneyVisualization({ locked, steps, transport, profile
                                 ))}
                             </div>
 
-                            {/* ── Curved U-turn connector: drops down from right, returns up on left ── */}
-                            <div className="w-full" style={{ height: 44 }}>
-                                <motion.svg width="100%" height="44" viewBox="0 0 500 44" preserveAspectRatio="none">
-                                    <defs>
-                                        <linearGradient id="uGrad" x1="0" y1="0" x2="1" y2="0">
-                                            <stop offset="0%" stopColor="#06b6d4" />
-                                            <stop offset="100%" stopColor="#a855f7" />
-                                        </linearGradient>
-                                    </defs>
-                                    {/* Start at top-right (from Arrive Airport), curve down-right, go left along bottom, curve up-left (to row 2 first step) */}
-                                    <motion.path
-                                        d="M 484 4 Q 496 4 496 16 L 496 28 Q 496 40 484 40 L 16 40 Q 4 40 4 28 L 4 44"
-                                        fill="none"
-                                        stroke="url(#uGrad)"
-                                        strokeWidth="2.5"
-                                        strokeLinecap="round"
-                                        initial={{ pathLength: 0, opacity: 0 }}
-                                        animate={{
-                                            pathLength: isRevealed(row2[0]?.id) ? 1 : 0,
-                                            opacity: isRevealed(row2[0]?.id) ? 1 : 0,
-                                        }}
-                                        transition={{ duration: 1.1, ease: [0.25, 0.46, 0.45, 0.94] }}
-                                    />
-                                </motion.svg>
-                            </div>
+                            {/* ── U-turn connector: down from right edge, across bottom, up to left of row 2 ── */}
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: isRevealed(row2[0]?.id) ? 1 : 0 }}
+                                transition={{ duration: 0.5 }}
+                                className="relative w-full"
+                                style={{ height: 44 }}
+                            >
+                                {/* Right vertical drop */}
+                                <motion.div
+                                    initial={{ scaleY: 0 }}
+                                    animate={{ scaleY: isRevealed(row2[0]?.id) ? 1 : 0 }}
+                                    transition={{ duration: 0.4, ease: 'easeOut' }}
+                                    style={{
+                                        position: 'absolute', right: 38, top: 0,
+                                        width: 2, height: 22,
+                                        background: '#06b6d4',
+                                        transformOrigin: 'top',
+                                        borderRadius: 2,
+                                    }}
+                                />
+                                {/* Bottom horizontal line */}
+                                <motion.div
+                                    initial={{ scaleX: 0 }}
+                                    animate={{ scaleX: isRevealed(row2[0]?.id) ? 1 : 0 }}
+                                    transition={{ duration: 0.7, ease: 'easeOut', delay: 0.35 }}
+                                    style={{
+                                        position: 'absolute', right: 38, bottom: 0,
+                                        left: 38,
+                                        height: 2,
+                                        background: 'linear-gradient(90deg, #a855f7, #06b6d4)',
+                                        transformOrigin: 'right',
+                                        borderRadius: 2,
+                                    }}
+                                />
+                                {/* Left vertical rise */}
+                                <motion.div
+                                    initial={{ scaleY: 0 }}
+                                    animate={{ scaleY: isRevealed(row2[0]?.id) ? 1 : 0 }}
+                                    transition={{ duration: 0.4, ease: 'easeOut', delay: 1.0 }}
+                                    style={{
+                                        position: 'absolute', left: 38, bottom: 0,
+                                        width: 2, height: 22,
+                                        background: '#a855f7',
+                                        transformOrigin: 'bottom',
+                                        borderRadius: 2,
+                                    }}
+                                />
+                            </motion.div>
 
                             {/* ── Row 2: R → L (flex-row-reverse so rightmost renders first) ── */}
                             <div className="flex items-center flex-row-reverse">
