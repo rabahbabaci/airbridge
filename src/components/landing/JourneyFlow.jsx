@@ -31,7 +31,8 @@ export default function JourneyFlow() {
                     </p>
                 </motion.div>
 
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12" style={{gridTemplateRows: 'auto auto'}}>
+
                     {steps.map((step, index) => (
                         <motion.div
                             key={step.number}
