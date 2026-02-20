@@ -310,11 +310,20 @@ export default function Engine() {
                                 </motion.div>
                             ) : (
                                 <motion.button key="lock" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                                    onClick={() => setLocked(true)}
+                                    onClick={() => flightNumber.trim() && airport ? setLocked(true) : null}
+                                    disabled={!flightNumber.trim() || !airport}
                                     className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-semibold text-white transition-all"
-                                    style={{ background: 'linear-gradient(135deg, #2563eb, #7c3aed)', boxShadow: '0 4px 24px rgba(37,99,235,0.3)' }}>
+                                    style={{
+                                        background: flightNumber.trim() && airport
+                                            ? 'linear-gradient(135deg, #2563eb, #7c3aed)'
+                                            : 'rgba(255,255,255,0.06)',
+                                        boxShadow: flightNumber.trim() && airport ? '0 4px 24px rgba(37,99,235,0.3)' : 'none',
+                                        color: flightNumber.trim() && airport ? '#fff' : '#4b5563',
+                                        cursor: flightNumber.trim() && airport ? 'pointer' : 'not-allowed',
+                                        border: flightNumber.trim() && airport ? 'none' : '1px solid rgba(255,255,255,0.08)',
+                                    }}>
                                     <Lock className="w-4 h-4" />
-                                    Lock In My Departure Time
+                                    {flightNumber.trim() && airport ? 'Lock In My Departure Time' : 'Enter flight info to continue'}
                                 </motion.button>
                             )}
                         </AnimatePresence>
