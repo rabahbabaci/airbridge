@@ -120,8 +120,8 @@ export default function DepartureEngineDemo() {
                             <span className="text-gray-900 font-semibold text-base">Your Trip</span>
                         </div>
 
-                        {/* Flight + Airport */}
-                        <div className="grid grid-cols-2 gap-3">
+                        {/* Flight + Airport + Transport in a responsive row */}
+                        <div className="grid sm:grid-cols-3 gap-3">
                             <div>
                                 <label className="text-xs text-gray-500 uppercase tracking-wider mb-1.5 block font-medium">Flight</label>
                                 <div className="bg-gray-50 rounded-xl border border-gray-200 px-3 py-2.5 flex items-center gap-2">
@@ -147,53 +147,41 @@ export default function DepartureEngineDemo() {
                                     </select>
                                 </div>
                             </div>
-                        </div>
-
-                        {/* Transport Mode */}
-                        <div>
-                            <label className="text-xs text-gray-500 uppercase tracking-wider mb-2 block font-medium">Transport Mode</label>
-                            <div className="flex flex-wrap gap-2">
-                                {transportModes.map(m => (
-                                    <button
-                                        key={m.id}
-                                        onClick={() => setTransport(m.id)}
-                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
-                                            transport === m.id
-                                                ? 'bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200 text-blue-700'
-                                                : 'bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300'
-                                        }`}
+                            <div>
+                                <label className="text-xs text-gray-500 uppercase tracking-wider mb-1.5 block font-medium">Transport Mode</label>
+                                <div className="bg-gray-50 rounded-xl border border-gray-200 px-3 py-2.5 flex items-center gap-2">
+                                    <select
+                                        value={transport}
+                                        onChange={e => setTransport(e.target.value)}
+                                        className="border-0 bg-transparent w-full text-gray-900 font-medium focus:outline-none text-sm"
                                     >
-                                        <m.icon className="w-3.5 h-3.5" />
-                                        {m.label}
-                                    </button>
-                                ))}
+                                        {transportModes.map(m => <option key={m.id} value={m.id}>{m.label}</option>)}
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Confidence Profile */}
+                        {/* Confidence Profile — horizontal on wide screens */}
                         <div>
                             <label className="text-xs text-gray-500 uppercase tracking-wider mb-2 block font-medium">Confidence Profile</label>
-                            <div className="space-y-2">
+                            <div className="grid sm:grid-cols-3 gap-2">
                                 {confidenceProfiles.map(p => (
                                     <button
                                         key={p.id}
                                         onClick={() => setSelectedProfile(p.id)}
-                                        className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${
+                                        className={`flex items-center gap-2.5 p-3 rounded-xl border transition-all text-left ${
                                             selectedProfile === p.id
                                                 ? 'bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200'
                                                 : 'bg-gray-50 border-gray-200 hover:border-gray-300'
                                         }`}
                                     >
-                                        <div className="flex items-center gap-2.5">
-                                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${selectedProfile === p.id ? 'bg-gradient-to-br from-blue-500 to-purple-600' : 'bg-gray-200'}`}>
-                                                <p.icon className={`w-3.5 h-3.5 ${selectedProfile === p.id ? 'text-white' : 'text-gray-500'}`} />
-                                            </div>
-                                            <div className="text-left">
-                                                <p className={`text-sm font-semibold ${selectedProfile === p.id ? 'text-blue-700' : 'text-gray-900'}`}>{p.name}</p>
-                                                <p className="text-xs text-gray-400">{p.desc}</p>
-                                            </div>
+                                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${selectedProfile === p.id ? 'bg-gradient-to-br from-blue-500 to-purple-600' : 'bg-gray-200'}`}>
+                                            <p.icon className={`w-3.5 h-3.5 ${selectedProfile === p.id ? 'text-white' : 'text-gray-500'}`} />
                                         </div>
-                                        <span className={`text-xs font-semibold ${selectedProfile === p.id ? 'text-purple-600' : 'text-gray-400'}`}>{p.range}</span>
+                                        <div>
+                                            <p className={`text-sm font-semibold ${selectedProfile === p.id ? 'text-blue-700' : 'text-gray-900'}`}>{p.name}</p>
+                                            <p className="text-xs text-gray-400">{p.range}</p>
+                                        </div>
                                     </button>
                                 ))}
                             </div>
