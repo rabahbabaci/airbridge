@@ -105,7 +105,7 @@ export default function CTA() {
                             transition={{ delay: 0.3 }}
                             className="text-gray-500 text-sm mt-6"
                         >
-                            Free during beta • No credit card required • Unsubscribe anytime
+                            Free during beta · No credit card required · Built with feedback from frequent flyers
                         </motion.p>
                     </div>
                 </motion.div>
