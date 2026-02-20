@@ -420,11 +420,10 @@ export default function JourneyVisualization({ locked, steps, transport, profile
                                 </svg>
                             </div>
 
-                            {/* ── Row 2: R → L (flex-row-reverse so rightmost renders first) ── */}
-                            <div className="flex items-center flex-row-reverse">
-                                {[...row2].reverse().map((s, ri) => {
-                                    const origIdx = row2.length - 1 - ri;
-                                    const nextS   = row2[origIdx - 1]; // left neighbour
+                            {/* ── Row 2: L → R (normal order, bars draw left-to-right) ── */}
+                            <div className="flex items-center">
+                                {row2.map((s, i) => {
+                                    const nextS = row2[i + 1];
                                     return (
                                         <React.Fragment key={s.id}>
                                             <StepNode
@@ -433,9 +432,9 @@ export default function JourneyVisualization({ locked, steps, transport, profile
                                             />
                                             {nextS && (
                                                 <HBar
-                                                    revealed={barRevealed(s.id) && isRevealed(nextS.id)}
-                                                    color={stepMeta[s.id]?.color || '#fff'}
-                                                    reverse
+                                                    revealed={isRevealed(s.id) && isRevealed(nextS.id)}
+                                                    color={stepMeta[nextS.id]?.color || '#fff'}
+                                                    reverse={false}
                                                 />
                                             )}
                                         </React.Fragment>
