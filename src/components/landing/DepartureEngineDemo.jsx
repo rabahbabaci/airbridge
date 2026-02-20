@@ -109,7 +109,7 @@ export default function DepartureEngineDemo() {
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="flex flex-col lg:flex-row gap-6"
+                    className="flex flex-col gap-6"
                 >
                     {/* ── LEFT: Inputs (~30%) ── */}
                     <div className="lg:w-[34%] bg-white rounded-3xl border border-gray-200 shadow-xl shadow-gray-200/50 p-6 flex flex-col gap-5">

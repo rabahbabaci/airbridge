@@ -39,7 +39,7 @@ export default function Hero() {
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
                         <Button
                             size="lg"
-                            className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8 h-13 text-base shadow-lg shadow-gray-900/20 w-full sm:w-auto"
+                            className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-10 py-4 h-14 text-base shadow-lg shadow-gray-900/20 w-full sm:w-auto"
                             onClick={() => document.getElementById('engine-demo')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
                         >
                             Test My Departure Time
@@ -48,7 +48,7 @@ export default function Hero() {
                         <Button
                             size="lg"
                             variant="outline"
-                            className="rounded-full px-8 h-13 text-base border-gray-200 hover:bg-gray-50 w-full sm:w-auto"
+                            className="rounded-full px-10 py-4 h-14 text-base border-gray-200 hover:bg-gray-50 w-full sm:w-auto"
                             onClick={() => document.getElementById('engine-demo')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
                         >
                             <Play className="mr-2 w-4 h-4" />
