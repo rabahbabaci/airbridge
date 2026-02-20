@@ -86,7 +86,7 @@ function LoadingSequence({ onDone }) {
 }
 
 // ── Step node ─────────────────────────────────────────────────────────────────
-function StepNode({ stepId, time, dur, revealed, TransportIcon }) {
+function StepNode({ stepId, time, dur, revealed, TransportIcon, stepNumber }) {
     const meta = stepMeta[stepId];
     const Icon = stepId === 'travel' ? TransportIcon : meta.icon;
     const showTime = !NO_TIME_STEPS.has(stepId);
