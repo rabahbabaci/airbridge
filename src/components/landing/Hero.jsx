@@ -59,7 +59,7 @@ export default function Hero() {
                                 onClick={() => document.getElementById('engine-demo')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
                             >
                                 <Play className="mr-2 w-4 h-4" />
-                                Live Preview
+                                Give A Try
                             </Button>
                         </div>
 
