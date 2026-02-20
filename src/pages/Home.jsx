@@ -21,6 +21,7 @@ export default function Home() {
                 <Solution />
                 <DepartureEngineDemo />
                 <HowItWorks />
+                <JourneyFlow />
                 <Comparison />
                 <Trust />
                 <CTA />
