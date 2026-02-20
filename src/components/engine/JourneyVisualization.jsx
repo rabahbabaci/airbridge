@@ -393,17 +393,18 @@ export default function JourneyVisualization({ locked, steps, transport, profile
                                 ))}
                             </div>
 
-                            {/* ── Curved U-turn connector ── */}
+                            {/* ── Curved U-turn connector: drops down from right, returns up on left ── */}
                             <div className="w-full" style={{ height: 44 }}>
                                 <motion.svg width="100%" height="44" viewBox="0 0 500 44" preserveAspectRatio="none">
                                     <defs>
-                                        <linearGradient id="uGrad" x1="1" y1="0" x2="0" y2="0">
+                                        <linearGradient id="uGrad" x1="0" y1="0" x2="1" y2="0">
                                             <stop offset="0%" stopColor="#06b6d4" />
                                             <stop offset="100%" stopColor="#a855f7" />
                                         </linearGradient>
                                     </defs>
+                                    {/* Start at top-right (from Arrive Airport), curve down-right, go left along bottom, curve up-left (to row 2 first step) */}
                                     <motion.path
-                                        d="M 484 5 Q 496 5 496 22 Q 496 40 484 40 L 16 40 Q 4 40 4 22"
+                                        d="M 484 4 Q 496 4 496 16 L 496 28 Q 496 40 484 40 L 16 40 Q 4 40 4 28 L 4 44"
                                         fill="none"
                                         stroke="url(#uGrad)"
                                         strokeWidth="2.5"
