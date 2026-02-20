@@ -159,29 +159,43 @@ export default function Engine() {
                             <p className="text-xs text-gray-400 mt-0.5">Configure your trip below</p>
                         </div>
 
-                        {/* Flight + Airport row */}
+                        {/* Flight Number */}
+                        <div>
+                            <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Flight Number</label>
+                            <div className="flex items-center gap-2 rounded-xl px-3 py-2.5 transition-all"
+                                style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
+                                <Plane className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                                <Input value={flightNumber} onChange={e => setFlightNumber(e.target.value)}
+                                    placeholder="e.g. UA 452"
+                                    className="border-0 p-0 h-auto bg-transparent focus-visible:ring-0 text-xs text-gray-900 font-medium" />
+                                <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0 ml-1" />
+                                <select value={airport} onChange={e => setAirport(e.target.value)}
+                                    className="bg-transparent text-xs text-gray-900 font-medium focus:outline-none">
+                                    {Object.entries(airportData).map(([code]) => (
+                                        <option key={code} value={code}>{code}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Date + Time row */}
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Flight</label>
+                                <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Flight Date</label>
                                 <div className="flex items-center gap-2 rounded-xl px-3 py-2.5 transition-all"
                                     style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
-                                    <Plane className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                                    <Input value={flightNumber} onChange={e => setFlightNumber(e.target.value)}
-                                        placeholder="UA 452"
-                                        className="border-0 p-0 h-auto bg-transparent focus-visible:ring-0 text-xs text-gray-900 font-medium" />
+                                    <Calendar className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                                    <input type="date" value={flightDate} onChange={e => setFlightDate(e.target.value)}
+                                        className="flex-1 bg-transparent text-xs text-gray-900 font-medium focus:outline-none min-w-0" />
                                 </div>
                             </div>
                             <div>
-                                <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Airport</label>
+                                <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Departure Time</label>
                                 <div className="flex items-center gap-2 rounded-xl px-3 py-2.5 transition-all"
                                     style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
-                                    <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                                    <select value={airport} onChange={e => setAirport(e.target.value)}
-                                        className="flex-1 bg-transparent text-xs text-gray-900 font-medium focus:outline-none">
-                                        {Object.entries(airportData).map(([code]) => (
-                                            <option key={code} value={code}>{code}</option>
-                                        ))}
-                                    </select>
+                                    <Clock className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                                    <input type="time" value={departureTime} onChange={e => setDepartureTime(e.target.value)}
+                                        className="flex-1 bg-transparent text-xs text-gray-900 font-medium focus:outline-none min-w-0" />
                                 </div>
                             </div>
                         </div>
