@@ -261,8 +261,8 @@ export default function DepartureEngineDemo() {
                         </button>
                     </div>
 
-                    {/* ── RIGHT: Results (~70%) ── */}
-                    <div className="lg:flex-1 bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 rounded-3xl p-7 text-white relative overflow-hidden flex flex-col gap-6">
+                    {/* ── BOTTOM: Results ── */}
+                    <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 rounded-3xl p-7 text-white relative overflow-hidden flex flex-col gap-6">
                         <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full blur-3xl pointer-events-none" />
 
                         <div className="relative flex flex-col gap-6 h-full">
