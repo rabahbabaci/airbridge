@@ -253,28 +253,34 @@ export default function DepartureEngineDemo() {
                     <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 rounded-3xl p-7 text-white relative overflow-hidden flex flex-col gap-6">
                         <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full blur-3xl pointer-events-none" />
 
-                        <div className="relative flex flex-col gap-6 h-full">
-                            {/* ① Recommended leave time — HERO */}
+                        <div className="relative flex flex-col sm:flex-row gap-6 h-full">
+                            {/* ① Recommended leave time + chip — left col */}
                             <motion.div
                                 key={animKey}
                                 initial={{ opacity: 0, y: -8 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.35 }}
-                                className="bg-white/5 rounded-2xl p-5 border border-white/10"
+                                className="sm:w-64 flex flex-col gap-4"
                             >
-                                <p className="text-xs text-gray-400 uppercase tracking-widest font-medium mb-2">Recommended Leave Home Time</p>
-                                <div className="flex items-end gap-4">
-                                    <span className="text-6xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent leading-none">{leaveTime}</span>
-                                    <span className={`mb-1 text-sm font-bold px-3 py-1 rounded-full ${confidenceColorMap[profile.color].badge}`}>
+                                <div className="bg-white/5 rounded-2xl p-5 border border-white/10 flex-1">
+                                    <p className="text-xs text-gray-400 uppercase tracking-widest font-medium mb-2">Leave Home At</p>
+                                    <span className="text-5xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent leading-none block mb-2">{leaveTime}</span>
+                                    <span className={`inline-block text-sm font-bold px-3 py-1 rounded-full ${confidenceColorMap[profile.color].badge}`}>
                                         {profile.confidenceScore}% Confidence
                                     </span>
+                                    <p className="text-gray-400 text-xs mt-3">
+                                        {flightNumber} · {airport}<br/>{total} min door-to-gate
+                                    </p>
                                 </div>
-                                <p className="text-gray-400 text-sm mt-2">
-                                    {flightNumber} · {airport} · {total} min door-to-gate
-                                </p>
+                                {/* Personalization chip */}
+                                <div className="bg-gray-800/70 rounded-xl px-4 py-3 border border-gray-700/50">
+                                    <p className="text-xs text-gray-400 mb-1">Buffer included</p>
+                                    <p className="text-white font-semibold text-lg">{buffer} min</p>
+                                    <p className="text-xs text-gray-400 mt-1">Profile: <span className="text-gray-200">{profile.name}</span></p>
+                                </div>
                             </motion.div>
 
-                            {/* ② Timeline — primary visual */}
+                            {/* ② Timeline — right col */}
                             <div className="flex-1">
                                 <p className="text-xs text-gray-400 uppercase tracking-wider font-medium mb-4">Door-to-Gate Timeline</p>
                                 <div className="space-y-1">
@@ -286,22 +292,13 @@ export default function DepartureEngineDemo() {
                                                     <div className="w-px flex-1 bg-gray-700 my-1" />
                                                 )}
                                             </div>
-                                            <div className={`flex items-start justify-between w-full ${i < timelineSteps.length - 1 ? 'pb-3' : ''}`}>
+                                            <div className={`flex items-start justify-between w-full ${i < timelineSteps.length - 1 ? 'pb-4' : ''}`}>
                                                 <span className={`text-sm ${i === 0 ? 'text-white font-semibold' : 'text-gray-300'}`}>{step.label}</span>
                                                 <span className={`text-sm font-bold ${i === 0 ? 'text-white' : 'text-gray-200'}`}>{step.time}</span>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
-                            </div>
-
-                            {/* ③ Personalization chip */}
-                            <div className="flex items-center justify-between bg-gray-800/70 rounded-xl px-4 py-3 border border-gray-700/50">
-                                <div className="flex items-center gap-2 text-sm text-gray-300">
-                                    <span className="w-2 h-2 rounded-full bg-blue-500" />
-                                    <span>Buffer included: <span className="text-white font-semibold">{buffer} min</span></span>
-                                </div>
-                                <span className="text-xs text-gray-400 font-medium">Profile: <span className="text-gray-200">{profile.name}</span></span>
                             </div>
                         </div>
                     </div>
