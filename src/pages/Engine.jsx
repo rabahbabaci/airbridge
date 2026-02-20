@@ -66,6 +66,8 @@ export default function Engine() {
     const [selectedProfile, setSelectedProfile] = useState('sweet');
     const [airport, setAirport]         = useState('SFO');
     const [flightNumber, setFlightNumber] = useState('');
+    const [flightDate, setFlightDate]   = useState('');
+    const [departureTime, setDepartureTime] = useState('');
     const [transport, setTransport]     = useState('uber');
     const [advancedOpen, setAdvancedOpen] = useState(false);
     const [hasBaggage, setHasBaggage]   = useState(false);
