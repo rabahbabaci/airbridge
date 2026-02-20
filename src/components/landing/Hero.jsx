@@ -43,17 +43,17 @@ export default function Hero() {
                         <Button
                             size="lg"
                             className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-10 py-4 h-14 text-base shadow-lg shadow-gray-900/20 w-full sm:w-auto"
-                            onClick={() => document.getElementById('engine-demo')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                        >
+                            onClick={() => navigate(createPageUrl('Engine'))}
+                            >
                             Test My Departure Time
                             <ArrowRight className="ml-2 w-4 h-4" />
-                        </Button>
-                        <Button
+                            </Button>
+                            <Button
                             size="lg"
                             variant="outline"
                             className="rounded-full px-10 py-4 h-14 text-base border-gray-200 hover:bg-gray-50 w-full sm:w-auto"
-                            onClick={() => document.getElementById('engine-demo')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
-                        >
+                            onClick={() => navigate(createPageUrl('Engine'))}
+                            >
                             <Play className="mr-2 w-4 h-4" />
                             View Live Preview
                         </Button>
