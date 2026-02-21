@@ -232,9 +232,10 @@ export default function JourneyVisualization({ locked, steps, transport, profile
     const timerRefs = useRef([]);
 
     const TransportIcon = transportIcons[transport] || Car;
-    // Remove the 'travel' node from visible steps — it will be shown as a bar label instead
+    // Remove travel (shown as bar label) and walk (shown as bar label between security→gate)
     const visibleSteps = steps.filter(s => {
         if (s.id === 'travel') return false;
+        if (s.id === 'walk') return false;
         if (s.id === 'baggage') return s.visible;
         if (s.id === 'trainwalk') return s.visible;
         return true;
