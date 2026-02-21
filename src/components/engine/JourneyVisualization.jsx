@@ -225,7 +225,7 @@ function StatCard({ label, value, unit, barColor, barPct, delay }) {
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
-export default function JourneyVisualization({ locked, steps, transport, profile, confidenceColorMap, onReady }) {
+export default function JourneyVisualization({ locked, steps, transport, profile, confidenceColorMap, onReady, boardingTime }) {
     const [phase, setPhase] = useState('idle');
     const [revealedCount, setRevealedCount] = useState(0);
     const prevLockedRef = useRef(false);
