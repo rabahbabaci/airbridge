@@ -100,7 +100,7 @@ function PhoneMockup() {
                             </div>
                             <div className="flex-1 bg-gray-50 rounded-xl px-3 py-2.5 border border-gray-100">
                                 <p className="text-[9px] text-gray-400 uppercase tracking-wider mb-0.5">Boarding</p>
-                                <p className="text-sm font-black text-gray-700">2:30 PM</p>
+                                <p className="text-sm font-black text-gray-700">1:15 PM</p>
                             </div>
                         </div>
 
@@ -123,7 +123,7 @@ function PhoneMockup() {
                             >
                                 {leaveTime}
                             </motion.p>
-                            <p className="text-[10px] text-white/60 mt-1">📍 Home · Stress-Free · 1h 38m door-to-gate</p>
+                            <p className="text-[10px] text-white/60 mt-1">📍 Home · Stress-Free · 1h 3min door-to-gate</p>
                         </motion.div>
                     </div>
                 </div>
