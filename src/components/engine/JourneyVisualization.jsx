@@ -180,8 +180,9 @@ function HBar({ revealed, color, label, reverse, duration = 0.9 }) {
                     )}
                 </AnimatePresence>
             </div>
-            {/* Bar */}
-            <div className="w-full overflow-hidden rounded" style={{ height: 2 }}>
+            {/* Bar with arrow */}
+            <div className="w-full flex items-center overflow-hidden rounded relative" style={{ height: 6 }}>
+                {/* Main line */}
                 <motion.div
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: revealed ? 1 : 0 }}
@@ -193,6 +194,23 @@ function HBar({ revealed, color, label, reverse, duration = 0.9 }) {
                         borderRadius: 2,
                     }}
                 />
+                {/* Arrow head */}
+                <AnimatePresence>
+                    {revealed && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ delay: duration * 0.6, duration: 0.4 }}
+                            className="absolute right-0 translate-x-1"
+                            style={{ top: '50%', transform: `translateY(-50%) ${reverse ? 'scaleX(-1)' : ''}` }}
+                        >
+                            <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0 4h6M4 2l2 2-2 2" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </div>
     );
