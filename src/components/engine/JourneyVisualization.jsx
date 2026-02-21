@@ -315,7 +315,7 @@ export default function JourneyVisualization({ locked, steps, transport, profile
 
     const getStepDur = (id) => steps.find(s => s.id === id)?.dur || null;
 
-    const row1ids = ['home', 'trainwalk', 'travel', 'airport'];
+    const row1ids = ['home', 'trainwalk', 'airport'];
     const row2ids = ['baggage', 'security', 'walk', 'gate'];
     const row1 = visibleSteps.filter(s => row1ids.includes(s.id));
     const row2 = visibleSteps.filter(s => row2ids.includes(s.id));
