@@ -625,6 +625,7 @@ export default function Engine() {
                             profile={profile}
                             confidenceColorMap={confidenceColorMap}
                             onReady={() => setJourneyReady(true)}
+                            boardingTime={boarding}
                         />
                     </AnimatePresence>
                 </div>
