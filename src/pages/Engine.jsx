@@ -242,7 +242,14 @@ export default function Engine() {
         { id: 'gate',     time: arriveGate,    dur: `on time` },
     ];
 
-    const canSearch = flightNumber.trim().length > 0 && flightDate.length > 0;
+    const getTodayStr = () => {
+        const today = new Date();
+        return today.toISOString().split('T')[0];
+    };
+
+    const canSearch = searchMode === 'route' 
+        ? fromAirport.trim().length > 0 && toAirport.trim().length > 0 && departureDate.length > 0
+        : flightNumber.trim().length > 0 && departureDate.length > 0;
 
     return (
         <div className="h-screen w-screen flex flex-col overflow-hidden bg-gray-950 font-sans antialiased">
