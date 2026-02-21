@@ -812,7 +812,7 @@ export default function Engine() {
                             transport={transport}
                             profile={profile}
                             confidenceColorMap={confidenceColorMap}
-                            onReady={() => setJourneyReady(true)}
+                            onReady={handleJourneyReady}
                             boardingTime={boarding}
                         />
                     </AnimatePresence>
