@@ -54,9 +54,10 @@ function Toggle({ on, onToggle }) {
         <button onClick={onToggle}
             className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-300 ${on ? 'bg-blue-600' : 'bg-gray-200'}`}>
             <motion.span
-                layout
+                animate={{ x: on ? 18 : 2 }}
                 transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow ${on ? 'translate-x-4' : 'translate-x-0.5'}`}
+                className="inline-block h-3.5 w-3.5 rounded-full bg-white shadow"
+                style={{ position: 'absolute' }}
             />
         </button>
     );
