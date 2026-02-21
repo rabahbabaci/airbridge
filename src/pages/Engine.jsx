@@ -770,7 +770,7 @@ export default function Engine() {
                             )}
                         </div>
                     </div>
-                </div>
+                </motion.div>
 
                 {/* RIGHT — Visualization Panel */}
                 <motion.div 
