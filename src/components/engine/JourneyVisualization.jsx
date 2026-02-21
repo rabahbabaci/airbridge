@@ -424,8 +424,25 @@ export default function JourneyVisualization({ locked, steps, transport, profile
                         </motion.div>
 
                         {/* Map */}
-                        <div className="rounded-2xl px-4 pt-5 pb-6 overflow-hidden"
+                        <div className="rounded-2xl px-4 pt-5 pb-6 overflow-hidden relative"
                             style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                            
+                            {/* Road Background SVG */}
+                            <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.6 }}>
+                                <defs>
+                                    <linearGradient id="roadGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.15" />
+                                        <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.08" />
+                                        <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.15" />
+                                    </linearGradient>
+                                </defs>
+                                {/* Road path: starts left, curves right, U-turn, comes back narrow, continues for row 2 */}
+                                <path d="M 20 30 L 85% 30 Q 95% 30 95% 50 Q 95% 70 50% 70 Q 20% 70 20% 50 L 20 100" 
+                                    fill="none" stroke="url(#roadGradient)" strokeWidth="32" strokeLinecap="round" strokeLinejoin="round" />
+                                {/* Narrower center section for visual flow */}
+                                <path d="M 35 70 Q 25% 70 25% 55 Q 25% 50 35 50" 
+                                    fill="none" stroke="url(#roadGradient)" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round" opacity="0.5" />
+                            </svg>
 
                             {/* Row 1 */}
                             <div className="flex items-start">
