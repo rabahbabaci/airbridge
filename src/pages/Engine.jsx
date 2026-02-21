@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from "@/components/ui/input";
 import {
     Plane, Car, Train, Bus, User, Shield, Zap, AlertCircle,
-    ChevronDown, CheckCircle2, Lock, Calendar, Search, ArrowLeft
+    ChevronDown, CheckCircle2, Lock, Calendar, Search, ArrowLeft, MapPin
 } from 'lucide-react';
 import JourneyVisualization from '@/components/engine/JourneyVisualization';
 import { base44 } from '@/api/base44Client';
