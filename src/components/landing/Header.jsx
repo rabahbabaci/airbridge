@@ -38,19 +38,19 @@ export default function Header() {
                         <span className="font-bold text-lg text-gray-900">AirBridge</span>
                     </a>
 
-                    <nav className="hidden md:flex items-center gap-8">
+                    <nav className="hidden md:flex items-center gap-1 bg-gray-100/80 backdrop-blur-sm rounded-full px-2 py-1.5">
                         {navLinks.map((link) => (
                             <a
                                 key={link.name}
                                 href={link.href || '#'}
                                 onClick={(e) => {
-                                            e.preventDefault();
-                                            if (link.action) link.action();
-                                            else if (link.href && link.href !== '#') {
-                                                document.querySelector(link.href)?.scrollIntoView({ behavior: 'smooth' });
-                                            }
-                                        }}
-                                className="text-sm text-gray-600 hover:text-gray-900 transition-colors font-medium"
+                                    e.preventDefault();
+                                    if (link.action) link.action();
+                                    else if (link.href && link.href !== '#') {
+                                        document.querySelector(link.href)?.scrollIntoView({ behavior: 'smooth' });
+                                    }
+                                }}
+                                className="text-sm text-gray-600 hover:text-gray-900 hover:bg-white transition-all font-medium px-4 py-1.5 rounded-full"
                             >
                                 {link.name}
                             </a>
