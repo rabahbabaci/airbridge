@@ -794,7 +794,7 @@ export default function Engine() {
                     {step === 3 && mobileView === 'results' && (
                         <button 
                             onClick={() => setMobileView('setup')}
-                            className="absolute top-6 left-6 md:hidden z-10 text-gray-400 hover:text-white transition-colors flex items-center gap-1.5 text-xs font-medium">
+                            className="absolute top-6 left-4 md:hidden z-10 text-gray-400 hover:text-white transition-colors flex items-center gap-1.5 text-xs font-medium">
                             <ArrowLeft className="w-3.5 h-3.5" />
                             Back to Setup
                         </button>
@@ -804,8 +804,9 @@ export default function Engine() {
                     <div className="absolute bottom-10 left-10 w-60 h-60 rounded-full pointer-events-none"
                         style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.06), transparent)', filter: 'blur(40px)' }} />
 
-                    <AnimatePresence mode="wait">
-                        <JourneyVisualization
+                    <div className="w-full max-w-2xl mx-auto flex flex-col">
+                        <AnimatePresence mode="wait">
+                            <JourneyVisualization
                             key={locked ? 'journey' : 'idle'}
                             locked={locked}
                             steps={journeySteps}
