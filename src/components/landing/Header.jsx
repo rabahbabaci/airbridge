@@ -26,6 +26,7 @@ export default function Header() {
     ];
 
     return (
+        <>
         <motion.header
             initial={{ y: -100 }}
             animate={{ y: 0 }}
