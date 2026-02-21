@@ -339,7 +339,9 @@ export default function Engine() {
                                         className="absolute inset-0 overflow-y-auto px-6 pt-4 pb-4 flex flex-col gap-4">
                                         <StepDots step={1} />
 
+                                        <AnimatePresence mode="wait">
                                         {searchMode === 'flight' ? (
+                                            <motion.div key="flight" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}>
                                                     <>
                                                          <div>
                                                              <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Flight Number</label>
@@ -398,8 +400,9 @@ export default function Engine() {
                                                          >
                                                              Don't have your flight? Search by route.
                                                          </button>
-                                                     </>
-                                                 ) : (
+                                            </motion.div>
+                                        ) : (
+                                            <motion.div key="route" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}>
                                                      <>
                                                          <div>
                                                              <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Airline</label>
@@ -479,8 +482,9 @@ export default function Engine() {
                                                          >
                                                              Have a flight number? Use that instead.
                                                          </button>
-                                                     </>
-                                                 )}
+                                            </motion.div>
+                                        )}
+                                        </AnimatePresence>
                                     </motion.div>
                                 )}
 
