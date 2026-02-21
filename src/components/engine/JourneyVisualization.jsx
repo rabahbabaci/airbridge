@@ -7,12 +7,11 @@ const transportIcons = { uber: Car, driving: Car, train: Train, bus: Bus, other:
 const stepMeta = {
     home:      { icon: Home,         label: 'Leave Home',     color: '#3b82f6', glow: 'rgba(59,130,246,0.6)'  },
     trainwalk: { icon: Train,        label: 'Walk to Train',  color: '#8b5cf6', glow: 'rgba(139,92,246,0.6)'  },
-    travel:    { icon: Car,          label: 'En Route',       color: '#f59e0b', glow: 'rgba(245,158,11,0.6)'  },
     airport:   { icon: Plane,        label: 'Arrive Airport', color: '#06b6d4', glow: 'rgba(6,182,212,0.6)'   },
     baggage:   { icon: Luggage,      label: 'Baggage Drop',   color: '#f97316', glow: 'rgba(249,115,22,0.6)'  },
     security:  { icon: Shield,       label: 'TSA Security',   color: '#a855f7', glow: 'rgba(168,85,247,0.6)'  },
     walk:      { icon: DoorOpen,     label: 'Gate Walk',      color: '#3b82f6', glow: 'rgba(59,130,246,0.6)'  },
-    gate:      { icon: CheckCircle2, label: 'Boarding',       color: '#22c55e', glow: 'rgba(34,197,94,0.6)'   },
+    gate:      { icon: CheckCircle2, label: 'Gate',           color: '#22c55e', glow: 'rgba(34,197,94,0.6)'   },
 };
 
 const loadingMessages = [
