@@ -422,9 +422,11 @@ export default function Engine() {
                                         <div className="flex items-center gap-2 px-3 py-2 rounded-xl"
                                             style={{ background: '#f0f5ff', border: '1px solid #c7d7fd' }}>
                                             <Plane className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                                            <span className="text-xs font-bold text-blue-700">{flightNumber.toUpperCase()}</span>
+                                            <span className="text-xs font-bold text-blue-700">
+                                                {searchMode === 'route' ? `${fromAirport.toUpperCase()} → ${toAirport.toUpperCase()}` : flightNumber.toUpperCase()}
+                                            </span>
                                             <span className="text-[10px] text-blue-400 ml-1">
-                                                {new Date(flightDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                                                {new Date(departureDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                                             </span>
                                             <button onClick={() => goTo(1)}
                                                 className="ml-auto text-[10px] text-blue-400 hover:text-blue-600 flex items-center gap-0.5 font-medium">
