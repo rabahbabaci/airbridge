@@ -18,7 +18,6 @@ export default function Home() {
                 <Problem />
                 <Solution />
                 <HowItWorks />
-
                 <Comparison />
                 <Trust />
                 <CTA />
