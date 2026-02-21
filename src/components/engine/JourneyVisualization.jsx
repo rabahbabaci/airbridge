@@ -233,7 +233,7 @@ function StatCard({ label, value, unit, barColor, barPct, delay }) {
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
-export default function JourneyVisualization({ locked, steps, transport, profile, confidenceColorMap }) {
+export default function JourneyVisualization({ locked, steps, transport, profile, confidenceColorMap, onReady }) {
     const [phase, setPhase] = useState('idle');
     // revealedCount: how many steps have been revealed in sequence
     const [revealedCount, setRevealedCount] = useState(0);
