@@ -341,8 +341,8 @@ export default function Engine() {
 
                                         <AnimatePresence mode="wait">
                                         {searchMode === 'flight' ? (
-                                            <motion.div key="flight" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}>
-                                                         <div>
+                                            <motion.div key="flight" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }} className="space-y-4">
+                                                    <div>
                                                              <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Flight Number</label>
                                                              <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
                                                                  style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
@@ -395,14 +395,14 @@ export default function Engine() {
 
                                                          <button
                                                              onClick={() => setSearchMode('route')}
-                                                             className="text-xs text-blue-500 hover:text-blue-700 font-medium mt-1"
+                                                             className="text-xs text-blue-500 hover:text-blue-700 font-medium mt-2 w-full text-center"
                                                          >
                                                              Don't have your flight? Search by route.
-                                                             </button>
+                                                         </button>
                                                              </motion.div>
                                                              ) : (
-                                                             <motion.div key="route" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}>
-                                                         <div>
+                                                                 <motion.div key="route" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }} className="space-y-4">
+                                                                         <div>
                                                              <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Airline</label>
                                                              <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
                                                                  style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
@@ -476,7 +476,7 @@ export default function Engine() {
 
                                                          <button
                                                              onClick={() => setSearchMode('flight')}
-                                                             className="text-xs text-blue-500 hover:text-blue-700 font-medium mt-1"
+                                                             className="text-xs text-blue-500 hover:text-blue-700 font-medium mt-2 w-full text-center"
                                                          >
                                                              Have a flight number? Use that instead.
                                                          </button>
