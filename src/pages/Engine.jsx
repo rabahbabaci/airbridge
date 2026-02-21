@@ -103,6 +103,8 @@ const slideVariants = {
 export default function Engine() {
     const [step, setStep] = useState(1);
     const [dir, setDir] = useState(1);
+    const dateInputRefRoute = React.useRef(null);
+    const dateInputRefFlight = React.useRef(null);
 
     // Step 1
     const [searchMode, setSearchMode] = useState('route'); // 'route' | 'flight'
