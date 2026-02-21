@@ -241,7 +241,7 @@ export default function Hero() {
                                 style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', boxShadow: '0 8px 32px rgba(79,70,229,0.35)' }}
                             >
                                 <Plane className="w-4 h-4" />
-                                Calculate My Departure Time
+                                See My Departure Time
                                 <ArrowRight className="w-4 h-4" />
                             </button>
                             </motion.div>
