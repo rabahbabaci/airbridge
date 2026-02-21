@@ -210,7 +210,7 @@ export default function Engine() {
     const dropBaggage = fmt(gate, -(base.tsa + base.walking + buffer));
     const tsaClear = fmt(gate, -(base.walking + buffer));
     const arriveGate = fmt(gate, -buffer);
-    const boarding = fmt(gate, 0);
+    const boarding = fmt(gate, 0); // actual departure time
 
     const terminal = selectedFlight?.terminal || 'Terminal 1';
     const isBusMode   = transport === 'bus';
