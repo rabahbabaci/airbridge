@@ -143,15 +143,15 @@ export default function Hero() {
 
     // Floating travel icons config
     const floatingIcons = [
-        { Icon: Plane,   top: '12%',  left: '5%',   size: 22, delay: 0,    opacity: 0.12 },
-        { Icon: Train,   top: '20%',  left: '88%',  size: 18, delay: 0.8,  opacity: 0.10 },
-        { Icon: Car,     top: '70%',  left: '6%',   size: 16, delay: 1.2,  opacity: 0.09 },
-        { Icon: Luggage, top: '75%',  left: '90%',  size: 18, delay: 0.4,  opacity: 0.10 },
-        { Icon: Shield,  top: '45%',  left: '3%',   size: 15, delay: 1.6,  opacity: 0.08 },
-        { Icon: MapPin,  top: '55%',  left: '93%',  size: 16, delay: 2.0,  opacity: 0.09 },
-        { Icon: Clock,   top: '88%',  left: '30%',  size: 14, delay: 0.6,  opacity: 0.07 },
-        { Icon: Plane,   top: '85%',  left: '65%',  size: 12, delay: 1.4,  opacity: 0.07 },
-        { Icon: Luggage, top: '8%',   left: '50%',  size: 13, delay: 2.2,  opacity: 0.07 },
+        { Icon: Plane,   top: '10%',  left: '4%',   size: 32, delay: 0,    opacity: 0.13 },
+        { Icon: Clock,   top: '18%',  left: '87%',  size: 28, delay: 0.8,  opacity: 0.12 },
+        { Icon: Car,     top: '68%',  left: '5%',   size: 26, delay: 1.2,  opacity: 0.11 },
+        { Icon: Shield,  top: '72%',  left: '89%',  size: 28, delay: 0.4,  opacity: 0.12 },
+        { Icon: MapPin,  top: '42%',  left: '2%',   size: 24, delay: 1.6,  opacity: 0.10 },
+        { Icon: Plane,   top: '50%',  left: '92%',  size: 26, delay: 2.0,  opacity: 0.11 },
+        { Icon: Clock,   top: '86%',  left: '28%',  size: 22, delay: 0.6,  opacity: 0.09 },
+        { Icon: Car,     top: '83%',  left: '63%',  size: 20, delay: 1.4,  opacity: 0.09 },
+        { Icon: MapPin,  top: '7%',   left: '48%',  size: 22, delay: 2.2,  opacity: 0.09 },
     ];
 
     return (
