@@ -94,11 +94,11 @@ function StepNode({ stepId, time, dur, terminal, mode, revealed, TransportIcon, 
     const subLabel = (() => {
         if (stepId === 'home') return null;
         if (stepId === 'airport') return terminal || null;
-        if (stepId === 'gate') return 'Board';
+        if (stepId === 'gate') return null; // boarding time shown in card below
         if (stepId === 'walk') return null; // duration shown on bar
+        if (stepId === 'trainwalk') return null; // duration shown on bar
         if (stepId === 'security') return dur;
         if (stepId === 'baggage') return dur;
-        if (stepId === 'trainwalk') return dur;
         return null;
     })();
 
