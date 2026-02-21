@@ -213,12 +213,16 @@ export default function Engine() {
     const boarding = fmt(gate, 0);
 
     const terminal = selectedFlight?.terminal || 'Terminal 1';
+    const isBusMode   = transport === 'bus';
     const isTrainMode = transport === 'train';
+    const transitWalkMins = isTrainMode ? trainWalkMins : isBusMode ? busWalkMins : 0;
 
     const journeySteps = [
         { id: 'home',     time: leaveTime,     flightLabel: `${flightNumber || 'Your flight'} · ${airportCode}`, total },
         ...(isTrainMode
-            ? [{ id: 'trainwalk', time: fmt(gate, -(total - trainWalkMins)), dur: `${trainWalkMins} min`, visible: true }]
+            ? [{ id: 'trainwalk', time: fmt(gate, -(total - transitWalkMins)), dur: `${transitWalkMins} min`, visible: true, mode: 'train' }]
+            : isBusMode
+            ? [{ id: 'trainwalk', time: fmt(gate, -(total - transitWalkMins)), dur: `${transitWalkMins} min`, visible: true, mode: 'bus' }]
             : [{ id: 'trainwalk', visible: false }]),
         { id: 'travel',   time: arriveAirport, dur: `${trafficTime} min` },
         { id: 'airport',  time: arriveAirport, terminal },
