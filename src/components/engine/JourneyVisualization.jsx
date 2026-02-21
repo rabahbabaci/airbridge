@@ -403,11 +403,14 @@ export default function JourneyVisualization({ locked, steps, transport, profile
                             <div className="flex items-start">
                                 {row1.map((s, i) => {
                                     const nextS = row1[i + 1];
-                                    // For the bar connecting to airport (last in row1), show "En Route · Xm" label
-                                    const isPreAirport = nextS?.id === 'airport' || (!nextS && s.id !== 'airport');
-                                    const barLabel = nextS?.id === 'airport'
-                                        ? `En Route · ${travelStep?.dur || ''}`
-                                        : null;
+                                    let barLabel = null;
+                                    if (nextS?.id === 'trainwalk') {
+                                        // Home → Walk to Train/Bus: show walk duration on bar
+                                        barLabel = trainwalkStep?.dur || null;
+                                    } else if (nextS?.id === 'airport') {
+                                        // (Walk to Train/Bus or Home) → Airport: En Route label
+                                        barLabel = `En Route · ${travelStep?.dur || ''}`;
+                                    }
                                     return (
                                         <React.Fragment key={s.id}>
                                             <StepNode
