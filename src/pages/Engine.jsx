@@ -105,6 +105,8 @@ export default function Engine() {
     const [dir, setDir] = useState(1);
     const dateInputRefRoute = React.useRef(null);
     const dateInputRefFlight = React.useRef(null);
+    const dateInputRefStep1Route = React.useRef(null);
+    const dateInputRefStep1Flight = React.useRef(null);
 
     // Step 1
     const [searchMode, setSearchMode] = useState('route'); // 'route' | 'flight'
