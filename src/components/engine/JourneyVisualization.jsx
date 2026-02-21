@@ -411,11 +411,16 @@ export default function JourneyVisualization({ locked, steps, transport, profile
                             <div className="flex items-start">
                                 {row1.map((s, i) => {
                                     const nextS = row1[i + 1];
-                                    const barLabel = nextS ? getStepDur(nextS.id) : null;
+                                    // For the bar connecting to airport (last in row1), show "En Route · Xm" label
+                                    const isPreAirport = nextS?.id === 'airport' || (!nextS && s.id !== 'airport');
+                                    const barLabel = nextS?.id === 'airport'
+                                        ? `En Route · ${travelStep?.dur || ''}`
+                                        : null;
                                     return (
                                         <React.Fragment key={s.id}>
                                             <StepNode
                                                 stepId={s.id} time={s.time} dur={s.dur} terminal={s.terminal}
+                                                mode={s.mode}
                                                 revealed={isRevealed(s.id)} TransportIcon={TransportIcon}
                                                 stepNumber={visibleSteps.findIndex(vs => vs.id === s.id) + 1}
                                             />
@@ -437,7 +442,11 @@ export default function JourneyVisualization({ locked, steps, transport, profile
                             <div className="flex items-start">
                                 {row2.map((s, i) => {
                                     const nextS = row2[i + 1];
-                                    const barLabel = nextS ? getStepDur(nextS.id) : null;
+                                    // baggage→security: no label. walk→gate: show walking time. others: no label.
+                                    let barLabel = null;
+                                    if (s.id === 'walk' && nextS?.id === 'gate') {
+                                        barLabel = walkStep?.dur ? `${walkStep.dur} walking` : null;
+                                    }
                                     return (
                                         <React.Fragment key={s.id}>
                                             <StepNode
