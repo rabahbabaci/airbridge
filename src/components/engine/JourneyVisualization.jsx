@@ -122,9 +122,9 @@ function StepNode({ stepId, time, dur, terminal, mode, revealed, TransportIcon, 
                     <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: revealed ? 1 : 0 }}
-                        transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 0.2 }}
-                        className="absolute -top-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black z-20 shadow-lg"
-                        style={{ background: `linear-gradient(135deg, ${meta.color}, ${meta.color}dd)`, color: '#fff', border: '2px solid rgba(255,255,255,0.3)' }}>
+                        transition={{ type: 'spring', stiffness: 220, damping: 18, delay: 0.2 }}
+                        className="absolute -top-2 -right-2 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-black z-20 shadow-lg ring-2 ring-white"
+                        style={{ background: `linear-gradient(135deg, ${meta.color}, ${meta.color}ee)`, color: '#fff' }}>
                         {stepNumber}
                     </motion.div>
                 )}
