@@ -342,17 +342,6 @@ export default function Engine() {
                                         {searchMode === 'flight' ? (
                                                     <>
                                                          <div>
-                                                             <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Airline</label>
-                                                             <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
-                                                                 style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
-                                                                 <Plane className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                                                                 <Input value={airline} onChange={e => setAirline(e.target.value)}
-                                                                     placeholder="e.g. United, Delta, Southwest"
-                                                                     className="border-0 p-0 h-auto bg-transparent focus-visible:ring-0 text-sm text-gray-900 font-medium" />
-                                                             </div>
-                                                         </div>
-
-                                                         <div>
                                                              <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Flight Number</label>
                                                              <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
                                                                  style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
