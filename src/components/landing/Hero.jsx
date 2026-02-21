@@ -204,15 +204,16 @@ export default function Hero() {
                             <h1 className="text-6xl lg:text-7xl font-black text-gray-900 mb-4 tracking-tight" style={{ lineHeight: 1.4 }}>
                                 <span className="block">Never Wait.</span>
                                 <span className="block">Never Rush.</span>
-                                <span className="block text-indigo-600">Just Board.</span>
-                                {' '}
-                                <motion.span
-                                    animate={{ x: [0, 8, 0] }}
-                                    transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-                                    className="inline-block"
-                                >
-                                    <Plane className="inline w-12 h-12 text-indigo-600" />
-                                </motion.span>
+                                <span className="block text-indigo-600">
+                                    Just Board.{' '}
+                                    <motion.span
+                                        animate={{ x: [0, 8, 0] }}
+                                        transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
+                                        className="inline-block"
+                                    >
+                                        <Plane className="inline w-12 h-12 text-indigo-600" />
+                                    </motion.span>
+                                </span>
                             </h1>
                         </motion.div>
 
