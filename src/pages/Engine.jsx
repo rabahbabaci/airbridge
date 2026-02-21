@@ -771,12 +771,12 @@ export default function Engine() {
                             )}
                         </div>
                     </div>
-                </motion.div>
+                    </motion.div>
                 )}
 
                 {/* RIGHT — Visualization Panel */}
                 {(journeyReady || step >= 3) && (
-                <motion.div 
+                    <motion.div 
                     initial={false}
                     animate={{ 
                         x: mobileView === 'setup' ? '100%' : 0,
