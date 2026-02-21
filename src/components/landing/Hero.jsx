@@ -226,7 +226,7 @@ export default function Hero() {
                             Real-time door-to-gate departure timing powered by live traffic, TSA wait data, and airport intelligence. One precise answer.
                         </motion.p>
 
-                        {/* CTAs */}
+                        {/* CTA */}
                         <motion.div
                             initial={{ opacity: 0, y: 16 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -235,18 +235,12 @@ export default function Hero() {
                         >
                             <button
                                 onClick={() => navigate(createPageUrl('Engine'))}
-                                className="flex items-center gap-2 px-6 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:scale-105"
+                                className="flex items-center gap-2 px-7 py-4 rounded-full text-white font-bold text-sm transition-all hover:scale-105 active:scale-100"
                                 style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', boxShadow: '0 8px 32px rgba(79,70,229,0.35)' }}
                             >
-                                Test My Departure Time
+                                <Plane className="w-4 h-4" />
+                                Calculate My Departure Time
                                 <ArrowRight className="w-4 h-4" />
-                            </button>
-                            <button
-                                onClick={() => navigate(createPageUrl('Engine'))}
-                                className="flex items-center gap-2 px-6 py-3.5 rounded-full font-semibold text-sm text-gray-800 transition-all hover:bg-white"
-                                style={{ background: 'rgba(255,255,255,0.6)', border: '1.5px solid rgba(0,0,0,0.12)', backdropFilter: 'blur(8px)' }}
-                            >
-                                View Live Preview
                             </button>
                         </motion.div>
 
