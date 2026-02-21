@@ -271,11 +271,14 @@ export default function JourneyVisualization({ locked, steps, transport, profile
         setPhase('journey');
         setRevealedCount(0);
         visibleSteps.forEach((_, i) => {
-            const t = setTimeout(() => {
-                setRevealedCount(prev => prev + 1);
-            }, i * STEP_INTERVAL + 300);
-            timerRefs.current.push(t);
-        });
+                  const t = setTimeout(() => {
+                      setRevealedCount(prev => prev + 1);
+                      if (i === visibleSteps.length - 1 && onReady) {
+                          setTimeout(onReady, 400);
+                      }
+                  }, i * STEP_INTERVAL + 300);
+                  timerRefs.current.push(t);
+              });
     };
 
     const leaveStep = steps.find(s => s.id === 'home');
