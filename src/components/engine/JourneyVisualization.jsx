@@ -395,7 +395,7 @@ export default function JourneyVisualization({ locked, steps, transport, profile
                                 <span className="text-4xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
                                     {leaveStep?.time}
                                 </span>
-                                <p className="text-gray-500 text-[11px] mt-1">{steps[0]?.flightLabel} · {steps[0]?.total} min door-to-gate</p>
+                                <p className="text-gray-500 text-[11px] mt-1">{steps[0]?.flightLabel} · {formatTotal(steps[0]?.total)} door-to-gate</p>
                             </div>
                             <span className={`text-xs font-bold px-3 py-1.5 rounded-full border shrink-0 ml-4 ${confidenceColorMap[profile?.color]?.badge}`}>
                                 {profile?.confidenceScore}% Confident
