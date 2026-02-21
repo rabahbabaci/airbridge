@@ -4,6 +4,7 @@ import { Menu, X, Plane } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import AuthModal from '@/components/landing/AuthModal';
 
 export default function Header() {
     const [scrolled, setScrolled] = useState(false);
