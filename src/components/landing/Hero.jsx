@@ -183,16 +183,16 @@ export default function Hero() {
 
                     {/* LEFT */}
                     <div>
-                        {/* Eyebrow */}
+                        {/* Beta pill */}
                         <motion.div
                             initial={{ opacity: 0, y: 16 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5 }}
                             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8"
-                            style={{ background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(99,102,241,0.2)' }}
+                            style={{ background: 'rgba(255,255,255,0.85)', border: '1px solid rgba(0,0,0,0.10)' }}
                         >
-                            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                            <span className="text-xs font-semibold text-indigo-700 uppercase tracking-wider">Door-to-Gate Precision Engine</span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                            <span className="text-xs font-medium text-gray-700">Now accepting beta users</span>
                         </motion.div>
 
                         {/* Headline */}
