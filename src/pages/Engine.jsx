@@ -308,7 +308,7 @@ export default function Engine() {
 
                 {/* LEFT — Input Panel */}
                 {(!journeyReady || mobileView === 'setup') && (
-                <motion.div 
+                    <motion.div 
                     initial={false}
                     animate={{ 
                         x: mobileView === 'results' ? '-100%' : 0,
