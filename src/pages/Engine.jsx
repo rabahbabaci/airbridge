@@ -107,6 +107,7 @@ export default function Engine() {
     const [dir, setDir] = useState(1);
 
     // Step 1
+    const [mobileView, setMobileView] = useState('setup'); // 'setup' | 'results'
     const [searchMode, setSearchMode] = useState('flight'); // 'route' | 'flight'
     const [airline, setAirline] = useState('');
     const [fromAirport, setFromAirport] = useState('');
@@ -178,6 +179,7 @@ export default function Engine() {
     const handleSelectFlight = (flight) => {
         setSelectedFlight(flight);
         goTo(3);
+        setMobileView('setup');
     };
 
     const [journeyReady, setJourneyReady] = useState(false);
@@ -189,6 +191,7 @@ export default function Engine() {
         setFlightOptions([]);
         setDir(-1);
         setStep(1);
+        setMobileView('setup');
     };
 
     const airportCode = selectedFlight?.origin_code && airportData[selectedFlight.origin_code]
@@ -304,8 +307,15 @@ export default function Engine() {
             <div className="flex flex-1 min-h-0">
 
                 {/* LEFT — Input Panel */}
-                <div className="w-[380px] shrink-0 flex flex-col overflow-hidden relative"
-                    style={{ background: '#ffffff', borderRight: '1px solid #f1f5f9' }}>
+                <motion.div 
+                    initial={false}
+                    animate={{ 
+                        x: mobileView === 'results' ? '-100%' : 0,
+                        opacity: mobileView === 'results' ? 0 : 1
+                    }}
+                    transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+                    className="w-full md:w-[380px] md:shrink-0 flex flex-col overflow-hidden relative absolute md:static md:opacity-100 inset-0 md:inset-auto"
+                    style={{ background: '#ffffff', borderRight: '1px solid #f1f5f9', pointerEvents: mobileView === 'results' ? 'none' : 'auto' }}>
                     {locked && !journeyReady && (
                         <div className="absolute inset-0 z-20 bg-white/70 backdrop-blur-sm flex items-center justify-center">
                             <div className="flex flex-col items-center gap-3">
@@ -747,10 +757,16 @@ export default function Engine() {
                             </AnimatePresence>
 
                             {step === 3 && (
-                                <button onClick={handleReset}
-                                    className="w-full text-center text-[11px] text-gray-400 hover:text-gray-600 mt-2 transition-colors">
-                                    ← Start over
-                                </button>
+                                <>
+                                    <button onClick={() => setMobileView('results')}
+                                        className="hidden md:block w-full text-center text-[11px] text-gray-400 hover:text-gray-600 mt-2 transition-colors">
+                                        View Results
+                                    </button>
+                                    <button onClick={handleReset}
+                                        className="w-full text-center text-[11px] text-gray-400 hover:text-gray-600 mt-2 transition-colors">
+                                        ← Start over
+                                    </button>
+                                </>
                             )}
                         </div>
                     </div>
