@@ -202,8 +202,8 @@ export default function Hero() {
                             transition={{ duration: 0.6, delay: 0.1 }}
                         >
                             <h1 className="text-6xl lg:text-7xl font-black text-gray-900 leading-[1.15] mb-4 tracking-tight">
-                                Never Wait.<br />
-                                Never Rush.<br />
+                                Never Wait.<br /><br />
+                                Never Rush.<br /><br />
                                 <span className="text-indigo-600">Just Board.</span>
                                 {' '}
                                 <motion.span
