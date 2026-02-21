@@ -1,29 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Plane, Car, Shield, CheckCircle, Clock, MapPin } from 'lucide-react';
+import { ArrowRight, Plane, Car, Shield, CheckCircle, Clock, Train, Luggage, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
 // Animated phone mockup
 function PhoneMockup() {
+    const [leaveTime] = useState('11:45 AM');
     const [pulse, setPulse] = useState(false);
 
     useEffect(() => {
-        const iv = setInterval(() => setPulse(p => !p), 2500);
+        const iv = setInterval(() => setPulse(p => !p), 2000);
         return () => clearInterval(iv);
     }, []);
-
-    const inputs = [
-        { icon: Car,    label: 'Uber/Lyft',  value: '42 min',  sub: 'En route',     color: 'bg-blue-50',   iconBg: 'bg-blue-100',   iconColor: 'text-blue-600'   },
-        { icon: Shield, label: 'TSA Wait',   value: '12 min',  sub: 'PreCheck lane', color: 'bg-violet-50', iconBg: 'bg-violet-100', iconColor: 'text-violet-600' },
-    ];
-
-    const flow = [
-        { emoji: '🏠', label: 'Home',    color: 'bg-blue-100 text-blue-700'    },
-        { emoji: '✈️', label: 'Airport', color: 'bg-cyan-100 text-cyan-700'    },
-        { emoji: '🛂', label: 'TSA',     color: 'bg-violet-100 text-violet-700' },
-        { emoji: '🎯', label: 'Gate',    color: 'bg-green-100 text-green-700'  },
-    ];
 
     return (
         <motion.div
@@ -33,80 +22,108 @@ function PhoneMockup() {
             className="relative"
             style={{ filter: 'drop-shadow(0 40px 80px rgba(99,102,241,0.25))' }}
         >
-            {/* Glow */}
-            <div className="absolute inset-0 rounded-[44px] blur-3xl opacity-30 pointer-events-none"
+            {/* Floating glow */}
+            <div className="absolute inset-0 rounded-[44px] blur-3xl opacity-30"
                 style={{ background: 'radial-gradient(circle, #6366f1, #a855f7)', transform: 'scale(0.85) translateY(20px)' }} />
 
             {/* Phone shell */}
             <div className="relative w-[300px] bg-gray-900 rounded-[44px] p-3 shadow-2xl"
                 style={{ border: '3px solid #1f2937' }}>
+                {/* Notch */}
                 <div className="absolute top-3 left-1/2 -translate-x-1/2 w-24 h-6 bg-gray-900 rounded-full z-10" />
 
-                <div className="bg-white rounded-[36px] overflow-hidden" style={{ minHeight: 540 }}>
+                {/* Screen */}
+                <div className="bg-white rounded-[36px] overflow-hidden" style={{ minHeight: 560 }}>
                     {/* Status bar */}
                     <div className="flex items-center justify-between px-6 pt-4 pb-2">
                         <span className="text-[11px] font-semibold text-gray-900">9:41</span>
-                        <div className="w-3 h-2 border border-gray-400 rounded-sm relative">
-                            <div className="absolute inset-0.5 bg-gray-900 rounded-sm" style={{ width: '70%' }} />
+                        <div className="flex gap-1 items-center">
+                            <div className="w-3 h-2 border border-gray-400 rounded-sm relative">
+                                <div className="absolute inset-0.5 bg-gray-900 rounded-sm" style={{ width: '70%' }} />
+                            </div>
                         </div>
                     </div>
 
-                    <div className="px-5 pb-6 space-y-3">
+                    <div className="px-5 pb-6 space-y-2.5">
                         {/* Flight header */}
-                        <div className="flex items-start justify-between">
-                            <div>
-                                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">UA 452 · Today</p>
-                                <p className="text-xl font-black text-gray-900 mt-0.5 tracking-tight">SFO → JFK</p>
-                                <p className="text-[10px] text-gray-400 mt-0.5">Departs 2:30 PM · Terminal 3</p>
-                            </div>
-                            <span className="text-[9px] font-bold bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full mt-1">91% Confidence</span>
+                        <div>
+                            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">UA 452 · Today</p>
+                            <p className="text-xl font-black text-gray-900 mt-0.5">SFO → JFK</p>
+                            <p className="text-[10px] text-gray-400">Departs 2:30 PM · Terminal 3</p>
                         </div>
 
-                        {/* Inputs row */}
+                        {/* Transport & TSA row */}
                         <div className="flex gap-2">
-                            {inputs.map(({ icon: Icon, label, value, sub, color, iconBg, iconColor }) => (
-                                <div key={label} className={`flex-1 flex items-center gap-2 ${color} rounded-xl px-2.5 py-2`}>
-                                    <div className={`w-6 h-6 ${iconBg} rounded-full flex items-center justify-center shrink-0`}>
-                                        <Icon className={`w-3 h-3 ${iconColor}`} />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] font-bold text-gray-800 leading-tight">{value}</p>
-                                        <p className="text-[9px] text-gray-500 leading-tight">{sub}</p>
-                                    </div>
+                            <motion.div
+                                animate={{ scale: [1, 1.02, 1] }}
+                                transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
+                                className="flex-1 flex items-center gap-2 bg-green-50 rounded-xl px-3 py-2.5"
+                            >
+                                <div className="w-7 h-7 bg-green-100 rounded-full flex items-center justify-center shrink-0">
+                                    <Car className="w-3.5 h-3.5 text-green-600" />
                                 </div>
-                            ))}
+                                <div>
+                                    <p className="text-[11px] font-bold text-gray-900">Uber · 42 min</p>
+                                    <p className="text-[9px] text-gray-500">Traffic clear</p>
+                                </div>
+                            </motion.div>
+                            <div className="flex-1 flex items-center gap-2 bg-purple-50 rounded-xl px-3 py-2.5">
+                                <div className="w-7 h-7 bg-purple-100 rounded-full flex items-center justify-center shrink-0">
+                                    <Shield className="w-3.5 h-3.5 text-purple-600" />
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-bold text-gray-900">TSA · 12 min</p>
+                                    <p className="text-[9px] text-gray-500">PreCheck open</p>
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Door-to-gate flow */}
+                        {/* Journey steps mini */}
                         <div className="bg-gray-50 rounded-xl px-3 py-2.5">
                             <p className="text-[9px] text-gray-400 font-semibold uppercase tracking-wider mb-2">Door-to-Gate</p>
-                            <div className="flex items-center justify-between">
-                                {flow.map((step, i) => (
-                                    <React.Fragment key={step.label}>
-                                        <div className="flex flex-col items-center gap-1">
-                                            <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${step.color}`}>
-                                                {step.emoji}
-                                            </span>
-                                            <span className="text-[8px] text-gray-500 font-medium">{step.label}</span>
-                                        </div>
-                                        {i < flow.length - 1 && (
-                                            <div className="flex-1 h-px bg-gray-200 mx-1 mb-3" />
-                                        )}
-                                    </React.Fragment>
-                                ))}
+                            <div className="flex items-center gap-1 text-[9px] text-gray-500 font-medium">
+                                <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full">🏠 Home</span>
+                                <span>→</span>
+                                <span className="bg-cyan-100 text-cyan-700 px-1.5 py-0.5 rounded-full">✈️ Airport</span>
+                                <span>→</span>
+                                <span className="bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full">🛡️ TSA</span>
+                                <span>→</span>
+                                <span className="bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full">🚪 Gate</span>
                             </div>
                         </div>
 
-                        {/* LEAVE HOME AT — hero card */}
+                        {/* Arrive at gate + boarding */}
+                        <div className="flex gap-2">
+                            <div className="flex-1 bg-green-50 rounded-xl px-3 py-2.5 border border-green-100">
+                                <p className="text-[9px] text-gray-400 uppercase tracking-wider mb-0.5">Gate Arrival</p>
+                                <p className="text-sm font-black text-green-600">12:48 PM</p>
+                            </div>
+                            <div className="flex-1 bg-gray-50 rounded-xl px-3 py-2.5 border border-gray-100">
+                                <p className="text-[9px] text-gray-400 uppercase tracking-wider mb-0.5">Boarding</p>
+                                <p className="text-sm font-black text-gray-700">2:30 PM</p>
+                            </div>
+                        </div>
+
+                        {/* LEAVE BY hero */}
                         <motion.div
-                            animate={{ boxShadow: pulse ? '0 0 0 4px rgba(99,102,241,0.18)' : '0 0 0 0px rgba(99,102,241,0)' }}
-                            transition={{ duration: 1.2 }}
-                            className="rounded-2xl px-4 py-4"
+                            animate={{ boxShadow: pulse ? '0 0 0 4px rgba(99,102,241,0.2)' : '0 0 0 0px rgba(99,102,241,0)' }}
+                            transition={{ duration: 1 }}
+                            className="rounded-2xl px-4 py-3.5"
                             style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)' }}
                         >
-                            <p className="text-[9px] text-white/60 font-semibold uppercase tracking-wider mb-1">Leave Home At</p>
-                            <p className="text-4xl font-black text-white tracking-tight leading-none">11:45 AM</p>
-                            <p className="text-[10px] text-white/50 mt-2">Buffer included: 18 min</p>
+                            <div className="flex items-center justify-between mb-1">
+                                <p className="text-[9px] text-white/70 font-semibold uppercase tracking-wider">Leave Home By</p>
+                                <span className="text-[9px] bg-white/20 text-white px-1.5 py-0.5 rounded-full font-medium">97% Confident</span>
+                            </div>
+                            <motion.p
+                                key={leaveTime}
+                                initial={{ opacity: 0, y: 6 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="text-3xl font-black text-white tracking-tight"
+                            >
+                                {leaveTime}
+                            </motion.p>
+                            <p className="text-[10px] text-white/60 mt-1">📍 Home · Stress-Free · 1h 38m door-to-gate</p>
                         </motion.div>
                     </div>
                 </div>
@@ -124,13 +141,17 @@ export default function Hero() {
         { value: '6 vars', label: 'In Every Prediction' },
     ];
 
-    // Floating travel icons config — only left half, subtle
+    // Floating travel icons config
     const floatingIcons = [
-        { Icon: Plane,   top: '10%',  left: '4%',   size: 18, delay: 0,    opacity: 0.09 },
-        { Icon: Car,     top: '60%',  left: '5%',   size: 15, delay: 1.2,  opacity: 0.07 },
-        { Icon: Shield,  top: '38%',  left: '2%',   size: 14, delay: 1.6,  opacity: 0.07 },
-        { Icon: MapPin,  top: '80%',  left: '22%',  size: 13, delay: 2.0,  opacity: 0.06 },
-        { Icon: Clock,   top: '20%',  left: '30%',  size: 12, delay: 0.6,  opacity: 0.06 },
+        { Icon: Plane,   top: '12%',  left: '5%',   size: 22, delay: 0,    opacity: 0.12 },
+        { Icon: Train,   top: '20%',  left: '88%',  size: 18, delay: 0.8,  opacity: 0.10 },
+        { Icon: Car,     top: '70%',  left: '6%',   size: 16, delay: 1.2,  opacity: 0.09 },
+        { Icon: Luggage, top: '75%',  left: '90%',  size: 18, delay: 0.4,  opacity: 0.10 },
+        { Icon: Shield,  top: '45%',  left: '3%',   size: 15, delay: 1.6,  opacity: 0.08 },
+        { Icon: MapPin,  top: '55%',  left: '93%',  size: 16, delay: 2.0,  opacity: 0.09 },
+        { Icon: Clock,   top: '88%',  left: '30%',  size: 14, delay: 0.6,  opacity: 0.07 },
+        { Icon: Plane,   top: '85%',  left: '65%',  size: 12, delay: 1.4,  opacity: 0.07 },
+        { Icon: Luggage, top: '8%',   left: '50%',  size: 13, delay: 2.2,  opacity: 0.07 },
     ];
 
     return (
