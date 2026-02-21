@@ -140,28 +140,13 @@ function StepNode({ stepId, time, dur, terminal, mode, revealed, TransportIcon, 
             </p>
 
             {/* Primary value */}
-            {stepId === 'travel' ? (
-                revealed ? (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
-                        className="flex items-center gap-0.5 mt-0.5">
-                        {[0, 1, 2].map(i => (
-                            <motion.span key={i}
-                                animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1.2, 0.8] }}
-                                transition={{ repeat: Infinity, duration: 1.2, delay: i * 0.2, ease: 'easeInOut' }}
-                                className="block w-1 h-1 rounded-full"
-                                style={{ background: meta.color }} />
-                        ))}
-                    </motion.div>
-                ) : null
-            ) : (
-                primaryLabel && (
-                    <motion.p
-                        initial={{ opacity: 0 }} animate={{ opacity: revealed ? 1 : 0 }}
-                        transition={{ delay: 0.3, duration: 0.5 }}
-                        className="text-xs font-bold text-white leading-none">
-                        {primaryLabel}
-                    </motion.p>
-                )
+            {primaryLabel && (
+                <motion.p
+                    initial={{ opacity: 0 }} animate={{ opacity: revealed ? 1 : 0 }}
+                    transition={{ delay: 0.3, duration: 0.5 }}
+                    className="text-xs font-bold text-white leading-none">
+                    {primaryLabel}
+                </motion.p>
             )}
 
             {/* Sub-label */}
