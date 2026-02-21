@@ -379,6 +379,7 @@ export default function Engine() {
                                                                 onSelect={(date) => {
                                                                     if (date) {
                                                                         setDepartureDate(date.toISOString().split('T')[0]);
+                                                                        document.body.click();
                                                                     }
                                                                 }}
                                                                 disabled={(date) => date < new Date(getTodayStr())}
@@ -427,6 +428,7 @@ export default function Engine() {
                                                                 onSelect={(date) => {
                                                                     if (date) {
                                                                         setDepartureDate(date.toISOString().split('T')[0]);
+                                                                        document.body.click();
                                                                     }
                                                                 }}
                                                                 disabled={(date) => date < new Date(getTodayStr())}
@@ -492,13 +494,13 @@ export default function Engine() {
                                                 <div className="flex flex-col gap-2">
                                                     {flightOptions.map((f, i) => (
                                                         <motion.button key={i}
-                                                            initial={{ opacity: 0, y: 12 }}
-                                                            animate={{ opacity: 1, y: 0 }}
-                                                            transition={{ delay: i * 0.08, duration: 0.3 }}
-                                                            onClick={() => handleSelectFlight(f)}
-                                                            className="w-full text-left rounded-xl px-4 py-3.5 transition-all duration-200 hover:scale-[1.01]"
-                                                            style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}
-                                                            whileHover={{ borderColor: '#93c5fd', background: '#eff6ff' }}>
+                                                             initial={{ opacity: 0, y: 12 }}
+                                                             animate={{ opacity: 1, y: 0 }}
+                                                             transition={{ delay: i * 0.08, duration: 0.3 }}
+                                                             onClick={() => handleSelectFlight(f)}
+                                                             className="w-full text-left rounded-xl px-4 py-3.5 transition-all duration-100 hover:scale-[1.01]"
+                                                             style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}
+                                                             whileHover={{ borderColor: '#93c5fd', background: '#eff6ff', transition: { duration: 0.1 } }}>
                                                             <div className="flex items-center justify-between mb-2">
                                                                 <div className="flex items-center gap-3">
                                                                     <span className="text-xl font-black text-gray-900">{f.departure_time}</span>
