@@ -811,7 +811,7 @@ export default function Engine() {
                             boardingTime={boarding}
                         />
                     </AnimatePresence>
-                </motion.div>
+                    </motion.div>
                 )}
             </div>
         </div>
