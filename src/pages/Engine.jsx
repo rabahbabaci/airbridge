@@ -231,7 +231,7 @@ export default function Engine() {
             : [{ id: 'baggage', visible: false }]),
         { id: 'security', time: tsaClear,      dur: `${base.tsa} min` },
         { id: 'walk',     time: arriveGate,    dur: `${base.walking} min` },
-        { id: 'gate',     time: boarding,      dur: `on time` },
+        { id: 'gate',     time: arriveGate,    dur: `on time` },
     ];
 
     const canSearch = flightNumber.trim().length > 0 && flightDate.length > 0;
