@@ -132,5 +132,6 @@ export default function Header() {
         </motion.header>
 
         <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
+    </>
     );
 }
