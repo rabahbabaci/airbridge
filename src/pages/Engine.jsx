@@ -333,27 +333,81 @@ export default function Engine() {
                                         className="absolute inset-0 overflow-y-auto px-6 pt-4 pb-4 flex flex-col gap-4">
                                         <StepDots step={1} />
 
-                                        <div>
-                                            <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Flight Number</label>
-                                            <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
-                                                style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
-                                                <Plane className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                                                <Input value={flightNumber} onChange={e => setFlightNumber(e.target.value)}
-                                                    placeholder="e.g. UA 452"
-                                                    onKeyDown={e => e.key === 'Enter' && canSearch && handleFindFlight()}
-                                                    className="border-0 p-0 h-auto bg-transparent focus-visible:ring-0 text-sm text-gray-900 font-medium" />
-                                            </div>
-                                        </div>
+                                        {searchMode === 'route' ? (
+                                            <>
+                                                <div>
+                                                    <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">From (Airport)</label>
+                                                    <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
+                                                        style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
+                                                        <Plane className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                                                        <Input value={fromAirport} onChange={e => setFromAirport(e.target.value)}
+                                                            placeholder="e.g. SFO or San Francisco"
+                                                            className="border-0 p-0 h-auto bg-transparent focus-visible:ring-0 text-sm text-gray-900 font-medium" />
+                                                    </div>
+                                                </div>
 
-                                        <div>
-                                            <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Flight Date</label>
-                                            <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
-                                                style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
-                                                <Calendar className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                                                <input type="date" value={flightDate} onChange={e => setFlightDate(e.target.value)}
-                                                    className="flex-1 bg-transparent text-sm text-gray-900 font-medium focus:outline-none" />
-                                            </div>
-                                        </div>
+                                                <div>
+                                                    <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">To (Airport)</label>
+                                                    <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
+                                                        style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
+                                                        <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                                                        <Input value={toAirport} onChange={e => setToAirport(e.target.value)}
+                                                            placeholder="e.g. JFK or New York"
+                                                            className="border-0 p-0 h-auto bg-transparent focus-visible:ring-0 text-sm text-gray-900 font-medium" />
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Departure Date</label>
+                                                    <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
+                                                        style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
+                                                        <Calendar className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                                                        <input type="date" value={departureDate} onChange={e => setDepartureDate(e.target.value)}
+                                                            min={getTodayStr()}
+                                                            className="flex-1 bg-transparent text-sm text-gray-900 font-medium focus:outline-none" />
+                                                    </div>
+                                                </div>
+
+                                                <button
+                                                    onClick={() => setSearchMode('flight')}
+                                                    className="text-xs text-blue-500 hover:text-blue-700 font-medium mt-1"
+                                                >
+                                                    Know your flight number? Enter it instead.
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div>
+                                                    <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Flight Number</label>
+                                                    <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
+                                                        style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
+                                                        <Plane className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                                                        <Input value={flightNumber} onChange={e => setFlightNumber(e.target.value)}
+                                                            placeholder="e.g. UA 452"
+                                                            onKeyDown={e => e.key === 'Enter' && canSearch && handleFindFlight()}
+                                                            className="border-0 p-0 h-auto bg-transparent focus-visible:ring-0 text-sm text-gray-900 font-medium" />
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Departure Date</label>
+                                                    <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
+                                                        style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
+                                                        <Calendar className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                                                        <input type="date" value={departureDate} onChange={e => setDepartureDate(e.target.value)}
+                                                            min={getTodayStr()}
+                                                            className="flex-1 bg-transparent text-sm text-gray-900 font-medium focus:outline-none" />
+                                                    </div>
+                                                </div>
+
+                                                <button
+                                                    onClick={() => setSearchMode('route')}
+                                                    className="text-xs text-blue-500 hover:text-blue-700 font-medium mt-1"
+                                                >
+                                                    ← Back to route search
+                                                </button>
+                                            </>
+                                        )}
                                     </motion.div>
                                 )}
 
