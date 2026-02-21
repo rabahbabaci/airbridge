@@ -7,7 +7,7 @@ import {
     Plane, Car, Train, Bus, User, Shield, Zap, AlertCircle,
     ChevronDown, CheckCircle2, Lock, Calendar, Search, ArrowLeft
 } from 'lucide-react';
-import JourneyVisualization from '@/components/engine/JourneyVisualization.jsx';
+import JourneyVisualization from '@/components/engine/JourneyVisualization';
 import { base44 } from '@/api/base44Client';
 
 // ── Data ────────────────────────────────────────────────────────────────────
