@@ -44,52 +44,63 @@ function PhoneMockup() {
                         </div>
                     </div>
 
-                    <div className="px-5 pb-6 space-y-3">
+                    <div className="px-5 pb-6 space-y-2.5">
                         {/* Flight header */}
                         <div>
-                            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Upcoming Flight</p>
-                            <p className="text-2xl font-bold text-gray-900 mt-0.5">SFO → JFK</p>
+                            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">UA 452 · Today</p>
+                            <p className="text-xl font-black text-gray-900 mt-0.5">SFO → JFK</p>
+                            <p className="text-[10px] text-gray-400">Departs 2:30 PM · Terminal 3</p>
                         </div>
 
-                        {/* Traffic card */}
-                        <motion.div
-                            animate={{ scale: [1, 1.01, 1] }}
-                            transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
-                            className="flex items-center gap-3 bg-gray-50 rounded-2xl px-4 py-3"
-                        >
-                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                                <Car className="w-4 h-4 text-green-600" />
-                            </div>
-                            <div>
-                                <p className="text-sm font-semibold text-gray-900">Traffic Clear</p>
-                                <p className="text-[11px] text-gray-500">32 min drive</p>
-                            </div>
-                        </motion.div>
-
-                        {/* Flight details */}
-                        <div className="bg-gray-50 rounded-2xl px-4 py-3">
-                            <div className="flex items-center justify-between">
+                        {/* Transport & TSA row */}
+                        <div className="flex gap-2">
+                            <motion.div
+                                animate={{ scale: [1, 1.02, 1] }}
+                                transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
+                                className="flex-1 flex items-center gap-2 bg-green-50 rounded-xl px-3 py-2.5"
+                            >
+                                <div className="w-7 h-7 bg-green-100 rounded-full flex items-center justify-center shrink-0">
+                                    <Car className="w-3.5 h-3.5 text-green-600" />
+                                </div>
                                 <div>
-                                    <p className="text-[10px] text-gray-400">Departs</p>
-                                    <p className="text-lg font-bold text-gray-900">2:30 PM</p>
+                                    <p className="text-[11px] font-bold text-gray-900">Uber · 42 min</p>
+                                    <p className="text-[9px] text-gray-500">Traffic clear</p>
                                 </div>
-                                <Plane className="w-5 h-5 text-indigo-400" />
-                                <div className="text-right">
-                                    <p className="text-[10px] text-gray-400">Arrives</p>
-                                    <p className="text-lg font-bold text-gray-900">11:15 PM</p>
+                            </motion.div>
+                            <div className="flex-1 flex items-center gap-2 bg-purple-50 rounded-xl px-3 py-2.5">
+                                <div className="w-7 h-7 bg-purple-100 rounded-full flex items-center justify-center shrink-0">
+                                    <Shield className="w-3.5 h-3.5 text-purple-600" />
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-bold text-gray-900">TSA · 12 min</p>
+                                    <p className="text-[9px] text-gray-500">PreCheck open</p>
                                 </div>
                             </div>
-                            <p className="text-[10px] text-gray-400 mt-1">Terminal 3</p>
                         </div>
 
-                        {/* TSA card */}
-                        <div className="flex items-center gap-3 bg-gray-50 rounded-2xl px-4 py-3">
-                            <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                                <Shield className="w-4 h-4 text-purple-600" />
+                        {/* Journey steps mini */}
+                        <div className="bg-gray-50 rounded-xl px-3 py-2.5">
+                            <p className="text-[9px] text-gray-400 font-semibold uppercase tracking-wider mb-2">Door-to-Gate</p>
+                            <div className="flex items-center gap-1 text-[9px] text-gray-500 font-medium">
+                                <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full">🏠 Home</span>
+                                <span>→</span>
+                                <span className="bg-cyan-100 text-cyan-700 px-1.5 py-0.5 rounded-full">✈️ Airport</span>
+                                <span>→</span>
+                                <span className="bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full">🛡️ TSA</span>
+                                <span>→</span>
+                                <span className="bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full">🚪 Gate</span>
                             </div>
-                            <div>
-                                <p className="text-sm font-semibold text-gray-900">TSA: 12 min</p>
-                                <p className="text-[11px] text-gray-500">PreCheck open</p>
+                        </div>
+
+                        {/* Arrive at gate + boarding */}
+                        <div className="flex gap-2">
+                            <div className="flex-1 bg-green-50 rounded-xl px-3 py-2.5 border border-green-100">
+                                <p className="text-[9px] text-gray-400 uppercase tracking-wider mb-0.5">Gate Arrival</p>
+                                <p className="text-sm font-black text-green-600">12:48 PM</p>
+                            </div>
+                            <div className="flex-1 bg-gray-50 rounded-xl px-3 py-2.5 border border-gray-100">
+                                <p className="text-[9px] text-gray-400 uppercase tracking-wider mb-0.5">Boarding</p>
+                                <p className="text-sm font-black text-gray-700">2:30 PM</p>
                             </div>
                         </div>
 
@@ -97,34 +108,23 @@ function PhoneMockup() {
                         <motion.div
                             animate={{ boxShadow: pulse ? '0 0 0 4px rgba(99,102,241,0.2)' : '0 0 0 0px rgba(99,102,241,0)' }}
                             transition={{ duration: 1 }}
-                            className="rounded-2xl px-4 py-4"
+                            className="rounded-2xl px-4 py-3.5"
                             style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)' }}
                         >
-                            <div className="flex items-center gap-1.5 mb-1">
-                                <div className="w-3 h-3 rounded-full border-2 border-white/60 flex items-center justify-center">
-                                    <div className="w-1 h-1 bg-white rounded-full" />
-                                </div>
-                                <p className="text-[10px] text-white/70 font-semibold uppercase tracking-wider">Leave By</p>
+                            <div className="flex items-center justify-between mb-1">
+                                <p className="text-[9px] text-white/70 font-semibold uppercase tracking-wider">Leave Home By</p>
+                                <span className="text-[9px] bg-white/20 text-white px-1.5 py-0.5 rounded-full font-medium">97% Confident</span>
                             </div>
                             <motion.p
                                 key={leaveTime}
                                 initial={{ opacity: 0, y: 6 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="text-4xl font-black text-white tracking-tight"
+                                className="text-3xl font-black text-white tracking-tight"
                             >
                                 {leaveTime}
                             </motion.p>
-                            <p className="text-[11px] text-white/60 mt-1">📍 From Home</p>
+                            <p className="text-[10px] text-white/60 mt-1">📍 Home · Stress-Free · 1h 38m door-to-gate</p>
                         </motion.div>
-
-                        {/* On Track */}
-                        <div className="flex items-center justify-between bg-gray-50 rounded-2xl px-4 py-3">
-                            <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                                <span className="text-sm font-semibold text-gray-900">On Track</span>
-                            </div>
-                            <span className="text-[11px] text-gray-500">2h 45m until departure</span>
-                        </div>
                     </div>
                 </div>
             </div>
