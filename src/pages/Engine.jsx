@@ -342,7 +342,6 @@ export default function Engine() {
                                         <AnimatePresence mode="wait">
                                         {searchMode === 'flight' ? (
                                             <motion.div key="flight" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}>
-                                                    <>
                                                          <div>
                                                              <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Flight Number</label>
                                                              <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
@@ -399,11 +398,10 @@ export default function Engine() {
                                                              className="text-xs text-blue-500 hover:text-blue-700 font-medium mt-1"
                                                          >
                                                              Don't have your flight? Search by route.
-                                                         </button>
-                                            </motion.div>
-                                        ) : (
-                                            <motion.div key="route" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}>
-                                                     <>
+                                                             </button>
+                                                             </motion.div>
+                                                             ) : (
+                                                             <motion.div key="route" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}>
                                                          <div>
                                                              <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Airline</label>
                                                              <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
