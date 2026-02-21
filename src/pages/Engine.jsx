@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import {
     Plane, Car, Train, Bus, User, Shield, Zap, AlertCircle,
     ChevronDown, CheckCircle2, Lock, Calendar, Search, ArrowLeft, MapPin
