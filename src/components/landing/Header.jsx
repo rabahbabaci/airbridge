@@ -67,7 +67,7 @@ export default function Header() {
 
                         <a
                             href="#"
-                            onClick={(e) => e.preventDefault()}
+                            onClick={(e) => { e.preventDefault(); setAuthOpen(true); }}
                             className="text-sm text-gray-600 hover:text-gray-900 hover:bg-white transition-all font-medium px-4 py-1.5 rounded-full"
                         >
                             Sign in
