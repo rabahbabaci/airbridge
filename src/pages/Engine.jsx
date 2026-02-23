@@ -107,7 +107,6 @@ export default function Engine() {
     const [dir, setDir] = useState(1);
 
     // Step 1
-    const [mobileView, setMobileView] = useState('setup'); // 'setup' | 'results'
     const [searchMode, setSearchMode] = useState('flight'); // 'route' | 'flight'
     const [airline, setAirline] = useState('');
     const [fromAirport, setFromAirport] = useState('');
@@ -179,7 +178,6 @@ export default function Engine() {
     const handleSelectFlight = (flight) => {
         setSelectedFlight(flight);
         goTo(3);
-        setMobileView('setup');
     };
 
     const [journeyReady, setJourneyReady] = useState(false);
@@ -191,12 +189,6 @@ export default function Engine() {
         setFlightOptions([]);
         setDir(-1);
         setStep(1);
-        setMobileView('setup');
-    };
-
-    const handleJourneyReady = () => {
-        setJourneyReady(true);
-        setMobileView('results'); // Auto-show results on mobile
     };
 
     const airportCode = selectedFlight?.origin_code && airportData[selectedFlight.origin_code]
@@ -266,61 +258,54 @@ export default function Engine() {
         : flightNumber.trim().length > 0 && departureDate.length > 0;
 
     return (
-        <div className="fixed inset-0 flex flex-col overflow-hidden bg-gray-950 font-sans antialiased">
+        <div className="h-screen w-screen flex flex-col overflow-hidden bg-gray-950 font-sans antialiased">
 
             {/* ── Topbar ── */}
-            <header className="flex items-center justify-between px-3 md:px-6 py-3 shrink-0 z-10 gap-3"
+            <header className="flex items-center justify-between px-6 py-3 shrink-0 z-10"
                 style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', background: 'rgba(9,9,11,0.85)', backdropFilter: 'blur(20px)' }}>
-                <div className="flex items-center gap-3 md:gap-6 min-w-0">
-                    <Link to={createPageUrl('Home')} className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-6">
+                    <Link to={createPageUrl('Home')} className="flex items-center gap-2">
                         <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                             <Plane className="w-3.5 h-3.5 text-white" />
                         </div>
-                        <span className="font-semibold text-white text-xs md:text-sm shrink-0">AirBridge</span>
+                        <span className="font-semibold text-white text-sm">AirBridge</span>
                     </Link>
                     <nav className="hidden md:flex items-center gap-5">
-                        <Link to={createPageUrl('Home')} className="text-xs md:text-sm text-gray-500 hover:text-white transition-colors">Home</Link>
-                        <span className="text-xs md:text-sm text-white font-medium" style={{ borderBottom: '1px solid #3b82f6', paddingBottom: '2px' }}>Departure Engine</span>
+                        <Link to={createPageUrl('Home')} className="text-sm text-gray-500 hover:text-white transition-colors">Home</Link>
+                        <span className="text-sm text-white font-medium" style={{ borderBottom: '1px solid #3b82f6', paddingBottom: '2px' }}>Departure Engine</span>
                     </nav>
                 </div>
-                <div className="flex items-center gap-1.5 md:gap-3 shrink-0">
+                <div className="flex items-center gap-3">
                     <AnimatePresence mode="wait">
                         {locked ? (
                             <motion.div key="live" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-                                className="hidden sm:flex items-center gap-1.5 px-2.5 md:px-3 py-1.5 rounded-full"
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
                                 style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)' }}>
                                 <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                                <span className="text-[10px] md:text-xs text-green-400 font-medium">Live · Reactive</span>
+                                <span className="text-xs text-green-400 font-medium">Live · Reactive</span>
                             </motion.div>
                         ) : (
                             <motion.div key="active" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                                className="hidden sm:flex items-center gap-1.5 px-2.5 md:px-3 py-1.5 rounded-full"
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
                                 style={{ background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)' }}>
                                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-                                <span className="text-[10px] md:text-xs text-blue-400 font-medium">Engine Active</span>
+                                <span className="text-xs text-blue-400 font-medium">Engine Active</span>
                             </motion.div>
                         )}
                     </AnimatePresence>
-                    <button className="text-[10px] md:text-sm text-gray-500 hover:text-white transition-colors">Sign In</button>
-                    <button className="text-[10px] md:text-sm bg-gradient-to-r from-blue-600 to-purple-600 text-white px-2.5 md:px-4 py-1.5 rounded-full font-medium">
+                    <button className="text-sm text-gray-500 hover:text-white transition-colors">Sign In</button>
+                    <button className="text-sm bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1.5 rounded-full font-medium">
                         Get Started
                     </button>
                 </div>
             </header>
 
             {/* ── Main Split ── */}
-            <div className="flex flex-1 min-h-0 relative">
+            <div className="flex flex-1 min-h-0">
 
                 {/* LEFT — Input Panel */}
-                <motion.div 
-                    initial={false}
-                    animate={{ 
-                        x: mobileView === 'results' ? '-100%' : 0,
-                        opacity: mobileView === 'results' ? 0 : 1
-                    }}
-                    transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-                    className="w-full md:w-[380px] md:shrink-0 flex flex-col overflow-hidden absolute md:relative md:!transform-none md:!opacity-100 inset-0 md:inset-auto"
-                    style={{ background: '#ffffff', borderRight: '1px solid #f1f5f9', pointerEvents: mobileView === 'results' ? 'none' : 'auto', zIndex: (mobileView === 'setup' || !journeyReady) ? 10 : 0 }}>
+                <div className="w-[380px] shrink-0 flex flex-col overflow-hidden relative"
+                    style={{ background: '#ffffff', borderRight: '1px solid #f1f5f9' }}>
                     {locked && !journeyReady && (
                         <div className="absolute inset-0 z-20 bg-white/70 backdrop-blur-sm flex items-center justify-center">
                             <div className="flex flex-col items-center gap-3">
@@ -412,7 +397,7 @@ export default function Engine() {
                                                              onClick={() => setSearchMode('route')}
                                                              className="text-xs text-blue-500 hover:text-blue-700 font-medium mt-2 w-full text-center"
                                                          >
-                                                             No flight number? Search by route.
+                                                             Don't have your flight? Search by route.
                                                          </button>
                                                              </motion.div>
                                                              ) : (
@@ -762,62 +747,36 @@ export default function Engine() {
                             </AnimatePresence>
 
                             {step === 3 && (
-                                <>
-                                    <button onClick={() => setMobileView('results')}
-                                        className="hidden md:block w-full text-center text-[11px] text-gray-400 hover:text-gray-600 mt-2 transition-colors">
-                                        View Results
-                                    </button>
-                                    <button onClick={handleReset}
-                                        className="w-full text-center text-[11px] text-gray-400 hover:text-gray-600 mt-2 transition-colors">
-                                        ← Start over
-                                    </button>
-                                </>
+                                <button onClick={handleReset}
+                                    className="w-full text-center text-[11px] text-gray-400 hover:text-gray-600 mt-2 transition-colors">
+                                    ← Start over
+                                </button>
                             )}
                         </div>
                     </div>
-                    </motion.div>
+                </div>
 
                 {/* RIGHT — Visualization Panel */}
-                {(journeyReady || step >= 3) && (
-                    <motion.div 
-                        initial={false}
-                        animate={{ 
-                            x: mobileView === 'setup' ? '100%' : 0,
-                            opacity: mobileView === 'setup' ? 0 : 1
-                        }}
-                        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-                        className="w-full md:flex-1 flex flex-col px-4 md:px-8 py-6 overflow-y-auto absolute md:relative md:!transform-none md:!opacity-100 inset-0 md:inset-auto"
-                        style={{ background: 'radial-gradient(ellipse at 60% 40%, rgba(59,130,246,0.07) 0%, rgba(9,9,11,1) 60%)', pointerEvents: (mobileView === 'setup' || !journeyReady) ? 'none' : 'auto', zIndex: mobileView === 'results' ? 10 : 0 }}>
-                    {/* Mobile back button */}
-                    {step === 3 && mobileView === 'results' && (
-                        <button 
-                            onClick={() => setMobileView('setup')}
-                            className="absolute top-6 left-4 md:hidden z-10 text-gray-400 hover:text-white transition-colors flex items-center gap-1.5 text-xs font-medium">
-                            <ArrowLeft className="w-3.5 h-3.5" />
-                            Back to Setup
-                        </button>
-                    )}
+                <div className="flex-1 flex items-center justify-center px-8 py-6 relative overflow-hidden"
+                    style={{ background: 'radial-gradient(ellipse at 60% 40%, rgba(59,130,246,0.07) 0%, rgba(9,9,11,1) 60%)' }}>
                     <div className="absolute top-10 right-10 w-80 h-80 rounded-full pointer-events-none"
                         style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.08), transparent)', filter: 'blur(60px)' }} />
                     <div className="absolute bottom-10 left-10 w-60 h-60 rounded-full pointer-events-none"
                         style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.06), transparent)', filter: 'blur(40px)' }} />
 
-                    <div className="w-full max-w-2xl mx-auto flex flex-col">
-                        <AnimatePresence mode="wait">
-                            <JourneyVisualization
-                                key={locked ? 'journey' : 'idle'}
-                                locked={locked}
-                                steps={journeySteps}
-                                transport={transport}
-                                profile={profile}
-                                confidenceColorMap={confidenceColorMap}
-                                onReady={handleJourneyReady}
-                                boardingTime={boarding}
-                            />
-                        </AnimatePresence>
-                    </div>
-                </motion.div>
-                )}
+                    <AnimatePresence mode="wait">
+                        <JourneyVisualization
+                            key={locked ? 'journey' : 'idle'}
+                            locked={locked}
+                            steps={journeySteps}
+                            transport={transport}
+                            profile={profile}
+                            confidenceColorMap={confidenceColorMap}
+                            onReady={() => setJourneyReady(true)}
+                            boardingTime={boarding}
+                        />
+                    </AnimatePresence>
+                </div>
             </div>
         </div>
     );
