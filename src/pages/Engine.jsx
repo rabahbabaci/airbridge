@@ -491,7 +491,7 @@ export default function Engine() {
                                     <motion.div key="step2" custom={dir}
                                         variants={slideVariants} initial="enter" animate="center" exit="exit"
                                         transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-                                        className="absolute inset-0 overflow-y-auto px-6 pt-4 pb-4 flex flex-col gap-4">
+                                        className="px-6 pt-4 pb-4 flex flex-col gap-4">
                                         <StepDots step={2} />
 
                                         <div className="flex items-center gap-2 px-3 py-2 rounded-xl"
