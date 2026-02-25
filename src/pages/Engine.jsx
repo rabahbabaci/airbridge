@@ -635,61 +635,48 @@ export default function Engine() {
 
                                         {/* Advanced Options */}
                                         <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #e5e7eb' }}>
-                                            <button onClick={() => setAdvancedOpen(o => !o)}
-                                                className="w-full flex items-center justify-between px-4 py-3 text-[10px] font-semibold text-gray-400 uppercase tracking-wider hover:bg-gray-50 transition-colors">
+                                            <div className="px-4 py-3 text-[10px] font-semibold text-gray-400 uppercase tracking-wider" style={{ borderBottom: '1px solid #f1f5f9' }}>
                                                 Advanced Options
-                                                <motion.span animate={{ rotate: advancedOpen ? 180 : 0 }} transition={{ duration: 0.3 }}>
-                                                    <ChevronDown className="w-3.5 h-3.5" />
-                                                </motion.span>
-                                            </button>
-                                            <motion.div initial={false}
-                                                animate={{ height: advancedOpen ? 'auto' : 0 }}
-                                                transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-                                                style={{ overflow: 'hidden' }}>
-                                                <motion.div initial={false}
-                                                    animate={{ opacity: advancedOpen ? 1 : 0 }}
-                                                    transition={{ duration: 0.25, delay: advancedOpen ? 0.1 : 0 }}
-                                                    className="px-4 pb-4 space-y-4 pt-3"
-                                                    style={{ borderTop: '1px solid #f1f5f9' }}>
-                                                    <div className="flex items-center justify-between">
-                                                        <div>
-                                                            <p className="text-xs text-gray-700 font-medium">Checked baggage</p>
-                                                            <AnimatePresence>
-                                                                {hasBaggage && (
-                                                                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-                                                                        className="flex items-center gap-1.5 mt-1 overflow-hidden">
-                                                                        <span className="text-[10px] text-gray-400">Bags:</span>
-                                                                        {[1, 2, 3].map(n => (
-                                                                            <button key={n} onClick={() => setBaggageCount(n)}
-                                                                                className="w-6 h-6 rounded text-[10px] font-semibold border transition-all"
-                                                                                style={{ background: baggageCount === n ? '#2563eb' : '#f9fafb', color: baggageCount === n ? '#fff' : '#6b7280', borderColor: baggageCount === n ? '#2563eb' : '#e5e7eb' }}>
-                                                                                {n}
-                                                                            </button>
-                                                                        ))}
-                                                                    </motion.div>
-                                                                )}
-                                                            </AnimatePresence>
-                                                        </div>
-                                                        <Toggle on={hasBaggage} onToggle={() => setHasBaggage(b => !b)} />
-                                                    </div>
-                                                    <div className="flex items-center justify-between">
-                                                        <p className="text-xs text-gray-700 font-medium">Traveling with children</p>
-                                                        <Toggle on={withChildren} onToggle={() => setWithChildren(prev => !prev)} />
-                                                    </div>
+                                            </div>
+                                            <div className="px-4 pb-4 space-y-4 pt-3">
+                                                <div className="flex items-center justify-between">
                                                     <div>
-                                                        <p className="text-xs text-gray-700 font-medium mb-2">Extra airport time</p>
-                                                        <div className="flex gap-2">
-                                                            {['none', '+15', '+30'].map(v => (
-                                                                <button key={v} onClick={() => setExtraTime(v)}
-                                                                    className="flex-1 text-[10px] py-1.5 rounded-lg font-semibold border transition-all"
-                                                                    style={{ background: extraTime === v ? '#2563eb' : '#f9fafb', color: extraTime === v ? '#fff' : '#6b7280', borderColor: extraTime === v ? '#2563eb' : '#e5e7eb' }}>
-                                                                    {v === 'none' ? 'None' : v + ' min'}
-                                                                </button>
-                                                            ))}
-                                                        </div>
+                                                        <p className="text-xs text-gray-700 font-medium">Checked baggage</p>
+                                                        <AnimatePresence>
+                                                            {hasBaggage && (
+                                                                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                                                                    className="flex items-center gap-1.5 mt-1 overflow-hidden">
+                                                                    <span className="text-[10px] text-gray-400">Bags:</span>
+                                                                    {[1, 2, 3].map(n => (
+                                                                        <button key={n} onClick={() => setBaggageCount(n)}
+                                                                            className="w-6 h-6 rounded text-[10px] font-semibold border transition-all"
+                                                                            style={{ background: baggageCount === n ? '#2563eb' : '#f9fafb', color: baggageCount === n ? '#fff' : '#6b7280', borderColor: baggageCount === n ? '#2563eb' : '#e5e7eb' }}>
+                                                                            {n}
+                                                                        </button>
+                                                                    ))}
+                                                                </motion.div>
+                                                            )}
+                                                        </AnimatePresence>
                                                     </div>
-                                                </motion.div>
-                                            </motion.div>
+                                                    <Toggle on={hasBaggage} onToggle={() => setHasBaggage(b => !b)} />
+                                                </div>
+                                                <div className="flex items-center justify-between">
+                                                    <p className="text-xs text-gray-700 font-medium">Traveling with children</p>
+                                                    <Toggle on={withChildren} onToggle={() => setWithChildren(prev => !prev)} />
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs text-gray-700 font-medium mb-2">Extra airport time</p>
+                                                    <div className="flex gap-2">
+                                                        {['none', '+15', '+30'].map(v => (
+                                                            <button key={v} onClick={() => setExtraTime(v)}
+                                                                className="flex-1 text-[10px] py-1.5 rounded-lg font-semibold border transition-all"
+                                                                style={{ background: extraTime === v ? '#2563eb' : '#f9fafb', color: extraTime === v ? '#fff' : '#6b7280', borderColor: extraTime === v ? '#2563eb' : '#e5e7eb' }}>
+                                                                {v === 'none' ? 'None' : v + ' min'}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </motion.div>
                                 )}
