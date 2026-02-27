@@ -41,12 +41,12 @@ const airportData = {
 };
 
 const departureWindows = [
-    { id: 'morning',    label: 'Morning',    range: 'AM',  desc: '8:00–11:59 AM',      startH: 8,  endH: 12  },
-    { id: 'midday',     label: 'Midday',     range: 'AM',  desc: '12:00–2:59 PM',      startH: 12, endH: 15  },
-    { id: 'afternoon',  label: 'Afternoon',  range: 'PM',  desc: '3:00–5:59 PM',       startH: 15, endH: 18  },
-    { id: 'evening',    label: 'Evening',    range: 'PM',  desc: '6:00–8:59 PM',       startH: 18, endH: 21  },
-    { id: 'late_night', label: 'Late Night', range: 'PM',  desc: '9:00 PM–1:59 AM',    startH: 21, endH: 26  },
     { id: 'not_sure',   label: 'Not Sure',   range: '',    desc: 'Show all departures', startH: 0,  endH: 24  },
+    { id: 'morning',    label: 'Morning',    range: 'AM',  desc: '6:00–11:59 AM',      startH: 6,  endH: 12  },
+    { id: 'midday',     label: 'Midday',     range: 'PM',  desc: '12:00–2:59 PM',      startH: 12, endH: 15  },
+    { id: 'afternoon',  label: 'Afternoon',  range: 'PM',  desc: '3:00–5:59 PM',       startH: 15, endH: 18  },
+    { id: 'evening',    label: 'Evening',    range: 'PM',  desc: '6:00–9:59 PM',       startH: 18, endH: 22  },
+    { id: 'late_night', label: 'Late Night', range: 'PM',  desc: '10:00 PM–5:59 AM',   startH: 22, endH: 6   },
 ];
 
 function parseHour(timeStr) {
