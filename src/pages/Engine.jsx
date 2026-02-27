@@ -588,9 +588,7 @@ export default function Engine() {
                                                         if (aIn && !bIn) return -1;
                                                         if (!aIn && bIn) return 1;
                                                         return 0;
-                                                    }).map((f, i) => {
-                                                        const inWindow = isInWindow(f.departure_time, departureWindow);
-                                                        return (
+                                                    }).map((f, i) => (
                                                         <motion.button key={i}
                                                              initial={{ opacity: 0, y: 12 }}
                                                              animate={{ opacity: 1, y: 0 }}
