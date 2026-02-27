@@ -116,6 +116,7 @@ export default function Engine() {
     const [flightNumber, setFlightNumber] = useState('');
     const [startingAddress, setStartingAddress] = useState('');
     const [calendarOpen, setCalendarOpen] = useState(false);
+    const [departureWindow, setDepartureWindow] = useState('not_sure');
 
     // Step 2
     const [searching, setSearching] = useState(false);
