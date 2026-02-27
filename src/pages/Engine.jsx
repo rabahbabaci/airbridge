@@ -66,8 +66,8 @@ function isInWindow(timeStr, windowId) {
     if (!w) return true;
     const h = parseHour(timeStr);
     if (h === -1) return true;
-    // late_night wraps past midnight (21–26, where 24+ = next day 0–2)
-    if (windowId === 'late_night') return h >= 21 || h < 2;
+    // late_night wraps past midnight (22–6)
+    if (windowId === 'late_night') return h >= 22 || h < 6;
     return h >= w.startH && h < w.endH;
 }
 
