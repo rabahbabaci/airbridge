@@ -40,6 +40,37 @@ const airportData = {
     DFW: { name: 'Dallas/Fort Worth Intl',  traffic: 51, tsa: 35, walking: 20, baseBuffer: 16 },
 };
 
+const departureWindows = [
+    { id: 'morning',    label: 'Morning',    range: 'AM',  desc: '8:00–11:59 AM',      startH: 8,  endH: 12  },
+    { id: 'midday',     label: 'Midday',     range: 'AM',  desc: '12:00–2:59 PM',      startH: 12, endH: 15  },
+    { id: 'afternoon',  label: 'Afternoon',  range: 'PM',  desc: '3:00–5:59 PM',       startH: 15, endH: 18  },
+    { id: 'evening',    label: 'Evening',    range: 'PM',  desc: '6:00–8:59 PM',       startH: 18, endH: 21  },
+    { id: 'late_night', label: 'Late Night', range: 'PM',  desc: '9:00 PM–1:59 AM',    startH: 21, endH: 26  },
+    { id: 'not_sure',   label: 'Not Sure',   range: '',    desc: 'Show all departures', startH: 0,  endH: 24  },
+];
+
+function parseHour(timeStr) {
+    if (!timeStr) return -1;
+    const m = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    if (!m) return -1;
+    let h = parseInt(m[1]);
+    const ampm = m[3].toUpperCase();
+    if (ampm === 'PM' && h !== 12) h += 12;
+    if (ampm === 'AM' && h === 12) h = 0;
+    return h;
+}
+
+function isInWindow(timeStr, windowId) {
+    if (windowId === 'not_sure') return true;
+    const w = departureWindows.find(d => d.id === windowId);
+    if (!w) return true;
+    const h = parseHour(timeStr);
+    if (h === -1) return true;
+    // late_night wraps past midnight (21–26, where 24+ = next day 0–2)
+    if (windowId === 'late_night') return h >= 21 || h < 2;
+    return h >= w.startH && h < w.endH;
+}
+
 const confidenceColorMap = {
     green: { badge: 'bg-green-500/20 text-green-400 border-green-500/30', bar: 'from-green-500 to-emerald-400' },
     blue:  { badge: 'bg-blue-500/20 text-blue-400 border-blue-500/30',    bar: 'from-blue-500 to-purple-500'   },
