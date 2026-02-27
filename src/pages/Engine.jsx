@@ -621,7 +621,7 @@ export default function Engine() {
                                                                 <span className="text-[10px] text-gray-400 ml-2">· {f.terminal}</span>
                                                                 </div>
                                                                 </motion.button>
-                                                                );})}
+                                                                ))}
                                                                 </div>
                                             )}
                                         </div>
