@@ -600,7 +600,7 @@ export default function Engine() {
                                                             <div className="flex items-center justify-between mb-2">
                                                                 <div className="flex items-center gap-3">
                                                                     <span className="text-xl font-black text-gray-900">{f.departure_time}</span>
-                                                                    {inWindow && departureWindow !== 'not_sure' && (
+                                                                    {isInWindow(f.departure_time, departureWindow) && departureWindow !== 'not_sure' && (
                                                                         <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-600">Preferred</span>
                                                                     )}
                                                                     <div className="flex items-center gap-1">
