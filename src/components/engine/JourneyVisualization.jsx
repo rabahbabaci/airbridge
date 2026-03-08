@@ -110,33 +110,33 @@ function StepNode({ seg, index, stepTime, delay }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay, duration: 0.35, ease: 'easeOut' }}
             className="flex flex-col items-center"
-            style={{ flex: '0 0 auto', width: 96 }}
+            style={{ flex: '0 0 auto', width: 88 }}
         >
             {/* Badge number */}
             <div
-                className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white mb-2 shrink-0"
-                style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', boxShadow: '0 0 0 2px rgba(99,102,241,0.25)' }}
+                className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white mb-1.5 shrink-0"
+                style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', boxShadow: '0 0 0 2px rgba(99,102,241,0.3)' }}
             >
                 {index + 1}
             </div>
             {/* Icon */}
-            <SegIcon seg={seg} size={52} />
+            <SegIcon seg={seg} size={46} />
             {/* Label */}
-            <p className="text-[11px] font-semibold text-gray-300 mt-2.5 text-center leading-tight" style={{ maxWidth: 84 }}>{seg.label}</p>
+            <p className="text-[10px] font-semibold text-gray-300 mt-1.5 text-center leading-tight" style={{ maxWidth: 80 }}>{seg.label}</p>
             {/* Shiny time chip */}
             <span
-                className="mt-2 font-mono text-[13px] font-bold px-2.5 py-1 rounded-lg"
+                className="mt-1.5 font-mono text-[12px] font-bold px-2 py-0.5 rounded-lg"
                 style={{
                     background: 'linear-gradient(135deg, rgba(96,165,250,0.22), rgba(139,92,246,0.18))',
                     border: '1px solid rgba(147,197,253,0.4)',
                     color: '#e0f2fe',
-                    textShadow: '0 0 12px rgba(147,197,253,0.6)',
-                    boxShadow: '0 0 10px rgba(96,165,250,0.15)',
+                    textShadow: '0 0 10px rgba(147,197,253,0.6)',
+                    boxShadow: '0 0 8px rgba(96,165,250,0.15)',
                 }}
             >{stepTime}</span>
             {/* Duration */}
             {seg.duration_minutes > 0 && (
-                <span className="mt-1 text-[10px] text-gray-500 font-medium">{seg.duration_minutes} min</span>
+                <span className="mt-0.5 text-[9px] text-gray-500 font-medium">{seg.duration_minutes} min</span>
             )}
         </motion.div>
     );
