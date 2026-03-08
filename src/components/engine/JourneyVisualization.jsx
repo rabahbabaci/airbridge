@@ -32,26 +32,52 @@ function totalToHM(minutes) {
     return h > 0 ? `${h}h ${String(m).padStart(2, '0')}m` : `${m}m`;
 }
 
-function getIcon(seg) {
+// Maps segment type → { Icon, color gradient }
+function getSegmentIcon(seg) {
     const id = (seg.id || '').toLowerCase();
     const label = (seg.label || '').toLowerCase();
 
-    if (id === 'bag_drop') return '🧳';
-    if (id === 'curb_to_checkin') return '🏢';
-    if (id === 'walk_to_security' || id === 'walk_to_gate') return '🚶';
-    if (id === 'tsa') return '🛡️';
-    if (id === 'boarding_buffer') return '⏱️';
-    if (id.includes('train') || label.includes('train')) return '🚆';
-    if (id.includes('bus') || label.includes('bus')) return '🚌';
-    if (id.includes('drive') || label.includes('ride') || label.includes('drive') || label.includes('uber') || label.includes('lyft')) return '🚗';
-    if (label.includes('security') || label.includes('tsa')) return '🛡️';
-    if (label.includes('walk')) return '🚶';
-    if (label.includes('bag') || label.includes('luggage')) return '🧳';
-    if (label.includes('check-in') || label.includes('check in') || label.includes('terminal')) return '🏢';
-    if (label.includes('gate')) return '🎫';
-    if (label.includes('board')) return '✈️';
-    if (label.includes('leave home') || label.includes('depart')) return '🚗';
-    return '📍';
+    if (id === 'bag_drop' || label.includes('bag') || label.includes('luggage'))
+        return { Icon: Luggage, from: '#f59e0b', to: '#d97706' };
+    if (id === 'curb_to_checkin' || label.includes('check-in') || label.includes('check in') || label.includes('terminal'))
+        return { Icon: Building2, from: '#6366f1', to: '#4f46e5' };
+    if (id === 'walk_to_security' || id === 'walk_to_gate' || label.includes('walk'))
+        return { Icon: PersonStanding, from: '#22d3ee', to: '#0891b2' };
+    if (id === 'tsa' || label.includes('security') || label.includes('tsa'))
+        return { Icon: Shield, from: '#f43f5e', to: '#be123c' };
+    if (id === 'boarding_buffer')
+        return { Icon: Clock, from: '#a78bfa', to: '#7c3aed' };
+    if (id.includes('train') || label.includes('train'))
+        return { Icon: Train, from: '#3b82f6', to: '#1d4ed8' };
+    if (id.includes('bus') || label.includes('bus'))
+        return { Icon: Bus, from: '#10b981', to: '#047857' };
+    if (id.includes('drive') || label.includes('ride') || label.includes('drive') || label.includes('uber') || label.includes('lyft') || label.includes('leave home') || label.includes('depart'))
+        return { Icon: Car, from: '#8b5cf6', to: '#6d28d9' };
+    if (label.includes('gate'))
+        return { Icon: Ticket, from: '#f97316', to: '#c2410c' };
+    if (label.includes('board'))
+        return { Icon: Plane, from: '#22c55e', to: '#15803d' };
+    return { Icon: MapPin, from: '#6366f1', to: '#4f46e5' };
+}
+
+// SVG icon rendered in a styled circle
+function SegIcon({ seg, size = 36 }) {
+    const { Icon, from, to } = getSegmentIcon(seg);
+    const id = `grad-${(seg.id || seg.label || 'x').replace(/\s/g, '')}`;
+    return (
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ flexShrink: 0 }}>
+            <defs>
+                <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor={from} />
+                    <stop offset="100%" stopColor={to} />
+                </linearGradient>
+            </defs>
+            <circle cx={size / 2} cy={size / 2} r={size / 2} fill={`url(#${id})`} />
+            <foreignObject x={size * 0.18} y={size * 0.18} width={size * 0.64} height={size * 0.64}>
+                <Icon style={{ width: '100%', height: '100%', color: 'white' }} />
+            </foreignObject>
+        </svg>
+    );
 }
 
 // ── Hero time — pulses on change via key ──────────────────────────────────────
