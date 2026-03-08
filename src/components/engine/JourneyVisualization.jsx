@@ -116,8 +116,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.4 }}
-                            className="rounded-3xl overflow-hidden"
-                            style={{ background: 'rgba(15,15,30,0.85)', border: '1px solid rgba(255,255,255,0.07)' }}
+                            className="w-full"
                         >
                             {/* HERO */}
                             <div className="flex flex-col items-center text-center px-8 pt-8 pb-6"
