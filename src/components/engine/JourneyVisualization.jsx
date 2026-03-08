@@ -211,13 +211,12 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
 
     const showResult = locked && recommendation;
 
-    // Build rows of segments for horizontal layout (max ~4 per row)
+    // Split segments into 2 rows: ceil(n/2) on top, rest on bottom
     const segments = recommendation?.segments || [];
-    const ROW_SIZE = 4;
-    const rows = [];
-    for (let i = 0; i < segments.length; i += ROW_SIZE) {
-        rows.push(segments.slice(i, i + ROW_SIZE));
-    }
+    const topCount = Math.ceil(segments.length / 2);
+    const rows = segments.length > 0
+        ? [segments.slice(0, topCount), segments.slice(topCount)].filter(r => r.length > 0)
+        : [];
 
     return (
         <div className="w-full min-h-full px-8 py-8 flex flex-col items-center">
