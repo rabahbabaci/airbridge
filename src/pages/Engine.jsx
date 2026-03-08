@@ -235,7 +235,7 @@ export default function Engine() {
     useEffect(() => {
         if (!locked || !selectedFlight) return;
 
-        const recompute = async () => {
+        const timer = setTimeout(async () => {
             try {
                 const tripRes = await fetch(`${API_BASE}/v1/trips`, {
                     method: 'POST',
@@ -267,9 +267,9 @@ export default function Engine() {
             } catch (err) {
                 console.error('Recompute failed:', err);
             }
-        };
+        }, 400);
 
-        recompute();
+        return () => clearTimeout(timer);
     }, [transport, selectedProfile, hasBaggage, baggageCount, withChildren, extraTime, selectedFlight]);
 
     const handleReset = () => {
