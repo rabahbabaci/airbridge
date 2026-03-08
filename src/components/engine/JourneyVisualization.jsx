@@ -16,11 +16,18 @@ function addMinutesAndFormat(utcStr, minutes) {
     return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 }
 
+// Parse flight departure time to get boarding time (30 min before departure)
+function parseDepartureTime(localTimeStr) {
+    if (!localTimeStr) return null;
+    const match = localTimeStr.match(/(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})/);
+    if (!match) return null;
+    return new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3]), parseInt(match[4]), parseInt(match[5]));
+}
+
 function parseDepartureAndGetBoardingTime(localTimeStr) {
     if (!localTimeStr) return { boarding: '', departure: '' };
-    const match = localTimeStr.match(/(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})/);
-    if (!match) return { boarding: localTimeStr, departure: localTimeStr };
-    const d = new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3]), parseInt(match[4]), parseInt(match[5]));
+    const d = parseDepartureTime(localTimeStr);
+    if (!d) return { boarding: localTimeStr, departure: localTimeStr };
     const boardingDate = new Date(d.getTime() - 30 * 60000);
     const fmt = (date) => date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
     return { boarding: fmt(boardingDate), departure: fmt(d) };
@@ -229,15 +236,12 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
         ? Math.round((recommendation.confidence_score || 0) * 100)
         : 0;
 
-    const gateCushion = recommendation && selectedFlight
-        ? (() => {
-            const departure = new Date(selectedFlight.departure_time);
-            const leaveHome = new Date(recommendation.leave_home_at);
-            const arrivalAtGate = new Date(leaveHome.getTime() + totalMinutes * 60000);
-            const cushion = Math.round((departure - arrivalAtGate) / 60000);
-            return cushion > 0 ? cushion : 0;
-        })()
-        : 0;
+    // Calculate gate cushion from backend data
+    const gateArrival = recommendation?.gate_arrival_utc ? new Date(recommendation.gate_arrival_utc) : null;
+    const departureDateObj = selectedFlight?.departure_time ? parseDepartureTime(selectedFlight.departure_time) : null;
+    const boardingTime = departureDateObj ? new Date(departureDateObj.getTime() - 30 * 60000) : null;
+    const gateCushionMinutes = (gateArrival && boardingTime) ? Math.round((boardingTime - gateArrival) / 60000) : 0;
+    const gateCushion = gateCushionMinutes > 0 ? gateCushionMinutes : 0;
 
     const { boarding, departure: departureTime } = selectedFlight
         ? parseDepartureAndGetBoardingTime(selectedFlight.departure_time)
