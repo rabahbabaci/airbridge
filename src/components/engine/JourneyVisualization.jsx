@@ -175,29 +175,23 @@ function UTurnConnector({ label, delay }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay, duration: 0.4 }}
-            className="flex justify-end items-center pr-2 py-1"
+            className="w-full flex justify-end pr-6 -my-1"
         >
-            <div className="flex flex-col items-center gap-1">
-                <span
-                    className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
+            <div className="flex flex-col items-center gap-0.5">
+                <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
                     style={{
                         background: 'rgba(99,102,241,0.14)',
                         border: '1px solid rgba(99,102,241,0.25)',
                         color: '#a5b4fc',
                         whiteSpace: 'nowrap',
-                    }}
-                >
+                    }}>
                     {label}
                 </span>
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                    <path
-                        d="M6 4 L26 4 Q30 4 30 8 L30 24 Q30 28 26 28 L6 28"
-                        stroke="rgba(139,92,246,0.5)"
-                        strokeWidth="1.5"
-                        fill="none"
-                        strokeLinecap="round"
-                    />
-                    <polygon points="6,24 2,28 10,28" fill="rgba(139,92,246,0.5)" />
+                {/* Curved arrow going down and to the left */}
+                <svg width="48" height="40" viewBox="0 0 48 40" fill="none">
+                    <path d="M24 2 L42 2 Q46 2 46 6 L46 34 Q46 38 42 38 L6 38"
+                        stroke="rgba(139,92,246,0.5)" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+                    <polygon points="6,34 2,38 6,42" fill="rgba(139,92,246,0.5)" />
                 </svg>
             </div>
         </motion.div>
@@ -383,12 +377,21 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                     return (
                                         <React.Fragment key={rowIdx}>
                                             {/* U-turn connector between rows */}
-                                            {rowIdx === 1 && lastSegOfRow0 && (
-                                                <UTurnConnector
-                                                    label={`${lastSegOfRow0.duration_minutes} min`}
-                                                    delay={globalOffset * 0.07 + 0.1}
-                                                />
-                                            )}
+                                            {rowIdx === 1 && lastSegOfRow0 && (() => {
+                                                // For TSA, parse walk time from advice
+                                                let uturnLabel = `${lastSegOfRow0.duration_minutes} min`;
+                                                if (lastSegOfRow0.id === 'tsa' && lastSegOfRow0.advice) {
+                                                    const walkMatch = lastSegOfRow0.advice.match(/walk:(\d+)/);
+                                                    if (walkMatch) {
+                                                        uturnLabel = `${walkMatch[1]} min`;
+                                                    }
+                                                }
+                                                // For bag_drop, show its duration
+                                                if (lastSegOfRow0.id === 'bag_drop') {
+                                                    uturnLabel = `${lastSegOfRow0.duration_minutes} min`;
+                                                }
+                                                return <UTurnConnector label={uturnLabel} delay={globalOffset * 0.07 + 0.1} />;
+                                            })()}
                                             <div className={rowIdx > 0 ? 'mt-1' : ''}>
                                                 <div className="flex items-center">
                                                     {rowSegs.map((seg, i) => {
