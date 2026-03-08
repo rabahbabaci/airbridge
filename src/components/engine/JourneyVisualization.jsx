@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plane, CheckCircle2 } from 'lucide-react';
+import { Plane } from 'lucide-react';
 
 function formatUTCToLocal(utcStr) {
     if (!utcStr) return '';
@@ -12,6 +12,32 @@ function addMinutesAndFormat(utcStr, minutes) {
     const d = new Date(utcStr);
     d.setMinutes(d.getMinutes() + minutes);
     return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+}
+
+function totalToHM(minutes) {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return h > 0 ? `${h}h ${String(m).padStart(2, '0')}m` : `${m}m`;
+}
+
+const SEGMENT_ICONS = {
+    'leave home': '🏠',
+    'arrive airport': '🚗',
+    'through tsa': '🛡️',
+    'tsa': '🛡️',
+    'security': '🛡️',
+    'at gate': '🎫',
+    'gate': '🎫',
+    'boarding': '✈️',
+};
+
+function getIcon(label) {
+    if (!label) return '📍';
+    const lower = label.toLowerCase();
+    for (const [key, icon] of Object.entries(SEGMENT_ICONS)) {
+        if (lower.includes(key)) return icon;
+    }
+    return '📍';
 }
 
 export default function JourneyVisualization({ locked, recommendation, selectedFlight, transport, profile, confidenceColorMap, onReady }) {
@@ -31,9 +57,20 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
         ? Math.round((recommendation.confidence_score || 0) * 100)
         : 0;
 
+    // Gate cushion = time between last segment end and departure
+    const gateCushion = recommendation && selectedFlight
+        ? (() => {
+            const departure = new Date(selectedFlight.departure_time);
+            const leaveHome = new Date(recommendation.leave_home_at);
+            const arrivalAtGate = new Date(leaveHome.getTime() + totalMinutes * 60000);
+            const cushion = Math.round((departure - arrivalAtGate) / 60000);
+            return cushion > 0 ? cushion : 0;
+        })()
+        : 0;
+
     return (
-        <div className="w-full min-h-full py-10 px-6">
-            <div className="max-w-2xl mx-auto">
+        <div className="w-full min-h-full flex items-center justify-center py-8 px-4">
+            <div className="w-full max-w-md">
                 <AnimatePresence mode="wait">
 
                     {/* ── IDLE STATE ── */}
@@ -75,112 +112,114 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                     {locked && recommendation && (
                         <motion.div
                             key="result"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
+                            initial={{ opacity: 0, y: 16 }}
+                            animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.4 }}
-                            className="flex flex-col gap-10"
+                            className="rounded-3xl overflow-hidden"
+                            style={{ background: 'rgba(15,15,30,0.85)', border: '1px solid rgba(255,255,255,0.07)' }}
                         >
                             {/* HERO */}
-                            <motion.div
-                                initial={{ opacity: 0, y: -16 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5 }}
-                                className="flex flex-col items-center text-center gap-3 pt-4"
-                            >
-                                <p className="text-[11px] font-bold uppercase tracking-widest text-blue-400">Leave Home By</p>
-
-                                <p className="font-black text-white leading-none" style={{ fontSize: 64 }}>
+                            <div className="flex flex-col items-center text-center px-8 pt-8 pb-6"
+                                style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-blue-400 mb-2">Leave Home By</p>
+                                <p className="font-black text-white leading-none mb-3" style={{ fontSize: 72, letterSpacing: '-2px' }}>
                                     {formatUTCToLocal(recommendation.leave_home_at)}
                                 </p>
-
                                 {selectedFlight && (
-                                    <p className="text-gray-400 text-sm font-medium">
-                                        {selectedFlight.flight_number} · {selectedFlight.origin_code} → {selectedFlight.destination_code} · {totalMinutes}m door-to-gate
+                                    <p className="text-gray-400 text-sm font-medium mb-3">
+                                        {selectedFlight.flight_number} · {selectedFlight.origin_code} → {selectedFlight.destination_code} · {totalToHM(totalMinutes)} door-to-gate
                                     </p>
                                 )}
-
-                                <div className="flex items-center gap-2 px-4 py-1.5 rounded-full mt-1"
-                                    style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.25)' }}>
+                                <div className="flex items-center gap-2 px-4 py-1.5 rounded-full"
+                                    style={{ background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)' }}>
                                     <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                                    <span className="text-green-400 text-xs font-bold">{confidenceScore}% Confident</span>
+                                    <span className="text-green-400 text-sm font-semibold">{confidenceScore}% Confident</span>
                                 </div>
-                            </motion.div>
+                            </div>
 
-                            {/* VERTICAL TIMELINE */}
-                            <div className="relative flex flex-col gap-0 pl-8">
-                                {/* Vertical gradient line */}
-                                <div className="absolute left-[15px] top-3 bottom-3 w-0.5 rounded-full"
-                                    style={{ background: 'linear-gradient(to bottom, #6366f1, #22c55e)' }} />
-
+                            {/* TIMELINE */}
+                            <div className="px-6 py-6 flex flex-col">
                                 {recommendation.segments.map((seg, i) => {
                                     const cumulativeBefore = recommendation.segments
                                         .slice(0, i)
                                         .reduce((sum, s) => sum + (s.duration_minutes || 0), 0);
                                     const stepTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore);
+                                    const isLast = i === recommendation.segments.length - 1;
 
                                     return (
                                         <motion.div
                                             key={i}
-                                            initial={{ opacity: 0, x: -20 }}
+                                            initial={{ opacity: 0, x: -16 }}
                                             animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: i * 0.1 + 0.2, duration: 0.4, ease: 'easeOut' }}
-                                            className="relative flex gap-4 pb-8"
+                                            transition={{ delay: i * 0.1 + 0.15, duration: 0.35, ease: 'easeOut' }}
+                                            className="flex gap-4 relative"
                                         >
-                                            {/* Circle on line */}
-                                            <div className="absolute -left-8 w-8 flex items-start justify-center pt-0.5">
-                                                <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-black text-white z-10 shrink-0"
-                                                    style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', border: '2px solid rgba(99,102,241,0.4)' }}>
+                                            {/* Line + Circle column */}
+                                            <div className="flex flex-col items-center" style={{ minWidth: 32 }}>
+                                                <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black text-white shrink-0 z-10"
+                                                    style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', boxShadow: '0 0 0 3px rgba(99,102,241,0.2)' }}>
                                                     {i + 1}
                                                 </div>
+                                                {!isLast && (
+                                                    <div className="w-0.5 flex-1 my-1"
+                                                        style={{ background: 'linear-gradient(to bottom, rgba(99,102,241,0.5), rgba(99,102,241,0.15))', minHeight: 32 }} />
+                                                )}
                                             </div>
 
                                             {/* Content */}
-                                            <div className="flex flex-col gap-1 pl-2 pt-0.5">
-                                                <div className="flex items-center gap-2 flex-wrap">
-                                                    <span className="text-sm font-bold text-white">{seg.label}</span>
-                                                    {seg.duration_minutes > 0 && (
-                                                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                                                            style={{ background: 'rgba(99,102,241,0.15)', color: '#a5b4fc', border: '1px solid rgba(99,102,241,0.25)' }}>
-                                                            {seg.duration_minutes}m
-                                                        </span>
-                                                    )}
+                                            <div className={`flex-1 flex flex-col gap-1 ${isLast ? 'pb-0' : 'pb-5'}`}>
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-lg">{getIcon(seg.label)}</span>
+                                                        <span className="text-base font-bold text-white">{seg.label}</span>
+                                                    </div>
+                                                    <span className="text-base font-bold text-blue-300 shrink-0 ml-2">{stepTime}</span>
                                                 </div>
-                                                <p className="text-xs font-semibold text-blue-300">{stepTime}</p>
                                                 {seg.advice && (
-                                                    <p className="text-xs text-gray-500 leading-relaxed">{seg.advice}</p>
+                                                    <p className="text-xs text-gray-500 leading-relaxed ml-8">{seg.advice}</p>
+                                                )}
+                                                {seg.duration_minutes > 0 && (
+                                                    <div className="ml-8 mt-0.5">
+                                                        <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full"
+                                                            style={{ background: 'rgba(99,102,241,0.12)', color: '#a5b4fc', border: '1px solid rgba(99,102,241,0.2)' }}>
+                                                            {seg.duration_minutes} min estimated
+                                                        </span>
+                                                    </div>
                                                 )}
                                             </div>
                                         </motion.div>
                                     );
                                 })}
 
-                                {/* Final boarding node */}
+                                {/* Boarding final node */}
                                 {selectedFlight && (
                                     <motion.div
-                                        initial={{ opacity: 0, x: -20 }}
+                                        initial={{ opacity: 0, x: -16 }}
                                         animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: (recommendation.segments.length) * 0.1 + 0.2, duration: 0.4 }}
-                                        className="relative flex gap-4 pb-4"
+                                        transition={{ delay: recommendation.segments.length * 0.1 + 0.15, duration: 0.35 }}
+                                        className="flex gap-4 relative mt-0"
                                     >
-                                        <div className="absolute -left-8 w-8 flex items-start justify-center pt-0.5">
-                                            <div className="w-7 h-7 rounded-full flex items-center justify-center z-10 shrink-0"
-                                                style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)', border: '2px solid rgba(34,197,94,0.4)' }}>
-                                                <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                                        {/* Line + Circle column */}
+                                        <div className="flex flex-col items-center" style={{ minWidth: 32 }}>
+                                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-base shrink-0 z-10"
+                                                style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)', boxShadow: '0 0 0 3px rgba(34,197,94,0.2)' }}>
+                                                ✓
                                             </div>
                                         </div>
-                                        <div className="flex flex-col gap-1 pl-2 pt-0.5">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-sm font-bold text-green-400">Boarding</span>
-                                                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                                                    style={{ background: 'rgba(34,197,94,0.1)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.25)' }}>
-                                                    Departs
+                                        <div className="flex-1 flex flex-col gap-1 pb-2">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-lg">✈️</span>
+                                                    <span className="text-base font-bold text-green-400">Boarding</span>
+                                                </div>
+                                                <span className="text-base font-bold text-green-300 shrink-0 ml-2">
+                                                    {formatUTCToLocal(selectedFlight.departure_time)}
                                                 </span>
                                             </div>
-                                            <p className="text-xs font-semibold text-green-300">
-                                                {formatUTCToLocal(selectedFlight.departure_time)}
+                                            <p className="text-xs text-gray-500 ml-8">
+                                                Flight departs {formatUTCToLocal(selectedFlight.departure_time)}
                                             </p>
-                                            <p className="text-xs text-gray-500">Gate closes — you're ready to fly.</p>
                                         </div>
                                     </motion.div>
                                 )}
@@ -188,22 +227,19 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
 
                             {/* FOOTER STATS */}
                             <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.6, duration: 0.4 }}
-                                className="grid grid-cols-2 gap-3 pb-6"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.7, duration: 0.4 }}
+                                className="flex items-center justify-between px-8 py-5"
+                                style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}
                             >
-                                <div className="rounded-2xl p-4 flex flex-col gap-1"
-                                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                                    <p className="text-[10px] uppercase tracking-widest font-semibold text-gray-500">Total Journey</p>
-                                    <p className="text-2xl font-black text-white">{totalMinutes}<span className="text-sm font-semibold text-gray-400 ml-1">min</span></p>
+                                <div>
+                                    <p className="text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1">Total Journey</p>
+                                    <p className="text-2xl font-black text-white">{totalToHM(totalMinutes)}</p>
                                 </div>
-                                <div className="rounded-2xl p-4 flex flex-col gap-1"
-                                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                                    <p className="text-[10px] uppercase tracking-widest font-semibold text-gray-500">Boarding</p>
-                                    <p className="text-2xl font-black text-white">
-                                        {selectedFlight ? formatUTCToLocal(selectedFlight.departure_time) : '—'}
-                                    </p>
+                                <div className="text-right">
+                                    <p className="text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1">Gate Cushion</p>
+                                    <p className="text-2xl font-black text-green-400">{totalToHM(gateCushion)}</p>
                                 </div>
                             </motion.div>
                         </motion.div>
