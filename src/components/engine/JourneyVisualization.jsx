@@ -280,10 +280,10 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                 initial={{ opacity: 0, scale: 0.97 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.45, ease: 'easeOut' }}
-                                className="w-full rounded-2xl px-7 py-6"
+                                className="w-full rounded-2xl px-6 py-4"
                                 style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)' }}
                             >
-                                <p className="text-xs font-bold uppercase mb-1" style={{ color: '#60a5fa', letterSpacing: '0.22em' }}>
+                                <p className="text-xs font-bold uppercase mb-0.5" style={{ color: '#60a5fa', letterSpacing: '0.22em' }}>
                                     Leave Home By
                                 </p>
                                 <div className="flex items-end justify-between gap-4">
