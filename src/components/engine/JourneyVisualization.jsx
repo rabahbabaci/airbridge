@@ -123,7 +123,7 @@ function AnimatedTime({ value }) {
 }
 
 // ── Horizontal step node ──────────────────────────────────────────────────────
-function StepNode({ seg, index, stepTime, delay, displayLabel, waitLabel }) {
+function StepNode({ seg, index, stepTime, delay, displayLabel, waitLabel, extraBadge }) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -141,7 +141,7 @@ function StepNode({ seg, index, stepTime, delay, displayLabel, waitLabel }) {
             </div>
             {/* Icon */}
             <SegIcon seg={seg} size={56} />
-            {/* Wait time under icon (e.g. TSA wait) */}
+            {/* Wait time under icon (e.g. TSA wait, bag drop) */}
             {waitLabel && (
                 <p className="text-[10px] font-semibold text-amber-400/90 mt-1 text-center leading-tight" style={{ maxWidth: 92 }}>{waitLabel}</p>
             )}
@@ -158,6 +158,12 @@ function StepNode({ seg, index, stepTime, delay, displayLabel, waitLabel }) {
                     boxShadow: '0 0 8px rgba(96,165,250,0.15)',
                 }}
             >{stepTime}</span>
+            {extraBadge && (
+                <span className="mt-1 text-[9px] font-semibold px-2 py-0.5 rounded-full"
+                    style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', color: '#4ade80' }}>
+                    {extraBadge}
+                </span>
+            )}
         </motion.div>
     );
 }
@@ -266,12 +272,14 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
 
     const showResult = locked && recommendation;
 
-    // Split segments into 2 rows: ceil(n/2) on top, rest on bottom
+    // Filter out comfort_buffer from timeline — it will be shown on the Gate step
     const segments = recommendation?.segments || [];
-    const hasBags = segments.some(s => s.id === 'bag_drop');
-    const topCount = Math.ceil(segments.length / 2);
-    const rows = segments.length > 0
-        ? [segments.slice(0, topCount), segments.slice(topCount)].filter(r => r.length > 0)
+    const comfortBuffer = segments.find(s => s.id === 'comfort_buffer');
+    const displaySegments = segments.filter(s => s.id !== 'comfort_buffer');
+    const hasBags = displaySegments.some(s => s.id === 'bag_drop');
+    const topCount = Math.ceil(displaySegments.length / 2);
+    const rows = displaySegments.length > 0
+        ? [displaySegments.slice(0, topCount), displaySegments.slice(topCount)].filter(r => r.length > 0)
         : [];
 
     return (
@@ -369,7 +377,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                 className="w-full rounded-2xl px-5 py-4"
                             >
                                 {rows.map((rowSegs, rowIdx) => {
-                                    const globalOffset = rowIdx === 0 ? 0 : Math.ceil(segments.length / 2);
+                                    const globalOffset = rowIdx === 0 ? 0 : Math.ceil(displaySegments.length / 2);
                                     // The last seg of row 0 is the "U-turn" segment (its duration connects to first of row 1)
                                     const lastSegOfRow0 = rows.length > 1 ? rows[0][rows[0].length - 1] : null;
                                     return (
@@ -385,7 +393,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                                 <div className="flex items-center">
                                                     {rowSegs.map((seg, i) => {
                                                         const globalIdx = globalOffset + i;
-                                                        const cumulativeBefore = segments
+                                                        const cumulativeBefore = displaySegments
                                                             .slice(0, globalIdx)
                                                             .reduce((sum, s) => sum + (s.duration_minutes || 0), 0);
                                                         const stepTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore);
@@ -403,6 +411,13 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                                         // Parse TSA advice for walk/wait split (walk on arrow TO TSA, wait under TSA icon)
                                                         let connectorLabel = `${seg.duration_minutes} min`;
                                                         let waitLabel = undefined;
+                                                        // Bag Drop: show drop time under the step, arrow after shows next segment's duration
+                                                        const isBagDrop = seg.id === 'bag_drop';
+                                                        if (isBagDrop) {
+                                                            waitLabel = `${seg.duration_minutes} min`;
+                                                            const nextSeg = displaySegments[globalIdx + 1];
+                                                            connectorLabel = nextSeg ? `${nextSeg.duration_minutes} min` : `${seg.duration_minutes} min`;
+                                                        }
                                                         if (seg.id === 'tsa' && seg.advice) {
                                                             const walkMatch = seg.advice.match(/walk:(\d+)/);
                                                             const waitMatch = seg.advice.match(/wait:(\d+)/);
@@ -412,17 +427,22 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                                             const period = periodMatch ? periodMatch[1].trim() : '';
                                                             waitLabel = `${waitMin} min${period ? ' · ' + period : ''}`;
                                                             // Connector AFTER TSA shows the next segment's duration
-                                                            const nextSeg = segments[globalIdx + 1];
+                                                            const nextSeg = displaySegments[globalIdx + 1];
                                                             connectorLabel = nextSeg ? `${nextSeg.duration_minutes} min` : `${seg.duration_minutes} min`;
                                                         }
                                                         // Connector BEFORE TSA: use TSA's walk time on the arrow leading TO the TSA step
-                                                        const nextSegInArray = segments[globalIdx + 1];
+                                                        const nextSegInArray = displaySegments[globalIdx + 1];
                                                         if (nextSegInArray?.id === 'tsa' && nextSegInArray.advice) {
                                                             const walkMatch = nextSegInArray.advice.match(/walk:(\d+)/);
                                                             if (walkMatch) {
                                                                 connectorLabel = `${walkMatch[1]} min`;
                                                             }
                                                         }
+                                                        // Gate step: show comfort buffer as extra badge if present
+                                                        const isGateStep = seg.id === 'walk_to_gate';
+                                                        const extraBadge = (isGateStep && comfortBuffer)
+                                                            ? `+${comfortBuffer.duration_minutes} min buffer`
+                                                            : undefined;
 
                                                         return (
                                                             <React.Fragment key={seg.id || seg.label}>
@@ -433,6 +453,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                                                     delay={delay}
                                                                     displayLabel={displayLabel}
                                                                     waitLabel={waitLabel}
+                                                                    extraBadge={extraBadge}
                                                                 />
                                                                 {showConnector && (
                                                                     <Connector
@@ -454,7 +475,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                             <motion.div
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: segments.length * 0.07 + 0.3, duration: 0.4 }}
+                                transition={{ delay: displaySegments.length * 0.07 + 0.3, duration: 0.4 }}
                                 className="w-full rounded-2xl overflow-hidden"
                                 style={{ border: '1px solid rgba(34,197,94,0.25)' }}
                             >
