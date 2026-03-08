@@ -52,6 +52,13 @@ function formatLocalTime(timeStr) {
     return `${h12}:${minutes} ${ampm}`;
 }
 
+function parseTimeToDate(localTimeStr) {
+    if (!localTimeStr) return null;
+    const match = localTimeStr.match(/(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})/);
+    if (!match) return null;
+    return new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3]), parseInt(match[4]), parseInt(match[5]));
+}
+
 function fmt(date, offsetMins) {
     const d = new Date(date);
     d.setMinutes(d.getMinutes() + offsetMins);
@@ -172,6 +179,7 @@ export default function Engine() {
                 canceled: f.canceled ?? false,
                 catchable: f.catchable ?? true,
                 time_warning: f.time_warning ?? null,
+                is_boarding: f.is_boarding ?? false,
                 revised_departure_local: f.revised_departure_local,
                 is_delayed: f.is_delayed ?? false,
                 scheduled_departure_local: f.scheduled_departure_local,
@@ -482,7 +490,7 @@ export default function Engine() {
                                             ) : (
                                                 <div className="flex flex-col gap-2">
                                                 {flightOptions.map((f, i) => {
-                                                    const isDisabled = f.departed || f.canceled;
+                                                    const isDisabled = f.departed || f.canceled || f.is_boarding;
                                                     return (
                                                         <motion.button key={i}
                                                             initial={{ opacity: 0, y: 12 }}
@@ -492,15 +500,15 @@ export default function Engine() {
                                                             disabled={isDisabled}
                                                             className="w-full text-left rounded-xl px-4 py-3.5 transition-all duration-100"
                                                             style={{
-                                                                border: isDisabled ? '1px solid #fca5a5' : '1px solid #e5e7eb',
-                                                                background: isDisabled ? '#fef2f2' : '#f9fafb',
-                                                                opacity: isDisabled ? 0.5 : 1,
-                                                                cursor: isDisabled ? 'not-allowed' : 'pointer',
+                                                                border: (f.departed || f.is_boarding) ? '1px solid #fca5a5' : '1px solid #e5e7eb',
+                                                                background: (f.departed || f.is_boarding) ? '#fef2f2' : '#f9fafb',
+                                                                opacity: (f.departed || f.canceled || f.is_boarding) ? 0.5 : 1,
+                                                                cursor: (f.departed || f.canceled || f.is_boarding) ? 'not-allowed' : 'pointer',
                                                             }}
                                                             whileHover={!isDisabled ? { borderColor: '#93c5fd', background: '#eff6ff', transition: { duration: 0.1 } } : {}}>
                                                             <div className="flex items-center justify-between mb-2">
                                                                 <div className="flex items-center gap-3">
-                                                                    <span className={`text-xl font-black ${isDisabled ? 'text-gray-400 line-through' : 'text-gray-900'}`}>
+                                                                    <span className={`text-xl font-black ${(f.departed || f.canceled || f.is_boarding) ? 'text-gray-400 line-through' : 'text-gray-900'}`}>
                                                                         {formatLocalTime(f.departure_time)}
                                                                     </span>
                                                                     <div className="flex items-center gap-1">
@@ -513,6 +521,11 @@ export default function Engine() {
                                                                 {f.departed && (
                                                                     <span className="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full border border-red-200">
                                                                         Departed
+                                                                    </span>
+                                                                )}
+                                                                {f.is_boarding && (
+                                                                    <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                                                                        Boarding Now
                                                                     </span>
                                                                 )}
                                                                 {f.canceled && (
@@ -529,11 +542,14 @@ export default function Engine() {
                                                                 <span className="text-[11px] font-semibold text-gray-600">{f.destination_code}</span>
                                                                 <span className="text-[10px] text-gray-400 ml-2">· {f.terminal}</span>
                                                             </div>
-                                                            {f.is_delayed && f.revised_departure_local && (
-                                                                <p className="text-[10px] text-orange-500 font-medium mt-1">
-                                                                    ⚠️ Delayed — now expected {formatLocalTime(f.revised_departure_local)}
-                                                                </p>
-                                                            )}
+                                                            {f.is_delayed && f.revised_departure_local && f.departure_time && (() => {
+                                                                const scheduled = parseTimeToDate(f.departure_time);
+                                                                const revised = parseTimeToDate(f.revised_departure_local);
+                                                                if (scheduled && revised && revised > scheduled) {
+                                                                    return <p className="text-[10px] text-orange-500 font-medium mt-1">⚠️ Delayed — now expected {formatLocalTime(f.revised_departure_local)}</p>;
+                                                                }
+                                                                return null;
+                                                            })()}
                                                             {f.time_warning && !isDisabled && (
                                                                 <p className="text-[10px] text-amber-600 font-medium mt-1.5">⚠️ {f.time_warning}</p>
                                                             )}
