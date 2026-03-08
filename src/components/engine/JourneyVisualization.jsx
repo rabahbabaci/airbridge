@@ -39,6 +39,19 @@ function totalToHM(minutes) {
     return h > 0 ? `${h}h ${String(m).padStart(2, '0')}m` : `${m}m`;
 }
 
+// Parse TSA advice "walk:3|wait:45|peak" → { walkMin, waitMin, period }
+function parseTsaAdvice(advice) {
+    if (!advice) return null;
+    const walkMatch = advice.match(/walk:(\d+)/);
+    const waitMatch = advice.match(/wait:(\d+)/);
+    const periodMatch = advice.match(/\|([^|]+)$/);
+    return {
+        walkMin: walkMatch ? parseInt(walkMatch[1], 10) : 0,
+        waitMin: waitMatch ? parseInt(waitMatch[1], 10) : undefined,
+        period: periodMatch ? periodMatch[1].trim() : '',
+    };
+}
+
 // Maps segment type → { Icon, from, to }
 function getSegmentIcon(seg) {
     const id = (seg.id || '').toLowerCase();
@@ -110,7 +123,7 @@ function AnimatedTime({ value }) {
 }
 
 // ── Horizontal step node ──────────────────────────────────────────────────────
-function StepNode({ seg, index, stepTime, delay, displayLabel }) {
+function StepNode({ seg, index, stepTime, delay, displayLabel, waitLabel }) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -128,6 +141,10 @@ function StepNode({ seg, index, stepTime, delay, displayLabel }) {
             </div>
             {/* Icon */}
             <SegIcon seg={seg} size={56} />
+            {/* Wait time under icon (e.g. TSA wait) */}
+            {waitLabel && (
+                <p className="text-[10px] font-semibold text-amber-400/90 mt-1 text-center leading-tight" style={{ maxWidth: 92 }}>{waitLabel}</p>
+            )}
             {/* Label */}
             <p className="text-[11px] font-semibold text-gray-300 mt-1.5 text-center leading-tight" style={{ maxWidth: 92 }}>{displayLabel}</p>
             {/* Shiny time chip */}
@@ -383,6 +400,25 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                                             displayLabel = 'Curb to security';
                                                         }
 
+                                                        // Parse TSA advice for walk/wait split (walk on connector TO TSA, wait under TSA icon)
+                                                        let connectorLabel = `${seg.duration_minutes} min`;
+                                                        let waitLabel = undefined;
+                                                        if (seg.id === 'tsa' && seg.advice) {
+                                                            const tsa = parseTsaAdvice(seg.advice);
+                                                            if (tsa) {
+                                                                const waitMin = tsa.waitMin ?? seg.duration_minutes;
+                                                                waitLabel = `${waitMin} min${tsa.period ? ' · ' + tsa.period : ''}`;
+                                                            }
+                                                        }
+                                                        // Connector leading TO the next step: if next is TSA, show TSA walk time
+                                                        const nextSegInArray = segments[globalIdx + 1];
+                                                        if (nextSegInArray?.id === 'tsa' && nextSegInArray.advice) {
+                                                            const tsa = parseTsaAdvice(nextSegInArray.advice);
+                                                            if (tsa && tsa.walkMin > 0) {
+                                                                connectorLabel = `${tsa.walkMin} min`;
+                                                            }
+                                                        }
+
                                                         return (
                                                             <React.Fragment key={seg.id || seg.label}>
                                                                 <StepNode
@@ -391,10 +427,11 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                                                     stepTime={stepTime}
                                                                     delay={delay}
                                                                     displayLabel={displayLabel}
+                                                                    waitLabel={waitLabel}
                                                                 />
                                                                 {showConnector && (
                                                                     <Connector
-                                                                        label={`${seg.duration_minutes} min`}
+                                                                        label={connectorLabel}
                                                                         delay={delay + 0.05}
                                                                     />
                                                                 )}
