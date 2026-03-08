@@ -143,21 +143,24 @@ function StepNode({ seg, index, stepTime, delay }) {
 }
 
 // ── Connector line between steps (vertically centered at icon level) ──────────
-// paddingTop pushes the line down to align with icon center:
-// badge(24) + gap(6) + icon/2(23) = ~53px from top
+// StepNode layout: badge(24) + mb(6) + icon(46) → icon center at 24+6+23 = 53px
+// We use absolute positioning to center the connector at that exact vertical position.
 function Connector({ label, delay }) {
     return (
         <motion.div
             initial={{ opacity: 0, scaleX: 0 }}
             animate={{ opacity: 1, scaleX: 1 }}
             transition={{ delay, duration: 0.4, ease: 'easeOut' }}
-            className="flex-1 flex flex-col"
-            style={{ transformOrigin: 'left', paddingTop: 53 }}
+            className="flex-1 relative"
+            style={{ transformOrigin: 'left', minHeight: 120 }}
         >
-            {/* Duration label above line */}
-            <div className="flex justify-center mb-1">
+            {/* Centered connector group: label above, arrow line below */}
+            <div
+                className="absolute left-0 right-0 flex flex-col items-center"
+                style={{ top: 53, transform: 'translateY(-50%)' }}
+            >
                 <span
-                    className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
+                    className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full mb-1"
                     style={{
                         background: 'rgba(99,102,241,0.14)',
                         border: '1px solid rgba(99,102,241,0.25)',
@@ -167,11 +170,10 @@ function Connector({ label, delay }) {
                 >
                     {label}
                 </span>
-            </div>
-            {/* Line with arrow */}
-            <div className="flex items-center">
-                <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, rgba(99,102,241,0.6), rgba(139,92,246,0.4))' }} />
-                <div style={{ width: 0, height: 0, borderTop: '4px solid transparent', borderBottom: '4px solid transparent', borderLeft: '6px solid rgba(139,92,246,0.5)' }} />
+                <div className="flex items-center w-full">
+                    <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, rgba(99,102,241,0.6), rgba(139,92,246,0.4))' }} />
+                    <div style={{ width: 0, height: 0, borderTop: '4px solid transparent', borderBottom: '4px solid transparent', borderLeft: '6px solid rgba(139,92,246,0.5)' }} />
+                </div>
             </div>
         </motion.div>
     );
