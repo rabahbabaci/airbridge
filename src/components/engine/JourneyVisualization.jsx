@@ -171,35 +171,39 @@ function StepNode({ seg, index, stepTime, delay, displayLabel, waitLabel, extraB
 }
 
 // ── Diagonal connector between row 1 and row 2 ───────────────────────────────
+// Starts just left of the right-side icon (row 1), ends just right of the left-side icon (row 2)
+// Icon center in the StepNode is roughly at x=46px from the node's left edge.
+// The connector uses the same solid gradient arrow style as the horizontal Connector.
 function UTurnConnector({ label, delay }) {
-    // Fixed viewBox coords; SVG will stretch to full container width via preserveAspectRatio="none"
     const VW = 500;
     const VH = 60;
-    const x1 = VW - 8;  // top-right
-    const y1 = 6;
-    const x2 = 8;       // bottom-left
-    const y2 = VH - 6;
+    // x1: near right-side icon — roughly where the horizontal arrow ends (left of icon center)
+    // x2: near left-side icon — stop short of touching the icon center
+    const x1 = VW - 46; // left edge of right icon
+    const y1 = 4;
+    const x2 = 46;      // right edge of left icon (stop short)
+    const y2 = VH - 4;
 
     // Arrowhead geometry
     const angle = Math.atan2(y2 - y1, x2 - x1);
-    const aLen = 11;
+    const aLen = 10;
     const aSpread = 0.38;
     const ax1 = x2 - aLen * Math.cos(angle - aSpread);
     const ay1 = y2 - aLen * Math.sin(angle - aSpread);
     const ax2 = x2 - aLen * Math.cos(angle + aSpread);
     const ay2 = y2 - aLen * Math.sin(angle + aSpread);
 
-    // Label position: midpoint
+    // Label at midpoint
     const lx = ((x1 + x2) / 2 / VW) * 100;
     const ly = (y1 + y2) / 2;
 
     return (
         <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay, duration: 0.4 }}
+            initial={{ opacity: 0, scaleX: 0 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            transition={{ delay, duration: 0.4, ease: 'easeOut' }}
             className="w-full relative"
-            style={{ height: VH }}
+            style={{ height: VH, transformOrigin: 'right' }}
         >
             <svg
                 width="100%"
@@ -208,15 +212,20 @@ function UTurnConnector({ label, delay }) {
                 preserveAspectRatio="none"
                 style={{ position: 'absolute', inset: 0 }}
             >
+                <defs>
+                    <linearGradient id="diag-grad" x1="1" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="rgba(99,102,241,0.6)" />
+                        <stop offset="100%" stopColor="rgba(139,92,246,0.4)" />
+                    </linearGradient>
+                </defs>
                 <line
                     x1={x1} y1={y1} x2={x2} y2={y2}
-                    stroke="rgba(139,92,246,0.5)"
+                    stroke="url(#diag-grad)"
                     strokeWidth="1.5"
-                    strokeDasharray="6 3"
                 />
                 <polygon
                     points={`${x2},${y2} ${ax1},${ay1} ${ax2},${ay2}`}
-                    fill="rgba(139,92,246,0.6)"
+                    fill="rgba(139,92,246,0.5)"
                 />
             </svg>
             {/* Duration label centered on the diagonal */}
@@ -232,8 +241,8 @@ function UTurnConnector({ label, delay }) {
                 <span
                     className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
                     style={{
-                        background: 'rgba(10,8,24,0.9)',
-                        border: '1px solid rgba(99,102,241,0.35)',
+                        background: 'rgba(99,102,241,0.14)',
+                        border: '1px solid rgba(99,102,241,0.25)',
                         color: '#a5b4fc',
                         whiteSpace: 'nowrap',
                     }}
