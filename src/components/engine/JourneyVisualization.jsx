@@ -87,9 +87,9 @@ function AnimatedTime({ value }) {
             initial={{ scale: 1 }}
             animate={{ scale: [1, 1.03, 1] }}
             transition={{ duration: 0.35, ease: 'easeInOut' }}
-            className="font-extrabold leading-none mb-3"
+            className="font-extrabold leading-none mb-2"
             style={{
-                fontSize: 72,
+                fontSize: 58,
                 letterSpacing: '-3px',
                 background: 'linear-gradient(135deg, #ffffff 40%, #93c5fd 100%)',
                 WebkitBackgroundClip: 'text',
