@@ -311,18 +311,18 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                             {/* Boarding final node */}
                             {selectedFlight && (
                                 <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
+                                    initial={{ opacity: 0, y: 14 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{
                                         delay: recommendation.segments.length * 0.08 + 0.15,
                                         duration: 0.3,
                                         ease: 'easeOut',
                                     }}
-                                    className="flex gap-3"
+                                    className="flex gap-4"
                                 >
-                                    <div className="flex flex-col items-center" style={{ minWidth: 28 }}>
+                                    <div className="flex flex-col items-center pt-4" style={{ minWidth: 36 }}>
                                         <div
-                                            className="w-7 h-7 rounded-full flex items-center justify-center text-sm shrink-0 z-10"
+                                            className="w-9 h-9 rounded-full flex items-center justify-center text-sm shrink-0 z-10"
                                             style={{
                                                 background: 'linear-gradient(135deg, #16a34a, #22c55e)',
                                                 boxShadow: '0 0 0 3px rgba(34,197,94,0.18)',
@@ -331,13 +331,23 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                             ✓
                                         </div>
                                     </div>
-                                    <div className="flex flex-col gap-1 pb-2">
-                                        <div className="flex items-center gap-2 flex-wrap">
-                                            <span className="text-base leading-none">✈️</span>
-                                            <span className="text-sm font-semibold text-green-400">Boarding</span>
-                                            <span className="font-mono text-sm" style={{ color: '#4ade80' }}>{boarding}</span>
+                                    <div className="flex-1 pb-2">
+                                        <div
+                                            className="w-full rounded-2xl px-5 py-4 flex flex-col gap-2"
+                                            style={{
+                                                background: 'rgba(34,197,94,0.07)',
+                                                border: '1px solid rgba(34,197,94,0.2)',
+                                            }}
+                                        >
+                                            <div className="flex items-center justify-between gap-3">
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-2xl leading-none">✈️</span>
+                                                    <span className="text-base font-semibold text-green-400">Boarding</span>
+                                                </div>
+                                                <span className="font-mono text-base font-semibold" style={{ color: '#4ade80' }}>{boarding}</span>
+                                            </div>
+                                            <p className="text-sm text-gray-500">Flight departs {departureTime}</p>
                                         </div>
-                                        <p className="text-xs text-gray-500">Flight departs {departureTime}</p>
                                     </div>
                                 </motion.div>
                             )}
