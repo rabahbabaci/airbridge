@@ -179,6 +179,11 @@ export default function Engine() {
 
     const handleSelectFlight = (flight) => {
         setSelectedFlight(flight);
+        if (locked) {
+            setLocked(false);
+            setRecommendation(null);
+            setJourneyReady(false);
+        }
         goTo(3);
     };
 
@@ -261,7 +266,7 @@ export default function Engine() {
         };
 
         recompute();
-    }, [transport, selectedProfile, hasBaggage, baggageCount, withChildren, extraTime]);
+    }, [transport, selectedProfile, hasBaggage, baggageCount, withChildren, extraTime, selectedFlight]);
 
     const handleReset = () => {
         setLocked(false);
