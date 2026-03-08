@@ -157,7 +157,7 @@ function Connector({ label, delay }) {
             {/* Centered connector group: label above, arrow line below */}
             <div
                 className="absolute left-0 right-0 flex flex-col items-center"
-                style={{ top: 53, transform: 'translateY(-50%)' }}
+                style={{ top: 58, transform: 'translateY(-50%)' }}
             >
                 <span
                     className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full mb-1"
