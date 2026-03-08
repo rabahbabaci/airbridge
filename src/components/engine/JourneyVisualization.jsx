@@ -433,15 +433,12 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                         <React.Fragment key={rowIdx}>
                                             {/* U-turn connector between rows */}
                                             {rowIdx === 1 && (() => {
-                                                // The diagonal connects row 1's last step to row 2's first step (usually TSA)
-                                                // Show the walk-to-TSA time parsed from TSA's advice field
-                                                const firstOfRow2 = rowSegs[0];
-                                                let uturnLabel = '5 min'; // fallback
-                                                if (firstOfRow2?.id === 'tsa' && firstOfRow2.advice) {
-                                                    const walkMatch = firstOfRow2.advice.match(/walk:(\d+)/);
-                                                    if (walkMatch) {
-                                                        uturnLabel = `${walkMatch[1]} min`;
-                                                    }
+                                                // Diagonal connector: get walk_to_next from the last segment of row 1
+                                                const lastOfRow1 = rows[0][rows[0].length - 1];
+                                                let uturnLabel = '3 min'; // fallback
+                                                const walkMatch = lastOfRow1?.advice?.match(/walk_to_next:(\d+)/);
+                                                if (walkMatch) {
+                                                    uturnLabel = `${walkMatch[1]} min`;
                                                 }
                                                 return <UTurnConnector label={uturnLabel} delay={globalOffset * 0.07 + 0.1} />;
                                             })()}
@@ -453,7 +450,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                                             .slice(0, globalIdx)
                                                             .reduce((sum, s) => sum + (s.duration_minutes || 0), 0);
                                                         const stepTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore);
-                                                        // For the last step (Gate), show arrival time (start + walk duration)
+                                                        // Last step (Gate): show arrival time (after walk) not start time
                                                         const isLastStep = globalIdx === displaySegments.length - 1;
                                                         const displayStepTime = isLastStep
                                                             ? addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + seg.duration_minutes)
@@ -473,35 +470,37 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                                             displayLabel = 'At Gate';
                                                         }
 
-                                                        // Parse TSA advice for walk/wait split (walk on arrow TO TSA, wait under TSA icon)
+                                                        // Default connector label
                                                         let connectorLabel = `${seg.duration_minutes} min`;
                                                         let waitLabel = undefined;
-                                                        // Bag Drop: show drop time under the step, arrow after shows next segment's duration
-                                                        const isBagDrop = seg.id === 'bag_drop';
-                                                        if (isBagDrop) {
-                                                            waitLabel = `${seg.duration_minutes} min`;
-                                                            const nextSeg = displaySegments[globalIdx + 1];
-                                                            connectorLabel = nextSeg ? `${nextSeg.duration_minutes} min` : `${seg.duration_minutes} min`;
-                                                        }
-                                                        if (seg.id === 'tsa' && seg.advice) {
-                                                            const walkMatch = seg.advice.match(/walk:(\d+)/);
-                                                            const waitMatch = seg.advice.match(/wait:(\d+)/);
-                                                            const periodMatch = seg.advice.match(/\|([^|]+)$/);
-                                                            const walkMin = walkMatch ? parseInt(walkMatch[1], 10) : 0;
-                                                            const waitMin = waitMatch ? parseInt(waitMatch[1], 10) : seg.duration_minutes;
-                                                            const period = periodMatch ? periodMatch[1].trim() : '';
-                                                            waitLabel = `${waitMin} min${period ? ' · ' + period : ''}`;
-                                                            // Connector AFTER TSA shows the next segment's duration
-                                                            const nextSeg = displaySegments[globalIdx + 1];
-                                                            connectorLabel = nextSeg ? `${nextSeg.duration_minutes} min` : `${seg.duration_minutes} min`;
-                                                        }
-                                                        // Connector BEFORE TSA: use TSA's walk time on the arrow leading TO the TSA step
-                                                        const nextSegInArray = displaySegments[globalIdx + 1];
-                                                        if (nextSegInArray?.id === 'tsa' && nextSegInArray.advice) {
-                                                            const walkMatch = nextSegInArray.advice.match(/walk:(\d+)/);
+
+                                                        // At Airport: walk_to_next goes on the connector after this step
+                                                        if (seg.id === 'at_airport') {
+                                                            const walkMatch = seg.advice?.match(/walk_to_next:(\d+)/);
                                                             if (walkMatch) {
                                                                 connectorLabel = `${walkMatch[1]} min`;
                                                             }
+                                                        }
+
+                                                        // Bag Drop: show drop time under the step, walk_to_next on the connector after
+                                                        if (seg.id === 'bag_drop') {
+                                                            waitLabel = `${seg.duration_minutes} min`;
+                                                            const walkMatch = seg.advice?.match(/walk_to_next:(\d+)/);
+                                                            if (walkMatch) {
+                                                                connectorLabel = `${walkMatch[1]} min`;
+                                                            }
+                                                        }
+
+                                                        // TSA: show wait time under the step, connector after shows walk to gate
+                                                        if (seg.id === 'tsa') {
+                                                            const waitMatch = seg.advice?.match(/wait:(\d+)/);
+                                                            const periodMatch = seg.advice?.match(/\|([^|]+)$/);
+                                                            const waitMin = waitMatch ? parseInt(waitMatch[1], 10) : seg.duration_minutes;
+                                                            const period = periodMatch ? periodMatch[1].trim() : '';
+                                                            waitLabel = `${waitMin} min${period ? ' · ' + period : ''}`;
+                                                            // Connector after TSA shows next segment's duration (walk to gate)
+                                                            const nextSeg = displaySegments[globalIdx + 1];
+                                                            connectorLabel = nextSeg ? `${nextSeg.duration_minutes} min` : '';
                                                         }
                                                         // Gate step: show comfort buffer as extra badge if present
                                                         const isGateStep = seg.id === 'walk_to_gate';
