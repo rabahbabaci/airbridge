@@ -359,40 +359,60 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                             >
                                 {/* Boarding row */}
                                 <div
-                                    className="flex items-center justify-between px-6 py-5 gap-4"
+                                    className="flex items-center justify-between px-7 py-6 gap-4"
                                     style={{ background: 'rgba(34,197,94,0.07)', borderBottom: '1px solid rgba(34,197,94,0.15)' }}
                                 >
                                     <div className="flex items-center gap-4">
                                         <div
-                                            className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-                                            style={{ background: 'linear-gradient(135deg,#16a34a,#22c55e)', boxShadow: '0 0 0 3px rgba(34,197,94,0.2)' }}
+                                            className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+                                            style={{ background: 'linear-gradient(135deg,#16a34a,#22c55e)', boxShadow: '0 0 16px rgba(34,197,94,0.35)' }}
                                         >
-                                            <CheckCircle2 className="w-5 h-5 text-white" />
+                                            <CheckCircle2 className="w-6 h-6 text-white" />
                                         </div>
                                         <div>
                                             <p className="text-[10px] font-bold uppercase tracking-widest text-green-500 mb-0.5">Boarding</p>
-                                            <p className="text-2xl font-extrabold text-white" style={{ letterSpacing: '-0.5px' }}>{boarding}</p>
+                                            <p
+                                                className="font-extrabold"
+                                                style={{
+                                                    fontSize: 36,
+                                                    letterSpacing: '-1px',
+                                                    background: 'linear-gradient(135deg, #ffffff, #86efac)',
+                                                    WebkitBackgroundClip: 'text',
+                                                    WebkitTextFillColor: 'transparent',
+                                                    backgroundClip: 'text',
+                                                    textShadow: 'none',
+                                                }}
+                                            >{boarding}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
                                         <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-500 mb-0.5">Flight Departs</p>
-                                        <p className="text-lg font-bold text-gray-300">{departureTime}</p>
+                                        <p
+                                            className="font-extrabold"
+                                            style={{
+                                                fontSize: 28,
+                                                letterSpacing: '-0.5px',
+                                                background: 'linear-gradient(135deg, #e2e8f0, #93c5fd)',
+                                                WebkitBackgroundClip: 'text',
+                                                WebkitTextFillColor: 'transparent',
+                                                backgroundClip: 'text',
+                                            }}
+                                        >{departureTime}</p>
                                     </div>
                                 </div>
 
-                                {/* Stats row */}
+                                {/* Stats row — only Total Journey + Gate Cushion */}
                                 <div
-                                    className="grid grid-cols-3 divide-x"
+                                    className="grid grid-cols-2 divide-x"
                                     style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.07)' }}
                                 >
                                     {[
                                         { label: 'Total Journey', value: totalToHM(totalMinutes), color: '#ffffff' },
                                         { label: 'Gate Cushion', value: totalToHM(gateCushion), color: '#4ade80' },
-                                        { label: 'Departs', value: departureTime, color: '#93c5fd' },
                                     ].map(({ label, value, color }) => (
-                                        <div key={label} className="flex flex-col gap-1 px-5 py-4" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+                                        <div key={label} className="flex flex-col gap-1 px-6 py-4" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
                                             <p className="text-[10px] uppercase tracking-wider font-semibold text-gray-500">{label}</p>
-                                            <p className="text-xl font-bold" style={{ color }}>{value}</p>
+                                            <p className="text-2xl font-bold" style={{ color }}>{value}</p>
                                         </div>
                                     ))}
                                 </div>
