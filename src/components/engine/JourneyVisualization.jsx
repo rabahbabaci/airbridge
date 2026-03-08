@@ -247,6 +247,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
 
     // Split segments into 2 rows: ceil(n/2) on top, rest on bottom
     const segments = recommendation?.segments || [];
+    const hasBags = segments.some(s => s.id === 'bag_drop');
     const topCount = Math.ceil(segments.length / 2);
     const rows = segments.length > 0
         ? [segments.slice(0, topCount), segments.slice(topCount)].filter(r => r.length > 0)
