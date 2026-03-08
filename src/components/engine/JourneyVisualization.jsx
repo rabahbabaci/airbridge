@@ -79,23 +79,25 @@ function getSegmentIcon(seg) {
     return { Icon: MapPin, from: '#6366f1', to: '#4f46e5' };
 }
 
-// Circular gradient icon using inline SVG + foreignObject
+// Circular gradient icon using a div + Lucide icon (avoids SVG foreignObject cloning issues)
 function SegIcon({ seg, size = 40 }) {
     const { Icon, from, to } = getSegmentIcon(seg);
-    const uid = `g-${(seg.id || seg.label || 'x').replace(/[\s_]/g, '')}`;
+    const iconSize = Math.round(size * 0.45);
     return (
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ flexShrink: 0 }}>
-            <defs>
-                <linearGradient id={uid} x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor={from} />
-                    <stop offset="100%" stopColor={to} />
-                </linearGradient>
-            </defs>
-            <circle cx={size / 2} cy={size / 2} r={size / 2} fill={`url(#${uid})`} />
-            <foreignObject x={size * 0.2} y={size * 0.2} width={size * 0.6} height={size * 0.6}>
-                <Icon style={{ width: '100%', height: '100%', color: 'white' }} />
-            </foreignObject>
-        </svg>
+        <div
+            style={{
+                width: size,
+                height: size,
+                borderRadius: '50%',
+                background: `linear-gradient(135deg, ${from}, ${to})`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+            }}
+        >
+            <Icon style={{ width: iconSize, height: iconSize, color: 'white' }} />
+        </div>
     );
 }
 
