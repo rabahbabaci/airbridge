@@ -360,7 +360,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                             >
                                 {/* Boarding row */}
                                 <div
-                                    className="flex items-center justify-between px-7 py-6 gap-4"
+                                    className="flex items-center justify-between px-6 py-4 gap-4"
                                     style={{ background: 'rgba(34,197,94,0.07)', borderBottom: '1px solid rgba(34,197,94,0.15)' }}
                                 >
                                     <div className="flex items-center gap-4">
