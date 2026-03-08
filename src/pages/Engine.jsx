@@ -169,6 +169,7 @@ export default function Engine() {
                 aircraft_model: f.aircraft_model,
                 departure_time_utc: f.departure_time_utc,
                 departed: f.departed ?? false,
+                canceled: f.canceled ?? false,
                 catchable: f.catchable ?? true,
                 time_warning: f.time_warning ?? null,
                 is_delayed: f.is_delayed ?? false,
@@ -479,57 +480,65 @@ export default function Engine() {
                                                 </div>
                                             ) : (
                                                 <div className="flex flex-col gap-2">
-                                                    {flightOptions.map((f, i) => (
-                                                    <motion.button key={i}
-                                                        initial={{ opacity: 0, y: 12 }}
-                                                        animate={{ opacity: 1, y: 0 }}
-                                                        transition={{ delay: i * 0.08, duration: 0.3 }}
-                                                        onClick={() => !f.departed && handleSelectFlight(f)}
-                                                        disabled={f.departed}
-                                                        className="w-full text-left rounded-xl px-4 py-3.5 transition-all duration-100"
-                                                        style={{
-                                                            border: f.departed ? '1px solid #fca5a5' : '1px solid #e5e7eb',
-                                                            background: f.departed ? '#fef2f2' : '#f9fafb',
-                                                            opacity: f.departed ? 0.5 : 1,
-                                                            cursor: f.departed ? 'not-allowed' : 'pointer',
-                                                        }}
-                                                        whileHover={!f.departed ? { borderColor: '#93c5fd', background: '#eff6ff', transition: { duration: 0.1 } } : {}}>
-                                                        <div className="flex items-center justify-between mb-2">
-                                                            <div className="flex items-center gap-3">
-                                                                <span className={`text-xl font-black ${f.departed ? 'text-gray-400 line-through' : 'text-gray-900'}`}>
-                                                                    {formatLocalTime(f.departure_time)}
-                                                                </span>
-                                                                <div className="flex items-center gap-1">
-                                                                    <div className="w-8 h-px bg-gray-300" />
-                                                                    <Plane className="w-3 h-3 text-gray-400" />
-                                                                    <div className="w-8 h-px bg-gray-300" />
+                                                {flightOptions.map((f, i) => {
+                                                    const isDisabled = f.departed || f.canceled;
+                                                    return (
+                                                        <motion.button key={i}
+                                                            initial={{ opacity: 0, y: 12 }}
+                                                            animate={{ opacity: 1, y: 0 }}
+                                                            transition={{ delay: i * 0.08, duration: 0.3 }}
+                                                            onClick={() => !isDisabled && handleSelectFlight(f)}
+                                                            disabled={isDisabled}
+                                                            className="w-full text-left rounded-xl px-4 py-3.5 transition-all duration-100"
+                                                            style={{
+                                                                border: isDisabled ? '1px solid #fca5a5' : '1px solid #e5e7eb',
+                                                                background: isDisabled ? '#fef2f2' : '#f9fafb',
+                                                                opacity: isDisabled ? 0.5 : 1,
+                                                                cursor: isDisabled ? 'not-allowed' : 'pointer',
+                                                            }}
+                                                            whileHover={!isDisabled ? { borderColor: '#93c5fd', background: '#eff6ff', transition: { duration: 0.1 } } : {}}>
+                                                            <div className="flex items-center justify-between mb-2">
+                                                                <div className="flex items-center gap-3">
+                                                                    <span className={`text-xl font-black ${isDisabled ? 'text-gray-400 line-through' : 'text-gray-900'}`}>
+                                                                        {formatLocalTime(f.departure_time)}
+                                                                    </span>
+                                                                    <div className="flex items-center gap-1">
+                                                                        <div className="w-8 h-px bg-gray-300" />
+                                                                        <Plane className="w-3 h-3 text-gray-400" />
+                                                                        <div className="w-8 h-px bg-gray-300" />
+                                                                    </div>
+                                                                    <span className="text-sm font-semibold text-gray-500">{formatLocalTime(f.arrival_time)}</span>
                                                                 </div>
-                                                                <span className="text-sm font-semibold text-gray-500">{formatLocalTime(f.arrival_time)}</span>
+                                                                {f.departed && (
+                                                                    <span className="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full border border-red-200">
+                                                                        Departed
+                                                                    </span>
+                                                                )}
+                                                                {f.canceled && (
+                                                                    <span className="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full border border-red-200">
+                                                                        Canceled
+                                                                    </span>
+                                                                )}
                                                             </div>
-                                                            {f.departed && (
-                                                                <span className="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full border border-red-200">
-                                                                    Departed
-                                                                </span>
+                                                            <div className="flex items-center gap-1.5">
+                                                                <span className="text-[11px] font-semibold text-gray-600">{f.flight_number}</span>
+                                                                <span className="text-[10px] text-gray-400 ml-1">·</span>
+                                                                <span className="text-[11px] font-semibold text-gray-600 ml-1">{f.origin_code}</span>
+                                                                <span className="text-[10px] text-gray-400">→</span>
+                                                                <span className="text-[11px] font-semibold text-gray-600">{f.destination_code}</span>
+                                                                <span className="text-[10px] text-gray-400 ml-2">· {f.terminal}</span>
+                                                            </div>
+                                                            {f.is_delayed && f.scheduled_departure_local && (
+                                                                <p className="text-[10px] text-orange-500 font-medium mt-1">
+                                                                    ⚠️ Delayed — originally {formatLocalTime(f.scheduled_departure_local)}
+                                                                </p>
                                                             )}
-                                                        </div>
-                                                        <div className="flex items-center gap-1.5">
-                                                            <span className="text-[11px] font-semibold text-gray-600">{f.flight_number}</span>
-                                                            <span className="text-[10px] text-gray-400 ml-1">·</span>
-                                                            <span className="text-[11px] font-semibold text-gray-600 ml-1">{f.origin_code}</span>
-                                                            <span className="text-[10px] text-gray-400">→</span>
-                                                            <span className="text-[11px] font-semibold text-gray-600">{f.destination_code}</span>
-                                                            <span className="text-[10px] text-gray-400 ml-2">· {f.terminal}</span>
-                                                        </div>
-                                                        {f.is_delayed && f.scheduled_departure_local && (
-                                                            <p className="text-[10px] text-orange-500 font-medium mt-1">
-                                                                ⚠️ Delayed — originally {formatLocalTime(f.scheduled_departure_local)}
-                                                            </p>
-                                                        )}
-                                                        {f.time_warning && !f.departed && (
-                                                            <p className="text-[10px] text-amber-600 font-medium mt-1.5">⚠️ {f.time_warning}</p>
-                                                        )}
-                                                    </motion.button>
-                                                    ))}
+                                                            {f.time_warning && !isDisabled && (
+                                                                <p className="text-[10px] text-amber-600 font-medium mt-1.5">⚠️ {f.time_warning}</p>
+                                                            )}
+                                                        </motion.button>
+                                                    );
+                                                })}
                                                 </div>
                                             )}
                                         </div>
