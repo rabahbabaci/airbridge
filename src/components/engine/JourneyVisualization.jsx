@@ -229,7 +229,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.7, duration: 0.4 }}
-                                className="flex items-center justify-between px-8 py-5"
+                                className="flex items-center justify-between px-8 py-6"
                                 style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}
                             >
                                 <div>
