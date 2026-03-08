@@ -376,10 +376,18 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                         >
                                             <div className="flex items-center justify-between gap-3">
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-2xl leading-none">✈️</span>
+                                                    <SegIcon seg={{ id: 'board', label: 'board' }} size={34} />
                                                     <span className="text-base font-semibold text-green-400">Boarding</span>
                                                 </div>
-                                                <span className="font-mono text-base font-semibold" style={{ color: '#4ade80' }}>{boarding}</span>
+                                                <span
+                                                    className="font-mono text-sm font-bold px-3 py-1 rounded-lg shrink-0"
+                                                    style={{
+                                                        background: 'rgba(34,197,94,0.13)',
+                                                        border: '1px solid rgba(34,197,94,0.3)',
+                                                        color: '#4ade80',
+                                                        letterSpacing: '0.02em',
+                                                    }}
+                                                >{boarding}</span>
                                             </div>
                                             <p className="text-sm text-gray-500">Flight departs {departureTime}</p>
                                         </div>
