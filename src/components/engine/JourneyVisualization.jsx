@@ -90,11 +90,11 @@ function StatCard({ label, value, valueColor = '#ffffff' }) {
     );
 }
 
-// ── Single segment row ────────────────────────────────────────────────────────
+// ── Single segment row (card style) ──────────────────────────────────────────
 function SegmentRow({ seg, index, stepTime, isLast, hasNextNode }) {
     return (
         <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, height: 0, overflow: 'hidden' }}
             transition={{
@@ -102,53 +102,68 @@ function SegmentRow({ seg, index, stepTime, isLast, hasNextNode }) {
                 y: { delay: index * 0.08 + 0.1, duration: 0.3, ease: 'easeOut' },
                 height: { duration: 0.25, ease: 'easeInOut' },
             }}
-            className="flex gap-3"
+            className="flex gap-4"
         >
             {/* Left: number + connector line */}
-            <div className="flex flex-col items-center" style={{ minWidth: 28 }}>
+            <div className="flex flex-col items-center pt-4" style={{ minWidth: 36 }}>
                 <div
-                    className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 z-10"
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0 z-10"
                     style={{
                         background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                        boxShadow: '0 0 0 3px rgba(99,102,241,0.15)',
+                        boxShadow: '0 0 0 3px rgba(99,102,241,0.18)',
                     }}
                 >
                     {index + 1}
                 </div>
                 {(!isLast || hasNextNode) && (
                     <div
-                        className="w-px flex-1 mt-1"
+                        className="w-px flex-1 mt-2"
                         style={{
                             background: 'linear-gradient(to bottom, rgba(99,102,241,0.4), rgba(34,197,94,0.12))',
-                            minHeight: 28,
+                            minHeight: 24,
                         }}
                     />
                 )}
             </div>
 
-            {/* Right: content */}
-            <div className={`flex flex-col gap-1 ${isLast && !hasNextNode ? 'pb-0' : 'pb-4'}`}>
-                {/* Label row: icon + label + pill + time */}
-                <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-base leading-none">{getIcon(seg)}</span>
-                    <span className="text-sm font-semibold text-white">{seg.label}</span>
-                    {seg.duration_minutes > 0 && (
-                        <span
-                            className="text-xs font-medium px-2 py-0.5 rounded-full"
-                            style={{
-                                background: 'rgba(255,255,255,0.05)',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                color: '#a5b4fc',
-                            }}
-                        >
-                            {seg.duration_minutes}m
-                        </span>
+            {/* Right: card */}
+            <div className={`flex-1 ${isLast && !hasNextNode ? 'pb-0' : 'pb-4'}`}>
+                <div
+                    className="w-full rounded-2xl px-5 py-4 flex flex-col gap-2"
+                    style={{
+                        background: 'rgba(255,255,255,0.04)',
+                        border: '1px solid rgba(255,255,255,0.09)',
+                    }}
+                >
+                    {/* Top row: emoji + label + time */}
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                            <span className="text-2xl leading-none">{getIcon(seg)}</span>
+                            <span className="text-base font-semibold text-white">{seg.label}</span>
+                        </div>
+                        <span className="font-mono text-base font-semibold text-gray-300 shrink-0">{stepTime}</span>
+                    </div>
+                    {/* Bottom row: advice + duration pill */}
+                    {(seg.advice || seg.duration_minutes > 0) && (
+                        <div className="flex items-center justify-between gap-3 mt-0.5">
+                            {seg.advice ? (
+                                <p className="text-sm text-gray-500 leading-relaxed flex-1">{seg.advice}</p>
+                            ) : <span />}
+                            {seg.duration_minutes > 0 && (
+                                <span
+                                    className="text-xs font-medium px-3 py-1 rounded-full shrink-0"
+                                    style={{
+                                        background: 'rgba(99,102,241,0.12)',
+                                        border: '1px solid rgba(99,102,241,0.2)',
+                                        color: '#a5b4fc',
+                                    }}
+                                >
+                                    {seg.duration_minutes} min
+                                </span>
+                            )}
+                        </div>
                     )}
-                    <span className="font-mono text-sm text-gray-400">{stepTime}</span>
                 </div>
-                {seg.advice && (
-                    <p className="text-xs text-gray-500 leading-relaxed">{seg.advice}</p>
-                )}
             </div>
         </motion.div>
     );
