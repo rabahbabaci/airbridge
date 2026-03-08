@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence, useAnimationControls } from 'framer-motion';
-import { Plane } from 'lucide-react';
+import { Plane, Car, Train, Bus, Shield, Clock, MapPin, Luggage, Building2, PersonStanding, Ticket } from 'lucide-react';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
