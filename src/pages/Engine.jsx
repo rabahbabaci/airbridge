@@ -145,7 +145,8 @@ export default function Engine() {
         setSearching(true);
         goTo(2);
         try {
-            const res = await fetch(`${API_BASE}/v1/flights/${encodeURIComponent(flightNumber.trim())}/${departureDate}`);
+            const addrParam = startingAddress.trim() ? `?home_address=${encodeURIComponent(startingAddress.trim())}` : '';
+            const res = await fetch(`${API_BASE}/v1/flights/${encodeURIComponent(flightNumber.trim())}/${departureDate}${addrParam}`);
             if (!res.ok) {
                 setFlightOptions([]);
                 setSearching(false);
@@ -167,6 +168,9 @@ export default function Engine() {
                 status: f.status,
                 aircraft_model: f.aircraft_model,
                 departure_time_utc: f.departure_time_utc,
+                departed: f.departed ?? false,
+                catchable: f.catchable ?? true,
+                time_warning: f.time_warning ?? null,
                 // Format display strings
                 duration: '', // We can calculate this later
                 terminal: f.departure_terminal ? `Terminal ${f.departure_terminal}` : 'Terminal TBD',
@@ -474,35 +478,50 @@ export default function Engine() {
                                             ) : (
                                                 <div className="flex flex-col gap-2">
                                                     {flightOptions.map((f, i) => (
-                                                        <motion.button key={i}
-                                                            initial={{ opacity: 0, y: 12 }}
-                                                            animate={{ opacity: 1, y: 0 }}
-                                                            transition={{ delay: i * 0.08, duration: 0.3 }}
-                                                            onClick={() => handleSelectFlight(f)}
-                                                            className="w-full text-left rounded-xl px-4 py-3.5 transition-all duration-100 hover:scale-[1.01]"
-                                                            style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}
-                                                            whileHover={{ borderColor: '#93c5fd', background: '#eff6ff', transition: { duration: 0.1 } }}>
-                                                            <div className="flex items-center justify-between mb-2">
-                                                                <div className="flex items-center gap-3">
-                                                                    <span className="text-xl font-black text-gray-900">{formatLocalTime(f.departure_time)}</span>
-                                                                    <div className="flex items-center gap-1">
-                                                                        <div className="w-8 h-px bg-gray-300" />
-                                                                        <Plane className="w-3 h-3 text-gray-400" />
-                                                                        <div className="w-8 h-px bg-gray-300" />
-                                                                    </div>
-                                                                    <span className="text-sm font-semibold text-gray-500">{formatLocalTime(f.arrival_time)}</span>
+                                                    <motion.button key={i}
+                                                        initial={{ opacity: 0, y: 12 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        transition={{ delay: i * 0.08, duration: 0.3 }}
+                                                        onClick={() => !f.departed && handleSelectFlight(f)}
+                                                        disabled={f.departed}
+                                                        className="w-full text-left rounded-xl px-4 py-3.5 transition-all duration-100"
+                                                        style={{
+                                                            border: f.departed ? '1px solid #fca5a5' : '1px solid #e5e7eb',
+                                                            background: f.departed ? '#fef2f2' : '#f9fafb',
+                                                            opacity: f.departed ? 0.5 : 1,
+                                                            cursor: f.departed ? 'not-allowed' : 'pointer',
+                                                        }}
+                                                        whileHover={!f.departed ? { borderColor: '#93c5fd', background: '#eff6ff', transition: { duration: 0.1 } } : {}}>
+                                                        <div className="flex items-center justify-between mb-2">
+                                                            <div className="flex items-center gap-3">
+                                                                <span className={`text-xl font-black ${f.departed ? 'text-gray-400 line-through' : 'text-gray-900'}`}>
+                                                                    {formatLocalTime(f.departure_time)}
+                                                                </span>
+                                                                <div className="flex items-center gap-1">
+                                                                    <div className="w-8 h-px bg-gray-300" />
+                                                                    <Plane className="w-3 h-3 text-gray-400" />
+                                                                    <div className="w-8 h-px bg-gray-300" />
                                                                 </div>
-                                                                <span className="text-[10px] text-gray-400 font-medium">{f.duration}</span>
+                                                                <span className="text-sm font-semibold text-gray-500">{formatLocalTime(f.arrival_time)}</span>
                                                             </div>
-                                                            <div className="flex items-center gap-1.5">
-                                                                <span className="text-[11px] font-semibold text-gray-600">{f.flight_number}</span>
-                                                                <span className="text-[10px] text-gray-400 ml-1">·</span>
-                                                                <span className="text-[11px] font-semibold text-gray-600 ml-1">{f.origin_code}</span>
-                                                                <span className="text-[10px] text-gray-400">→</span>
-                                                                <span className="text-[11px] font-semibold text-gray-600">{f.destination_code}</span>
-                                                                <span className="text-[10px] text-gray-400 ml-2">· {f.terminal}</span>
-                                                            </div>
-                                                        </motion.button>
+                                                            {f.departed && (
+                                                                <span className="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full border border-red-200">
+                                                                    Departed
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex items-center gap-1.5">
+                                                            <span className="text-[11px] font-semibold text-gray-600">{f.flight_number}</span>
+                                                            <span className="text-[10px] text-gray-400 ml-1">·</span>
+                                                            <span className="text-[11px] font-semibold text-gray-600 ml-1">{f.origin_code}</span>
+                                                            <span className="text-[10px] text-gray-400">→</span>
+                                                            <span className="text-[11px] font-semibold text-gray-600">{f.destination_code}</span>
+                                                            <span className="text-[10px] text-gray-400 ml-2">· {f.terminal}</span>
+                                                        </div>
+                                                        {f.time_warning && !f.departed && (
+                                                            <p className="text-[10px] text-amber-600 font-medium mt-1.5">⚠️ {f.time_warning}</p>
+                                                        )}
+                                                    </motion.button>
                                                     ))}
                                                 </div>
                                             )}
