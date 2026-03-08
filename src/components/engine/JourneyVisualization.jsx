@@ -170,31 +170,76 @@ function StepNode({ seg, index, stepTime, delay, displayLabel, waitLabel, extraB
     );
 }
 
-// ── U-turn connector between row 1 and row 2 ─────────────────────────────────
+// ── Diagonal connector between row 1 and row 2 ───────────────────────────────
 function UTurnConnector({ label, delay }) {
+    // Fixed viewBox coords; SVG will stretch to full container width via preserveAspectRatio="none"
+    const VW = 500;
+    const VH = 60;
+    const x1 = VW - 8;  // top-right
+    const y1 = 6;
+    const x2 = 8;       // bottom-left
+    const y2 = VH - 6;
+
+    // Arrowhead geometry
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+    const aLen = 11;
+    const aSpread = 0.38;
+    const ax1 = x2 - aLen * Math.cos(angle - aSpread);
+    const ay1 = y2 - aLen * Math.sin(angle - aSpread);
+    const ax2 = x2 - aLen * Math.cos(angle + aSpread);
+    const ay2 = y2 - aLen * Math.sin(angle + aSpread);
+
+    // Label position: midpoint
+    const lx = ((x1 + x2) / 2 / VW) * 100;
+    const ly = (y1 + y2) / 2;
+
     return (
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay, duration: 0.4 }}
-            className="w-full flex justify-end pr-6 -my-1"
+            className="w-full relative"
+            style={{ height: VH }}
         >
-            <div className="flex flex-col items-center gap-0.5">
-                <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
+            <svg
+                width="100%"
+                height={VH}
+                viewBox={`0 0 ${VW} ${VH}`}
+                preserveAspectRatio="none"
+                style={{ position: 'absolute', inset: 0 }}
+            >
+                <line
+                    x1={x1} y1={y1} x2={x2} y2={y2}
+                    stroke="rgba(139,92,246,0.5)"
+                    strokeWidth="1.5"
+                    strokeDasharray="6 3"
+                />
+                <polygon
+                    points={`${x2},${y2} ${ax1},${ay1} ${ax2},${ay2}`}
+                    fill="rgba(139,92,246,0.6)"
+                />
+            </svg>
+            {/* Duration label centered on the diagonal */}
+            <div
+                style={{
+                    position: 'absolute',
+                    left: `${lx}%`,
+                    top: ly,
+                    transform: 'translate(-50%, -50%)',
+                    pointerEvents: 'none',
+                }}
+            >
+                <span
+                    className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
                     style={{
-                        background: 'rgba(99,102,241,0.14)',
-                        border: '1px solid rgba(99,102,241,0.25)',
+                        background: 'rgba(10,8,24,0.9)',
+                        border: '1px solid rgba(99,102,241,0.35)',
                         color: '#a5b4fc',
                         whiteSpace: 'nowrap',
-                    }}>
+                    }}
+                >
                     {label}
                 </span>
-                {/* Curved arrow going down and to the left */}
-                <svg width="48" height="40" viewBox="0 0 48 40" fill="none">
-                    <path d="M24 2 L42 2 Q46 2 46 6 L46 34 Q46 38 42 38 L6 38"
-                        stroke="rgba(139,92,246,0.5)" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-                    <polygon points="6,34 2,38 6,42" fill="rgba(139,92,246,0.5)" />
-                </svg>
             </div>
         </motion.div>
     );
