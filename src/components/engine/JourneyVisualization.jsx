@@ -182,7 +182,7 @@ function UTurnConnector({ label, delay }) {
     const x1 = VW - 69; // left edge of right-side icon
     const y1 = 4;
     const x2 = 69;      // right edge of left-side icon (symmetric)
-    const y2 = VH - 4 + 16;
+    const y2 = VH + 60; // extend far down to reach TSA icon level
 
     // Arrowhead geometry
     const angle = Math.atan2(y2 - y1, x2 - x1);
