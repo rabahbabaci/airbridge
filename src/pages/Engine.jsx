@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -222,6 +222,46 @@ export default function Engine() {
             setJourneyReady(true);
         }
     };
+
+    // Re-compute recommendation when preferences change after lock-in
+    useEffect(() => {
+        if (!locked || !selectedFlight) return;
+
+        const recompute = async () => {
+            try {
+                const tripRes = await fetch(`${API_BASE}/v1/trips`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        input_mode: 'flight_number',
+                        flight_number: selectedFlight.flight_number,
+                        departure_date: departureDate,
+                        home_address: startingAddress,
+                        preferences: {
+                            transport_mode: transport === 'uber' ? 'rideshare' : transport,
+                            confidence_profile: selectedProfile,
+                            bag_count: hasBaggage ? baggageCount : 0,
+                            traveling_with_children: withChildren,
+                            extra_time_minutes: extraTime === '+15' ? 15 : extraTime === '+30' ? 30 : 0,
+                        }
+                    })
+                });
+                const trip = await tripRes.json();
+
+                const recRes = await fetch(`${API_BASE}/v1/recommendations`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ trip_id: trip.trip_id })
+                });
+                const rec = await recRes.json();
+                setRecommendation(rec);
+            } catch (err) {
+                console.error('Recompute failed:', err);
+            }
+        };
+
+        recompute();
+    }, [transport, selectedProfile, hasBaggage, baggageCount, withChildren, extraTime]);
 
     const handleReset = () => {
         setLocked(false);
@@ -637,13 +677,14 @@ export default function Engine() {
                 </div>
 
                 {/* RIGHT — Visualization Panel */}
-                <div className="flex-1 flex items-center justify-center px-8 py-6 relative overflow-y-auto"
+                <div className="flex-1 flex flex-col min-h-0 px-8 py-6 relative overflow-hidden"
                     style={{ background: 'radial-gradient(ellipse at 60% 40%, rgba(59,130,246,0.07) 0%, rgba(9,9,11,1) 60%)' }}>
                     <div className="absolute top-10 right-10 w-80 h-80 rounded-full pointer-events-none"
                         style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.08), transparent)', filter: 'blur(60px)' }} />
                     <div className="absolute bottom-10 left-10 w-60 h-60 rounded-full pointer-events-none"
                         style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.06), transparent)', filter: 'blur(40px)' }} />
 
+                    <div className="flex-1 min-h-0 flex items-center justify-center overflow-y-auto">
                     <AnimatePresence mode="wait">
                         <JourneyVisualization
                             key={locked ? 'journey' : 'idle'}
@@ -656,6 +697,7 @@ export default function Engine() {
                             onReady={() => setJourneyReady(true)}
                         />
                     </AnimatePresence>
+                    </div>
                 </div>
             </div>
         </div>
