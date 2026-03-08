@@ -273,7 +273,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.4 }}
-                            className="w-full flex flex-col gap-5"
+                            className="w-full flex flex-col gap-3"
                         >
                             {/* ── HERO CARD ── */}
                             <motion.div
