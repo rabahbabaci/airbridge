@@ -103,7 +103,7 @@ function AnimatedTime({ value }) {
 }
 
 // ── Horizontal step node ──────────────────────────────────────────────────────
-function StepNode({ seg, index, stepTime, delay }) {
+function StepNode({ seg, index, stepTime, delay, displayLabel }) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -122,7 +122,7 @@ function StepNode({ seg, index, stepTime, delay }) {
             {/* Icon */}
             <SegIcon seg={seg} size={56} />
             {/* Label */}
-            <p className="text-[11px] font-semibold text-gray-300 mt-1.5 text-center leading-tight" style={{ maxWidth: 92 }}>{seg.label}</p>
+            <p className="text-[11px] font-semibold text-gray-300 mt-1.5 text-center leading-tight" style={{ maxWidth: 92 }}>{displayLabel}</p>
             {/* Shiny time chip */}
             <span
                 className="mt-1.5 font-mono text-[13px] font-bold px-2 py-0.5 rounded-lg"
@@ -134,10 +134,42 @@ function StepNode({ seg, index, stepTime, delay }) {
                     boxShadow: '0 0 8px rgba(96,165,250,0.15)',
                 }}
             >{stepTime}</span>
-            {/* Duration */}
-            {seg.duration_minutes > 0 && (
-                <span className="mt-0.5 text-[9px] text-gray-500 font-medium">{seg.duration_minutes} min</span>
-            )}
+        </motion.div>
+    );
+}
+
+// ── U-turn connector between row 1 and row 2 ─────────────────────────────────
+function UTurnConnector({ label, delay }) {
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay, duration: 0.4 }}
+            className="flex justify-end items-center pr-2 py-1"
+        >
+            <div className="flex flex-col items-center gap-1">
+                <span
+                    className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
+                    style={{
+                        background: 'rgba(99,102,241,0.14)',
+                        border: '1px solid rgba(99,102,241,0.25)',
+                        color: '#a5b4fc',
+                        whiteSpace: 'nowrap',
+                    }}
+                >
+                    {label}
+                </span>
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <path
+                        d="M6 4 L26 4 Q30 4 30 8 L30 24 Q30 28 26 28 L6 28"
+                        stroke="rgba(139,92,246,0.5)"
+                        strokeWidth="1.5"
+                        fill="none"
+                        strokeLinecap="round"
+                    />
+                    <polygon points="6,24 2,28 10,28" fill="rgba(139,92,246,0.5)" />
+                </svg>
+            </div>
         </motion.div>
     );
 }
