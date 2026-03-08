@@ -310,13 +310,13 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1, duration: 0.4 }}
-                                className="w-full rounded-2xl px-6 py-6"
+                                className="w-full rounded-2xl px-5 py-4"
                                 style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)' }}
                             >
                                 {rows.map((rowSegs, rowIdx) => {
-                                    const globalOffset = rowIdx * ROW_SIZE;
+                                    const globalOffset = rowIdx === 0 ? 0 : Math.ceil(segments.length / 2);
                                     return (
-                                        <div key={rowIdx} className={rowIdx > 0 ? 'mt-6 pt-6' : ''} style={rowIdx > 0 ? { borderTop: '1px solid rgba(255,255,255,0.06)' } : {}}>
+                                        <div key={rowIdx} className={rowIdx > 0 ? 'mt-4 pt-4' : ''} style={rowIdx > 0 ? { borderTop: '1px solid rgba(255,255,255,0.06)' } : {}}>
                                             <div className="flex items-center">
                                                 {rowSegs.map((seg, i) => {
                                                     const globalIdx = globalOffset + i;
