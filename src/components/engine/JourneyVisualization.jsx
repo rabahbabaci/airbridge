@@ -110,7 +110,7 @@ function AnimatedTime({ value }) {
 }
 
 // ── Horizontal step node ──────────────────────────────────────────────────────
-function StepNode({ seg, index, stepTime, delay, displayLabel }) {
+function StepNode({ seg, index, stepTime, delay, displayLabel, waitLabel }) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -141,6 +141,10 @@ function StepNode({ seg, index, stepTime, delay, displayLabel }) {
                     boxShadow: '0 0 8px rgba(96,165,250,0.15)',
                 }}
             >{stepTime}</span>
+            {/* Wait duration (e.g. TSA) shown under the chip */}
+            {waitLabel && (
+                <span className="mt-0.5 text-[9px] font-semibold text-rose-400">{waitLabel}</span>
+            )}
         </motion.div>
     );
 }
