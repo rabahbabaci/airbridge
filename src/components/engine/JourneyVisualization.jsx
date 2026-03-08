@@ -429,6 +429,24 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                 </div>
                             </motion.div>
 
+                            {/* Late departure warning */}
+                            {recommendation.leave_home_at && new Date(recommendation.leave_home_at) < new Date() && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -5 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="w-full rounded-xl px-4 py-3 flex items-center gap-3"
+                                    style={{
+                                        background: 'rgba(239,68,68,0.1)',
+                                        border: '1px solid rgba(239,68,68,0.3)',
+                                    }}
+                                >
+                                    <span className="text-red-400 text-lg">⚠️</span>
+                                    <p className="text-red-400 text-xs font-medium">
+                                        You needed to leave by {formatUTCToLocal(recommendation.leave_home_at)} — you may not make this flight on time
+                                    </p>
+                                </motion.div>
+                            )}
+
                             {/* ── HORIZONTAL STEPS CARD ── */}
                             <motion.div
                                 initial={{ opacity: 0, y: 10 }}
