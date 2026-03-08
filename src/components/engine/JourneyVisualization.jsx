@@ -143,6 +143,8 @@ function StepNode({ seg, index, stepTime, delay }) {
 }
 
 // ── Connector line between steps (vertically centered at icon level) ──────────
+// paddingTop pushes the line down to align with icon center:
+// badge(24) + gap(6) + icon/2(23) = ~53px from top
 function Connector({ label, delay }) {
     return (
         <motion.div
@@ -150,12 +152,12 @@ function Connector({ label, delay }) {
             animate={{ opacity: 1, scaleX: 1 }}
             transition={{ delay, duration: 0.4, ease: 'easeOut' }}
             className="flex-1 flex flex-col"
-            style={{ transformOrigin: 'left', paddingBottom: 56, paddingTop: 28 }}
+            style={{ transformOrigin: 'left', paddingTop: 53 }}
         >
             {/* Duration label above line */}
-            <div className="flex justify-center mb-1.5">
+            <div className="flex justify-center mb-1">
                 <span
-                    className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                    className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
                     style={{
                         background: 'rgba(99,102,241,0.14)',
                         border: '1px solid rgba(99,102,241,0.25)',
@@ -167,7 +169,7 @@ function Connector({ label, delay }) {
                 </span>
             </div>
             {/* Line with arrow */}
-            <div className="flex-1 flex items-center">
+            <div className="flex items-center">
                 <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, rgba(99,102,241,0.6), rgba(139,92,246,0.4))' }} />
                 <div style={{ width: 0, height: 0, borderTop: '4px solid transparent', borderBottom: '4px solid transparent', borderLeft: '6px solid rgba(139,92,246,0.5)' }} />
             </div>
