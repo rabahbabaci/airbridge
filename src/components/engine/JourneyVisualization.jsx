@@ -349,37 +349,57 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                             >
                                 {rows.map((rowSegs, rowIdx) => {
                                     const globalOffset = rowIdx === 0 ? 0 : Math.ceil(segments.length / 2);
+                                    // The last seg of row 0 is the "U-turn" segment (its duration connects to first of row 1)
+                                    const lastSegOfRow0 = rows.length > 1 ? rows[0][rows[0].length - 1] : null;
                                     return (
-                                        <div key={rowIdx} className={rowIdx > 0 ? 'mt-4 pt-4' : ''}>
-                                            <div className="flex items-center">
-                                                {rowSegs.map((seg, i) => {
-                                                    const globalIdx = globalOffset + i;
-                                                    const cumulativeBefore = segments
-                                                        .slice(0, globalIdx)
-                                                        .reduce((sum, s) => sum + (s.duration_minutes || 0), 0);
-                                                    const stepTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore);
-                                                    const delay = globalIdx * 0.07 + 0.15;
-                                                    const isLastInRow = i === rowSegs.length - 1;
+                                        <React.Fragment key={rowIdx}>
+                                            {/* U-turn connector between rows */}
+                                            {rowIdx === 1 && lastSegOfRow0 && (
+                                                <UTurnConnector
+                                                    label={`${lastSegOfRow0.duration_minutes} min`}
+                                                    delay={globalOffset * 0.07 + 0.1}
+                                                />
+                                            )}
+                                            <div className={rowIdx > 0 ? 'mt-1' : ''}>
+                                                <div className="flex items-center">
+                                                    {rowSegs.map((seg, i) => {
+                                                        const globalIdx = globalOffset + i;
+                                                        const cumulativeBefore = segments
+                                                            .slice(0, globalIdx)
+                                                            .reduce((sum, s) => sum + (s.duration_minutes || 0), 0);
+                                                        const stepTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore);
+                                                        const delay = globalIdx * 0.07 + 0.15;
+                                                        const isLastInRow = i === rowSegs.length - 1;
+                                                        // For row 0, the last step connects via U-turn so no horizontal connector needed
+                                                        const showConnector = !isLastInRow || rowIdx < rows.length - 1 ? !isLastInRow : false;
 
-                                                    return (
-                                                        <React.Fragment key={seg.id || seg.label}>
-                                                            <StepNode
-                                                                seg={seg}
-                                                                index={globalIdx}
-                                                                stepTime={stepTime}
-                                                                delay={delay}
-                                                            />
-                                                            {!isLastInRow && (
-                                                                <Connector
-                                                                    label={`${seg.duration_minutes} min`}
-                                                                    delay={delay + 0.05}
+                                                        // Rename curb_to_checkin if no bags
+                                                        let displayLabel = seg.label;
+                                                        if (seg.id === 'curb_to_checkin' && !hasBags) {
+                                                            displayLabel = 'Curb to security';
+                                                        }
+
+                                                        return (
+                                                            <React.Fragment key={seg.id || seg.label}>
+                                                                <StepNode
+                                                                    seg={seg}
+                                                                    index={globalIdx}
+                                                                    stepTime={stepTime}
+                                                                    delay={delay}
+                                                                    displayLabel={displayLabel}
                                                                 />
-                                                            )}
-                                                        </React.Fragment>
-                                                    );
-                                                })}
+                                                                {showConnector && (
+                                                                    <Connector
+                                                                        label={`${seg.duration_minutes} min`}
+                                                                        delay={delay + 0.05}
+                                                                    />
+                                                                )}
+                                                            </React.Fragment>
+                                                        );
+                                                    })}
+                                                </div>
                                             </div>
-                                        </div>
+                                        </React.Fragment>
                                     );
                                 })}
                             </motion.div>
