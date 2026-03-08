@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence, useAnimationControls } from 'framer-motion';
 import { Plane } from 'lucide-react';
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function formatUTCToLocal(utcStr) {
     if (!utcStr) return '';
@@ -32,42 +32,36 @@ function totalToHM(minutes) {
     return h > 0 ? `${h}h ${String(m).padStart(2, '0')}m` : `${m}m`;
 }
 
-function getIcon(label) {
-    if (!label) return '📍';
-    const lower = label.toLowerCase();
-    if (lower.includes('train')) return '🚆';
-    if (lower.includes('bus')) return '🚌';
-    if (lower.includes('drive') || lower.includes('driving') || lower.includes('uber') || lower.includes('lyft') || lower.includes('rideshare') || lower.includes('ride')) return '🚗';
-    if (lower.includes('leave home') || lower.includes('depart home')) return '🚗';
-    if (lower.includes('check-in') || lower.includes('check in') || lower.includes('curb') || lower.includes('terminal')) return '🏢';
-    if (lower.includes('bag') || lower.includes('luggage')) return '🧳';
-    if (lower.includes('walk')) return '🚶';
-    if (lower.includes('tsa') || lower.includes('security')) return '🛡️';
-    if (lower.includes('gate')) return '🎫';
-    if (lower.includes('buffer') || lower.includes('wait')) return '⏱️';
-    if (lower.includes('board')) return '✈️';
-    if (lower.includes('arrive airport') || lower.includes('arrival')) return '🏢';
+function getIcon(seg) {
+    const id = (seg.id || '').toLowerCase();
+    const label = (seg.label || '').toLowerCase();
+
+    if (id === 'bag_drop') return '🧳';
+    if (id === 'curb_to_checkin') return '🏢';
+    if (id === 'walk_to_security' || id === 'walk_to_gate') return '🚶';
+    if (id === 'tsa') return '🛡️';
+    if (id === 'boarding_buffer') return '⏱️';
+    if (id.includes('train') || label.includes('train')) return '🚆';
+    if (id.includes('bus') || label.includes('bus')) return '🚌';
+    if (id.includes('drive') || label.includes('ride') || label.includes('drive') || label.includes('uber') || label.includes('lyft')) return '🚗';
+    if (label.includes('security') || label.includes('tsa')) return '🛡️';
+    if (label.includes('walk')) return '🚶';
+    if (label.includes('bag') || label.includes('luggage')) return '🧳';
+    if (label.includes('check-in') || label.includes('check in') || label.includes('terminal')) return '🏢';
+    if (label.includes('gate')) return '🎫';
+    if (label.includes('board')) return '✈️';
+    if (label.includes('leave home') || label.includes('depart')) return '🚗';
     return '📍';
 }
 
-// ── Animated number that pulses when value changes ────────────────────────────
+// ── Hero time — pulses on change via key ──────────────────────────────────────
 function AnimatedTime({ value }) {
-    const controls = useAnimationControls();
-    const prevValue = useRef(value);
-
-    useEffect(() => {
-        if (prevValue.current !== value && prevValue.current !== '') {
-            controls.start({
-                scale: [1, 1.06, 1],
-                transition: { duration: 0.35, ease: 'easeInOut' },
-            });
-        }
-        prevValue.current = value;
-    }, [value]);
-
     return (
         <motion.p
-            animate={controls}
+            key={value}
+            initial={{ scale: 1 }}
+            animate={{ scale: [1, 1.03, 1] }}
+            transition={{ duration: 0.35, ease: 'easeInOut' }}
             className="font-extrabold leading-none mb-3"
             style={{
                 fontSize: 76,
@@ -83,124 +77,6 @@ function AnimatedTime({ value }) {
     );
 }
 
-// ── Time label that flashes blue when value changes ───────────────────────────
-function FlashingTime({ value }) {
-    const [flash, setFlash] = useState(false);
-    const prevValue = useRef(value);
-
-    useEffect(() => {
-        if (prevValue.current !== value && prevValue.current !== '') {
-            setFlash(true);
-            const t = setTimeout(() => setFlash(false), 350);
-            return () => clearTimeout(t);
-        }
-        prevValue.current = value;
-    }, [value]);
-
-    return (
-        <span
-            className="font-mono text-base shrink-0 ml-4 transition-colors duration-300"
-            style={{ color: flash ? '#60a5fa' : '#9ca3af' }}
-        >
-            {value}
-        </span>
-    );
-}
-
-// ── Skeleton row ─────────────────────────────────────────────────────────────
-function SkeletonRow({ delay }) {
-    return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0.3, 0.7, 0.3] }}
-            transition={{ duration: 1.4, repeat: Infinity, delay }}
-            className="flex gap-4 pb-6"
-        >
-            <div className="flex flex-col items-center" style={{ minWidth: 32 }}>
-                <div className="w-8 h-8 rounded-full shrink-0" style={{ background: 'rgba(255,255,255,0.08)' }} />
-                <div className="w-0.5 flex-1 mt-1" style={{ background: 'rgba(255,255,255,0.05)', minHeight: 32 }} />
-            </div>
-            <div className="flex-1 flex flex-col gap-2 pt-1">
-                <div className="flex items-center justify-between">
-                    <div className="h-4 rounded-full w-32" style={{ background: 'rgba(255,255,255,0.08)' }} />
-                    <div className="h-4 rounded-full w-16" style={{ background: 'rgba(255,255,255,0.06)' }} />
-                </div>
-                <div className="h-3 rounded-full w-48" style={{ background: 'rgba(255,255,255,0.05)' }} />
-                <div className="h-5 rounded-full w-24" style={{ background: 'rgba(255,255,255,0.05)' }} />
-            </div>
-        </motion.div>
-    );
-}
-
-// ── Segment row ───────────────────────────────────────────────────────────────
-function SegmentRow({ seg, index, stepTime, isLast, isConnectedToFinal }) {
-    return (
-        <motion.div
-            layout
-            key={seg.label + index}
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, height: 0, marginBottom: 0, overflow: 'hidden' }}
-            transition={{
-                layout: { type: 'spring', stiffness: 300, damping: 30 },
-                opacity: { delay: index * 0.08 + 0.1, duration: 0.35 },
-                y: { delay: index * 0.08 + 0.1, duration: 0.35, ease: 'easeOut' },
-            }}
-            className="flex gap-4 relative"
-        >
-            {/* Connector column */}
-            <div className="flex flex-col items-center" style={{ minWidth: 32 }}>
-                <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 z-10"
-                    style={{
-                        background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                        boxShadow: '0 0 0 3px rgba(99,102,241,0.18)',
-                    }}
-                >
-                    {index + 1}
-                </div>
-                {(!isLast || isConnectedToFinal) && (
-                    <div
-                        className="w-px flex-1 my-1"
-                        style={{
-                            background: 'linear-gradient(to bottom, rgba(99,102,241,0.45), rgba(34,197,94,0.15))',
-                            minHeight: 32,
-                        }}
-                    />
-                )}
-            </div>
-
-            {/* Content */}
-            <div className={`flex-1 flex flex-col gap-1.5 ${isLast && !isConnectedToFinal ? 'pb-0' : 'pb-5'}`}>
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                        <span className="text-lg leading-none">{getIcon(seg.label)}</span>
-                        <span className="text-base font-semibold text-white">{seg.label}</span>
-                    </div>
-                    <FlashingTime value={stepTime} />
-                </div>
-                {seg.advice && (
-                    <p className="text-sm text-gray-500 leading-relaxed ml-9">{seg.advice}</p>
-                )}
-                {seg.duration_minutes > 0 && (
-                    <div className="ml-9 mt-0.5">
-                        <span
-                            className="text-xs font-medium px-2.5 py-1 rounded-full"
-                            style={{
-                                background: 'rgba(255,255,255,0.05)',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                color: '#a5b4fc',
-                            }}
-                        >
-                            {seg.duration_minutes} min
-                        </span>
-                    </div>
-                )}
-            </div>
-        </motion.div>
-    );
-}
-
 // ── Stat card ─────────────────────────────────────────────────────────────────
 function StatCard({ label, value, valueColor = '#ffffff' }) {
     return (
@@ -211,6 +87,70 @@ function StatCard({ label, value, valueColor = '#ffffff' }) {
             <p className="text-xs uppercase tracking-wider font-semibold text-gray-500">{label}</p>
             <p className="text-2xl font-bold" style={{ color: valueColor }}>{value}</p>
         </div>
+    );
+}
+
+// ── Single segment row ────────────────────────────────────────────────────────
+function SegmentRow({ seg, index, stepTime, isLast, hasNextNode }) {
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, height: 0, overflow: 'hidden' }}
+            transition={{
+                opacity: { delay: index * 0.08 + 0.1, duration: 0.3 },
+                y: { delay: index * 0.08 + 0.1, duration: 0.3, ease: 'easeOut' },
+                height: { duration: 0.25, ease: 'easeInOut' },
+            }}
+            className="flex gap-3"
+        >
+            {/* Left: number + connector line */}
+            <div className="flex flex-col items-center" style={{ minWidth: 28 }}>
+                <div
+                    className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 z-10"
+                    style={{
+                        background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                        boxShadow: '0 0 0 3px rgba(99,102,241,0.15)',
+                    }}
+                >
+                    {index + 1}
+                </div>
+                {(!isLast || hasNextNode) && (
+                    <div
+                        className="w-px flex-1 mt-1"
+                        style={{
+                            background: 'linear-gradient(to bottom, rgba(99,102,241,0.4), rgba(34,197,94,0.12))',
+                            minHeight: 28,
+                        }}
+                    />
+                )}
+            </div>
+
+            {/* Right: content */}
+            <div className={`flex flex-col gap-1 ${isLast && !hasNextNode ? 'pb-0' : 'pb-4'}`}>
+                {/* Label row: icon + label + pill + time */}
+                <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-base leading-none">{getIcon(seg)}</span>
+                    <span className="text-sm font-semibold text-white">{seg.label}</span>
+                    {seg.duration_minutes > 0 && (
+                        <span
+                            className="text-xs font-medium px-2 py-0.5 rounded-full"
+                            style={{
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                color: '#a5b4fc',
+                            }}
+                        >
+                            {seg.duration_minutes}m
+                        </span>
+                    )}
+                    <span className="font-mono text-sm text-gray-400">{stepTime}</span>
+                </div>
+                {seg.advice && (
+                    <p className="text-xs text-gray-500 leading-relaxed">{seg.advice}</p>
+                )}
+            </div>
+        </motion.div>
     );
 }
 
@@ -252,7 +192,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
         <div className="w-full min-h-full px-10 py-8">
             <AnimatePresence mode="wait">
 
-                {/* ── IDLE STATE ── */}
+                {/* ── IDLE ── */}
                 {!showResult && (
                     <motion.div
                         key="idle"
@@ -294,7 +234,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                     </motion.div>
                 )}
 
-                {/* ── RESULT STATE ── */}
+                {/* ── RESULT ── */}
                 {showResult && (
                     <motion.div
                         key="result"
@@ -304,7 +244,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                         transition={{ duration: 0.4 }}
                         className="w-full flex flex-col gap-0"
                     >
-                        {/* ── HERO ── */}
+                        {/* HERO */}
                         <motion.div
                             initial={{ opacity: 0, scale: 0.97 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -312,10 +252,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                             className="w-full flex flex-col items-center text-center pb-8"
                             style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}
                         >
-                            <p
-                                className="text-xs font-bold uppercase tracking-widest mb-3"
-                                style={{ color: '#60a5fa', letterSpacing: '0.22em' }}
-                            >
+                            <p className="text-xs font-bold uppercase mb-3" style={{ color: '#60a5fa', letterSpacing: '0.22em' }}>
                                 Leave Home By
                             </p>
                             <AnimatedTime value={formatUTCToLocal(recommendation.leave_home_at)} />
@@ -333,8 +270,8 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                             </div>
                         </motion.div>
 
-                        {/* ── TIMELINE ── */}
-                        <div className="w-full pt-7 pb-2 flex flex-col">
+                        {/* TIMELINE */}
+                        <div className="w-full pt-6 pb-2 flex flex-col">
                             <AnimatePresence>
                                 {recommendation.segments.map((seg, i) => {
                                     const cumulativeBefore = recommendation.segments
@@ -345,58 +282,53 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
 
                                     return (
                                         <SegmentRow
-                                            key={seg.label + i}
+                                            key={seg.id || seg.label}
                                             seg={seg}
                                             index={i}
                                             stepTime={stepTime}
                                             isLast={isLast}
-                                            isConnectedToFinal={isLast && !!selectedFlight}
+                                            hasNextNode={isLast && !!selectedFlight}
                                         />
                                     );
                                 })}
                             </AnimatePresence>
 
-                            {/* Final boarding node */}
+                            {/* Boarding final node */}
                             {selectedFlight && (
                                 <motion.div
-                                    layout
-                                    initial={{ opacity: 0, y: 18 }}
+                                    initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{
                                         delay: recommendation.segments.length * 0.08 + 0.15,
-                                        duration: 0.35,
+                                        duration: 0.3,
                                         ease: 'easeOut',
                                     }}
-                                    className="flex gap-4"
+                                    className="flex gap-3"
                                 >
-                                    <div className="flex flex-col items-center" style={{ minWidth: 32 }}>
+                                    <div className="flex flex-col items-center" style={{ minWidth: 28 }}>
                                         <div
-                                            className="w-8 h-8 rounded-full flex items-center justify-center text-sm shrink-0 z-10"
+                                            className="w-7 h-7 rounded-full flex items-center justify-center text-sm shrink-0 z-10"
                                             style={{
                                                 background: 'linear-gradient(135deg, #16a34a, #22c55e)',
-                                                boxShadow: '0 0 0 3px rgba(34,197,94,0.2)',
+                                                boxShadow: '0 0 0 3px rgba(34,197,94,0.18)',
                                             }}
                                         >
                                             ✓
                                         </div>
                                     </div>
-                                    <div className="flex-1 flex flex-col gap-1.5 pb-2">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2.5">
-                                                <span className="text-lg leading-none">✈️</span>
-                                                <span className="text-base font-semibold text-green-400">Boarding</span>
-                                            </div>
-                                            <span className="font-mono text-base shrink-0 ml-4" style={{ color: '#4ade80' }}>
-                                                {boarding}
-                                            </span>
+                                    <div className="flex flex-col gap-1 pb-2">
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            <span className="text-base leading-none">✈️</span>
+                                            <span className="text-sm font-semibold text-green-400">Boarding</span>
+                                            <span className="font-mono text-sm" style={{ color: '#4ade80' }}>{boarding}</span>
                                         </div>
-                                        <p className="text-sm text-gray-500 ml-9">Flight departs {departureTime}</p>
+                                        <p className="text-xs text-gray-500">Flight departs {departureTime}</p>
                                     </div>
                                 </motion.div>
                             )}
                         </div>
 
-                        {/* ── FOOTER STATS ── */}
+                        {/* FOOTER STATS */}
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -406,9 +338,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                         >
                             <StatCard label="Total Journey" value={totalToHM(totalMinutes)} />
                             <StatCard label="Gate Cushion" value={totalToHM(gateCushion)} valueColor="#4ade80" />
-                            {selectedFlight && (
-                                <StatCard label="Departs" value={departureTime} />
-                            )}
+                            {selectedFlight && <StatCard label="Departs" value={departureTime} />}
                         </motion.div>
                     </motion.div>
                 )}
