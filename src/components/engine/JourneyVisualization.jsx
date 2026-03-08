@@ -375,8 +375,8 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                             <p
                                                 className="font-extrabold"
                                                 style={{
-                                                    fontSize: 36,
-                                                    letterSpacing: '-1px',
+                                                    fontSize: 26,
+                                                    letterSpacing: '-0.5px',
                                                     background: 'linear-gradient(135deg, #ffffff, #86efac)',
                                                     WebkitBackgroundClip: 'text',
                                                     WebkitTextFillColor: 'transparent',
