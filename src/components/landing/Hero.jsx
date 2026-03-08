@@ -235,15 +235,17 @@ export default function Hero() {
                             transition={{ duration: 0.5, delay: 0.35 }}
                             className="flex flex-wrap gap-3 mb-14"
                         >
-                            <button
+                            <motion.button
                                 onClick={() => navigate(createPageUrl('Engine'))}
-                                className="flex items-center gap-2 px-7 py-4 rounded-full text-white font-bold text-sm transition-all hover:scale-105 active:scale-100"
-                                style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', boxShadow: '0 8px 32px rgba(79,70,229,0.35)' }}
+                                className="flex items-center gap-2 px-8 py-4 rounded-full text-white font-bold text-base transition-all hover:scale-110 active:scale-100"
+                                style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)', boxShadow: '0 0 40px rgba(59,130,246,0.6), 0 12px 48px rgba(99,102,241,0.4)' }}
+                                animate={{ boxShadow: ['0 0 40px rgba(59,130,246,0.6), 0 12px 48px rgba(99,102,241,0.4)', '0 0 60px rgba(59,130,246,0.8), 0 12px 64px rgba(99,102,241,0.5)', '0 0 40px rgba(59,130,246,0.6), 0 12px 48px rgba(99,102,241,0.4)'] }}
+                                transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}
                             >
-                                <Plane className="w-4 h-4" />
+                                <Plane className="w-5 h-5" />
                                 See My Departure Time
-                                <ArrowRight className="w-4 h-4" />
-                            </button>
+                                <ArrowRight className="w-5 h-5" />
+                            </motion.button>
                             </motion.div>
 
                             {/* Trust micro-copy */}
