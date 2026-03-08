@@ -413,9 +413,18 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                             <span className="text-green-400 text-xs font-semibold">{confidenceScore}% Confident</span>
                                         </div>
                                         {selectedFlight && (
-                                            <p className="text-gray-500 text-xs font-medium">
-                                                {selectedFlight.flight_number} · {selectedFlight.origin_code} → {selectedFlight.destination_code} · {totalToHM(totalMinutes)} door-to-gate
-                                            </p>
+                                            <div className="flex flex-col items-end gap-1">
+                                                <p className="text-gray-500 text-xs font-medium">
+                                                    {selectedFlight.flight_number} · {selectedFlight.origin_code} → {selectedFlight.destination_code} · {totalToHM(totalMinutes)} door-to-gate
+                                                </p>
+                                                {(selectedFlight.departure_terminal || selectedFlight.departure_gate) && (
+                                                    <p className="text-xs font-semibold" style={{ color: '#60a5fa' }}>
+                                                        {selectedFlight.departure_terminal ? `Terminal ${selectedFlight.departure_terminal}` : ''}
+                                                        {selectedFlight.departure_terminal && selectedFlight.departure_gate ? ' · ' : ''}
+                                                        {selectedFlight.departure_gate ? `Gate ${selectedFlight.departure_gate}` : ''}
+                                                    </p>
+                                                )}
+                                            </div>
                                         )}
                                     </div>
                                 </div>
