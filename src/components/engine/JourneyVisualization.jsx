@@ -171,18 +171,17 @@ function StepNode({ seg, index, stepTime, delay, displayLabel, waitLabel, extraB
 }
 
 // ── Diagonal connector between row 1 and row 2 ───────────────────────────────
-// Starts just left of the right-side icon (row 1), ends just right of the left-side icon (row 2)
-// Icon center in the StepNode is roughly at x=46px from the node's left edge.
-// The connector uses the same solid gradient arrow style as the horizontal Connector.
+// Connects from the right side of row 1 to the left side of row 2
+// Uses same styling and thickness as horizontal connectors
 function UTurnConnector({ label, delay }) {
     const VW = 500;
     const VH = 60;
-    // x1: left edge of right icon = where row 1 arrow tip ends (icon center ~46px from right, icon radius ~23px → left edge at VW - 46 - 23 = VW - 69)
-    // x2: right edge of left icon = where row 2 arrow starts (icon center ~46px from left, right edge at 46 + 23 = 69)
-    const x1 = VW - 69; // left edge of right-side icon
-    const y1 = 4;
-    const x2 = 69;      // right edge of left-side icon (symmetric)
-    const y2 = VH + 60; // extend far down to reach TSA icon level
+    // Right side (row 1): x near right edge, y at icon center level
+    // Left side (row 2): x near left edge, y at icon center level of row 2
+    const x1 = 450;          // right side, where row 1 ends
+    const y1 = 58;           // row 1 icon center level
+    const x2 = 50;           // left side, where row 2 starts
+    const y2 = VH + 58;      // row 2 icon center level
 
     // Arrowhead geometry
     const angle = Math.atan2(y2 - y1, x2 - x1);
@@ -203,15 +202,14 @@ function UTurnConnector({ label, delay }) {
             animate={{ opacity: 1, scaleX: 1 }}
             transition={{ delay, duration: 0.4, ease: 'easeOut' }}
             className="w-full relative"
-            style={{ height: VH + 76, transformOrigin: 'right', overflow: 'visible' }}
+            style={{ height: VH + 16, transformOrigin: 'left', overflow: 'visible' }}
         >
             <svg
                 width="100%"
-                height={VH + 76}
-                viewBox={`0 0 ${VW} ${VH + 76}`}
-                style={{ position: 'absolute', inset: 0, overflow: 'visible' }}
+                height={VH + 16}
+                viewBox={`0 0 ${VW} ${VH + 16}`}
                 preserveAspectRatio="none"
-                style={{ position: 'absolute', inset: 0 }}
+                style={{ position: 'absolute', inset: 0, overflow: 'visible' }}
             >
                 <defs>
                     <linearGradient id="diag-grad" x1="1" y1="0" x2="0" y2="1">
@@ -229,7 +227,7 @@ function UTurnConnector({ label, delay }) {
                     fill="rgba(139,92,246,0.5)"
                 />
             </svg>
-            {/* Duration label centered on the diagonal */}
+            {/* Duration label centered on the diagonal, above the line */}
             <div
                 style={{
                     position: 'absolute',
