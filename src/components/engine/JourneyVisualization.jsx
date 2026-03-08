@@ -401,15 +401,12 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                 </div>
 
                                 {/* Stats row — only Total Journey + Gate Cushion */}
-                                <div
-                                    className="grid grid-cols-2 divide-x"
-                                    style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.07)' }}
-                                >
+                                <div className="grid grid-cols-2">
                                     {[
                                         { label: 'Total Journey', value: totalToHM(totalMinutes), color: '#ffffff' },
                                         { label: 'Gate Cushion', value: totalToHM(gateCushion), color: '#4ade80' },
                                     ].map(({ label, value, color }) => (
-                                        <div key={label} className="flex flex-col gap-0.5 px-5 py-3" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+                                        <div key={label} className="flex flex-col items-center gap-0.5 px-5 py-3">
                                             <p className="text-[10px] uppercase tracking-wider font-semibold text-gray-500">{label}</p>
                                             <p className="text-xl font-bold" style={{ color }}>{value}</p>
                                         </div>
