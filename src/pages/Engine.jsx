@@ -12,6 +12,7 @@ import {
 import JourneyVisualization from '@/components/engine/JourneyVisualization';
 
 const API_BASE = 'https://airbridge-backend-production.up.railway.app';
+// const API_BASE = 'http://localhost:8000';
 
 // ── Data ────────────────────────────────────────────────────────────────────
 const transportOffsets = { uber: 0, driving: -5, train: 10, bus: 15, other: 5 };
@@ -202,14 +203,16 @@ export default function Engine() {
                     flight_number: selectedFlight.flight_number,
                     departure_date: departureDate,
                     home_address: startingAddress,
-                    preferences: {
-                        transport_mode: transport === 'uber' ? 'rideshare' : transport,
-                        confidence_profile: selectedProfile,
-                        bag_count: hasBaggage ? baggageCount : 0,
-                        traveling_with_children: withChildren,
-                        extra_time_minutes: extraTime === '+15' ? 15 : extraTime === '+30' ? 30 : 0,
-                    }
-                })
+                    selected_departure_utc: selectedFlight.departure_time_utc,
+                preferences: {
+                    transport_mode: transport === 'uber' ? 'rideshare' : transport,
+                    confidence_profile: selectedProfile,
+                    bag_count: hasBaggage ? baggageCount : 0,
+                    traveling_with_children: withChildren,
+                    extra_time_minutes: extraTime === '+15' ? 15 : extraTime === '+30' ? 30 : 0,
+                }
+            })
+                
             });
             const trip = await tripRes.json();
 
@@ -242,6 +245,7 @@ export default function Engine() {
                         flight_number: selectedFlight.flight_number,
                         departure_date: departureDate,
                         home_address: startingAddress,
+                        selected_departure_utc: selectedFlight.departure_time_utc,
                         preferences: {
                             transport_mode: transport === 'uber' ? 'rideshare' : transport,
                             confidence_profile: selectedProfile,
