@@ -207,8 +207,8 @@ function UTurnConnector({ label, delay }) {
         >
             <svg
                 width="100%"
-                height={VH}
-                viewBox={`0 0 ${VW} ${VH}`}
+                height={VH + 16}
+                viewBox={`0 0 ${VW} ${VH + 16}`}
                 preserveAspectRatio="none"
                 style={{ position: 'absolute', inset: 0 }}
             >
