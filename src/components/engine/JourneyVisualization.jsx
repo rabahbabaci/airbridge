@@ -177,11 +177,11 @@ function StepNode({ seg, index, stepTime, delay, displayLabel, waitLabel, extraB
 function UTurnConnector({ label, delay }) {
     const VW = 500;
     const VH = 60;
-    // x1: near right-side icon — roughly where the horizontal arrow ends (left of icon center)
-    // x2: near left-side icon — stop short of touching the icon center
-    const x1 = VW - 46; // left edge of right icon
+    // x1: left edge of right icon = where row 1 arrow tip ends (icon center ~46px from right, icon radius ~23px → left edge at VW - 46 - 23 = VW - 69)
+    // x2: right edge of left icon = where row 2 arrow starts (icon center ~46px from left, right edge at 46 + 23 = 69)
+    const x1 = VW - 69; // left edge of right-side icon
     const y1 = 4;
-    const x2 = 46;      // right edge of left icon (stop short)
+    const x2 = 69;      // right edge of left-side icon (symmetric)
     const y2 = VH - 4;
 
     // Arrowhead geometry
