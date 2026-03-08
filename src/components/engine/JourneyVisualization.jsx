@@ -411,9 +411,9 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                         { label: 'Total Journey', value: totalToHM(totalMinutes), color: '#ffffff' },
                                         { label: 'Gate Cushion', value: totalToHM(gateCushion), color: '#4ade80' },
                                     ].map(({ label, value, color }) => (
-                                        <div key={label} className="flex flex-col gap-1 px-6 py-4" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+                                        <div key={label} className="flex flex-col gap-0.5 px-5 py-3" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
                                             <p className="text-[10px] uppercase tracking-wider font-semibold text-gray-500">{label}</p>
-                                            <p className="text-2xl font-bold" style={{ color }}>{value}</p>
+                                            <p className="text-xl font-bold" style={{ color }}>{value}</p>
                                         </div>
                                     ))}
                                 </div>
