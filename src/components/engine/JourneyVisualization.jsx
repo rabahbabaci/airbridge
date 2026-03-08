@@ -400,22 +400,27 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                                             displayLabel = 'Curb to security';
                                                         }
 
-                                                        // Parse TSA advice for walk/wait split (walk on connector TO TSA, wait under TSA icon)
+                                                        // Parse TSA advice for walk/wait split (walk on arrow TO TSA, wait under TSA icon)
                                                         let connectorLabel = `${seg.duration_minutes} min`;
                                                         let waitLabel = undefined;
                                                         if (seg.id === 'tsa' && seg.advice) {
-                                                            const tsa = parseTsaAdvice(seg.advice);
-                                                            if (tsa) {
-                                                                const waitMin = tsa.waitMin ?? seg.duration_minutes;
-                                                                waitLabel = `${waitMin} min${tsa.period ? ' · ' + tsa.period : ''}`;
-                                                            }
+                                                            const walkMatch = seg.advice.match(/walk:(\d+)/);
+                                                            const waitMatch = seg.advice.match(/wait:(\d+)/);
+                                                            const periodMatch = seg.advice.match(/\|([^|]+)$/);
+                                                            const walkMin = walkMatch ? parseInt(walkMatch[1], 10) : 0;
+                                                            const waitMin = waitMatch ? parseInt(waitMatch[1], 10) : seg.duration_minutes;
+                                                            const period = periodMatch ? periodMatch[1].trim() : '';
+                                                            waitLabel = `${waitMin} min${period ? ' · ' + period : ''}`;
+                                                            // Connector AFTER TSA shows the next segment's duration
+                                                            const nextSeg = segments[globalIdx + 1];
+                                                            connectorLabel = nextSeg ? `${nextSeg.duration_minutes} min` : `${seg.duration_minutes} min`;
                                                         }
-                                                        // Connector leading TO the next step: if next is TSA, show TSA walk time
+                                                        // Connector BEFORE TSA: use TSA's walk time on the arrow leading TO the TSA step
                                                         const nextSegInArray = segments[globalIdx + 1];
                                                         if (nextSegInArray?.id === 'tsa' && nextSegInArray.advice) {
-                                                            const tsa = parseTsaAdvice(nextSegInArray.advice);
-                                                            if (tsa && tsa.walkMin > 0) {
-                                                                connectorLabel = `${tsa.walkMin} min`;
+                                                            const walkMatch = nextSegInArray.advice.match(/walk:(\d+)/);
+                                                            if (walkMatch) {
+                                                                connectorLabel = `${walkMatch[1]} min`;
                                                             }
                                                         }
 
