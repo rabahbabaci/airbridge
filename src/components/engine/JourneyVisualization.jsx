@@ -332,7 +332,6 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                                                 seg={seg}
                                                                 index={globalIdx}
                                                                 stepTime={stepTime}
-                                                                total={segments.length}
                                                                 delay={delay}
                                                             />
                                                             {!isLastInRow && (
