@@ -103,17 +103,14 @@ function AnimatedTime({ value }) {
 }
 
 // ── Horizontal step node ──────────────────────────────────────────────────────
-function StepNode({ seg, index, stepTime, total, delay }) {
-    const isFirst = index === 0;
-    const isLast = index === total - 1;
-
+function StepNode({ seg, index, stepTime, delay }) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay, duration: 0.35, ease: 'easeOut' }}
             className="flex flex-col items-center"
-            style={{ flex: isFirst || isLast ? '0 0 auto' : '1 1 0', minWidth: 72, maxWidth: isFirst || isLast ? 90 : undefined }}
+            style={{ flex: '0 0 auto', width: 96 }}
         >
             {/* Badge number */}
             <div
@@ -123,16 +120,18 @@ function StepNode({ seg, index, stepTime, total, delay }) {
                 {index + 1}
             </div>
             {/* Icon */}
-            <SegIcon seg={seg} size={44} />
+            <SegIcon seg={seg} size={52} />
             {/* Label */}
-            <p className="text-[11px] font-semibold text-gray-300 mt-2 text-center leading-tight" style={{ maxWidth: 80 }}>{seg.label}</p>
-            {/* Time chip */}
+            <p className="text-[11px] font-semibold text-gray-300 mt-2.5 text-center leading-tight" style={{ maxWidth: 84 }}>{seg.label}</p>
+            {/* Shiny time chip */}
             <span
-                className="mt-1.5 font-mono text-[11px] font-bold px-2 py-0.5 rounded-md"
+                className="mt-2 font-mono text-[13px] font-bold px-2.5 py-1 rounded-lg"
                 style={{
-                    background: 'rgba(96,165,250,0.13)',
-                    border: '1px solid rgba(96,165,250,0.28)',
-                    color: '#93c5fd',
+                    background: 'linear-gradient(135deg, rgba(96,165,250,0.22), rgba(139,92,246,0.18))',
+                    border: '1px solid rgba(147,197,253,0.4)',
+                    color: '#e0f2fe',
+                    textShadow: '0 0 12px rgba(147,197,253,0.6)',
+                    boxShadow: '0 0 10px rgba(96,165,250,0.15)',
                 }}
             >{stepTime}</span>
             {/* Duration */}
@@ -143,29 +142,34 @@ function StepNode({ seg, index, stepTime, total, delay }) {
     );
 }
 
-// ── Connector line between steps ──────────────────────────────────────────────
+// ── Connector line between steps (vertically centered at icon level) ──────────
 function Connector({ label, delay }) {
     return (
         <motion.div
             initial={{ opacity: 0, scaleX: 0 }}
             animate={{ opacity: 1, scaleX: 1 }}
             transition={{ delay, duration: 0.4, ease: 'easeOut' }}
-            className="flex-1 flex flex-col items-center justify-center pb-6"
-            style={{ transformOrigin: 'left' }}
+            className="flex-1 flex flex-col"
+            style={{ transformOrigin: 'left', paddingBottom: 56, paddingTop: 28 }}
         >
-            <div className="w-full relative flex items-center">
-                <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, rgba(99,102,241,0.5), rgba(34,197,94,0.3))' }} />
-                <div
-                    className="absolute left-1/2 -translate-x-1/2 -top-4 text-[9px] font-semibold px-2 py-0.5 rounded-full"
+            {/* Duration label above line */}
+            <div className="flex justify-center mb-1.5">
+                <span
+                    className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
                     style={{
-                        background: 'rgba(99,102,241,0.12)',
-                        border: '1px solid rgba(99,102,241,0.2)',
+                        background: 'rgba(99,102,241,0.14)',
+                        border: '1px solid rgba(99,102,241,0.25)',
                         color: '#a5b4fc',
                         whiteSpace: 'nowrap',
                     }}
                 >
                     {label}
-                </div>
+                </span>
+            </div>
+            {/* Line with arrow */}
+            <div className="flex-1 flex items-center">
+                <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, rgba(99,102,241,0.6), rgba(139,92,246,0.4))' }} />
+                <div style={{ width: 0, height: 0, borderTop: '4px solid transparent', borderBottom: '4px solid transparent', borderLeft: '6px solid rgba(139,92,246,0.5)' }} />
             </div>
         </motion.div>
     );
