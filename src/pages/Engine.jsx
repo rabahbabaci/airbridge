@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -10,7 +10,8 @@ import {
     ChevronDown, CheckCircle2, Lock, Calendar, Search, ArrowLeft, MapPin
 } from 'lucide-react';
 import JourneyVisualization from '@/components/engine/JourneyVisualization';
-import { base44 } from '@/api/base44Client';
+
+const API_BASE = 'https://airbridge-backend-production.up.railway.app';
 
 // ── Data ────────────────────────────────────────────────────────────────────
 const transportOffsets = { uber: 0, driving: -5, train: 10, bus: 15, other: 5 };
@@ -31,20 +32,23 @@ const transportModes = [
     { id: 'other',   label: 'Other',     icon: User  },
 ];
 
-const airportData = {
-    SFO: { name: 'San Francisco Intl',      traffic: 63, tsa: 41, walking: 17, baseBuffer: 16 },
-    LAX: { name: 'Los Angeles Intl',        traffic: 58, tsa: 48, walking: 22, baseBuffer: 16 },
-    JFK: { name: 'John F. Kennedy Intl',    traffic: 72, tsa: 52, walking: 19, baseBuffer: 16 },
-    ORD: { name: "O'Hare Intl",             traffic: 54, tsa: 38, walking: 15, baseBuffer: 16 },
-    ATL: { name: 'Hartsfield-Jackson Intl', traffic: 48, tsa: 45, walking: 18, baseBuffer: 16 },
-    DFW: { name: 'Dallas/Fort Worth Intl',  traffic: 51, tsa: 35, walking: 20, baseBuffer: 16 },
-};
-
 const confidenceColorMap = {
     green: { badge: 'bg-green-500/20 text-green-400 border-green-500/30', bar: 'from-green-500 to-emerald-400' },
     blue:  { badge: 'bg-blue-500/20 text-blue-400 border-blue-500/30',    bar: 'from-blue-500 to-purple-500'   },
     amber: { badge: 'bg-amber-500/20 text-amber-400 border-amber-500/30', bar: 'from-amber-500 to-orange-400'  },
 };
+
+function formatLocalTime(timeStr) {
+    if (!timeStr) return '';
+    // Parse "2026-03-07 10:09-08:00" format
+    const match = timeStr.match(/(\d{4}-\d{2}-\d{2})\s+(\d{2}):(\d{2})/);
+    if (!match) return timeStr;
+    const hours = parseInt(match[2]);
+    const minutes = match[3];
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const h12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+    return `${h12}:${minutes} ${ampm}`;
+}
 
 function fmt(date, offsetMins) {
     const d = new Date(date);
@@ -127,6 +131,7 @@ export default function Engine() {
     const [withChildren, setWithChildren] = useState(false);
     const [extraTime, setExtraTime] = useState('none');
     const [locked, setLocked] = useState(false);
+    const [recommendation, setRecommendation] = useState(null);
 
     const goTo = (next) => {
         setDir(next > step ? 1 : -1);
@@ -134,37 +139,41 @@ export default function Engine() {
     };
 
     const handleFindFlight = async () => {
-            if (!flightNumber.trim() || !departureDate) return;
-            setSearching(true);
-            goTo(2);
-            const dateStr = new Date(departureDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-            const prompt = `You are a flight data API. For flight number "${flightNumber.trim()}" on ${dateStr}, return realistic scheduled departure trips for that day. A single flight number typically operates 1-3 trips per day. Return between 1 and 3 trip objects with flight_number, departure_time, arrival_time, origin_code, origin_name, destination_code, destination_name, duration, and terminal.`;
-            const result = await base44.integrations.Core.InvokeLLM({
-                prompt,
-            response_json_schema: {
-                type: 'object',
-                properties: {
-                    flights: {
-                        type: 'array',
-                        items: {
-                            type: 'object',
-                            properties: {
-                                flight_number: { type: 'string', description: 'e.g. UA 452' },
-                                departure_time: { type: 'string', description: 'e.g. 7:30 AM' },
-                                arrival_time: { type: 'string', description: 'e.g. 10:45 AM' },
-                                origin_code: { type: 'string', description: 'IATA airport code e.g. JFK' },
-                                origin_name: { type: 'string', description: 'e.g. New York JFK' },
-                                destination_code: { type: 'string', description: 'IATA airport code e.g. LAX' },
-                                destination_name: { type: 'string', description: 'e.g. Los Angeles LAX' },
-                                duration: { type: 'string', description: 'e.g. 5h 30m' },
-                                terminal: { type: 'string', description: 'e.g. Terminal 2' },
-                            }
-                        }
-                    }
-                }
+        if (!flightNumber.trim() || !departureDate) return;
+        setSearching(true);
+        goTo(2);
+        try {
+            const res = await fetch(`${API_BASE}/v1/flights/${encodeURIComponent(flightNumber.trim())}/${departureDate}`);
+            if (!res.ok) {
+                setFlightOptions([]);
+                setSearching(false);
+                return;
             }
-        });
-        setFlightOptions(result.flights || []);
+            const data = await res.json();
+            // Map backend response to the shape the UI expects
+            const mapped = (data.flights || []).map(f => ({
+                flight_number: f.flight_number,
+                departure_time: f.departure_time_local,
+                arrival_time: f.arrival_time_local,
+                origin_code: f.origin_iata,
+                origin_name: f.origin_name,
+                destination_code: f.destination_iata,
+                destination_name: f.destination_name,
+                departure_terminal: f.departure_terminal,
+                departure_gate: f.departure_gate,
+                arrival_terminal: f.arrival_terminal,
+                status: f.status,
+                aircraft_model: f.aircraft_model,
+                departure_time_utc: f.departure_time_utc,
+                // Format display strings
+                duration: '', // We can calculate this later
+                terminal: f.departure_terminal ? `Terminal ${f.departure_terminal}` : 'Terminal TBD',
+            }));
+            setFlightOptions(mapped);
+        } catch (err) {
+            console.error('Flight lookup failed:', err);
+            setFlightOptions([]);
+        }
         setSearching(false);
     };
 
@@ -175,71 +184,56 @@ export default function Engine() {
 
     const [journeyReady, setJourneyReady] = useState(false);
 
+    const handleLockIn = async () => {
+        setLocked(true);
+        setJourneyReady(false);
+        try {
+            // Step 1: Create trip
+            const tripRes = await fetch(`${API_BASE}/v1/trips`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    input_mode: 'flight_number',
+                    flight_number: selectedFlight.flight_number,
+                    departure_date: departureDate,
+                    home_address: startingAddress,
+                    preferences: {
+                        transport_mode: transport === 'uber' ? 'rideshare' : transport,
+                        confidence_profile: selectedProfile,
+                        bag_count: hasBaggage ? baggageCount : 0,
+                        traveling_with_children: withChildren,
+                        extra_time_minutes: extraTime === '+15' ? 15 : extraTime === '+30' ? 30 : 0,
+                    }
+                })
+            });
+            const trip = await tripRes.json();
+
+            // Step 2: Get recommendation
+            const recRes = await fetch(`${API_BASE}/v1/recommendations`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ trip_id: trip.trip_id })
+            });
+            const rec = await recRes.json();
+            setRecommendation(rec);
+            setJourneyReady(true);
+        } catch (err) {
+            console.error('Recommendation failed:', err);
+            setJourneyReady(true);
+        }
+    };
+
     const handleReset = () => {
         setLocked(false);
         setJourneyReady(false);
+        setRecommendation(null);
         setSelectedFlight(null);
         setFlightOptions([]);
         setDir(-1);
         setStep(1);
     };
 
-    const airportCode = selectedFlight?.origin_code && airportData[selectedFlight.origin_code]
-        ? selectedFlight.origin_code : 'SFO';
     const profile = confidenceProfiles.find(p => p.id === selectedProfile);
-    const base = airportData[airportCode];
-    const trafficTime = base.traffic + (transportOffsets[transport] ?? 0);
-    const baggageTime = hasBaggage ? baggageCount * 7 : 0;
-    const buffer = Math.round(base.baseBuffer * profile.bufferMultiplier)
-        + (withChildren ? 10 : 0)
-        + (extraTime === '+15' ? 15 : extraTime === '+30' ? 30 : 0);
-    const total = trafficTime + baggageTime + base.tsa + base.walking + buffer;
-
-    const gate = useMemo(() => {
-        if (selectedFlight?.departure_time) {
-            const parts = selectedFlight.departure_time.match(/(\d+):(\d+)\s*(AM|PM)/i);
-            if (parts) {
-                let h = parseInt(parts[1]);
-                const m = parseInt(parts[2]);
-                const ampm = parts[3].toUpperCase();
-                if (ampm === 'PM' && h !== 12) h += 12;
-                if (ampm === 'AM' && h === 12) h = 0;
-                const d = new Date();
-                d.setHours(h, m, 0, 0);
-                return d;
-            }
-        }
-        const d = new Date(); d.setHours(10, 0, 0, 0); return d;
-    }, [selectedFlight]);
-
-    const leaveTime = fmt(gate, -total);
-    const arriveAirport = fmt(gate, -(baggageTime + base.tsa + base.walking + buffer));
-    const dropBaggage = fmt(gate, -(base.tsa + base.walking + buffer));
-    const tsaClear = fmt(gate, -(base.walking + buffer));
-    const arriveGate = fmt(gate, -buffer);
-    const boarding = fmt(gate, 0); // actual departure time
-
-    const terminal = selectedFlight?.terminal || 'Terminal 1';
-    const isBusMode   = transport === 'bus';
-    const isTrainMode = transport === 'train';
-    const transitWalkMins = isTrainMode ? trainWalkMins : isBusMode ? busWalkMins : 0;
-
-    const journeySteps = [
-        { id: 'home',     time: leaveTime,     flightLabel: `${flightNumber || 'Your flight'} · ${airportCode}`, total },
-        ...(isTrainMode
-            ? [{ id: 'trainwalk', time: fmt(gate, -(total - transitWalkMins)), dur: `${transitWalkMins} min`, visible: true, mode: 'train' }]
-            : isBusMode
-            ? [{ id: 'trainwalk', time: fmt(gate, -(total - transitWalkMins)), dur: `${transitWalkMins} min`, visible: true, mode: 'bus' }]
-            : [{ id: 'trainwalk', visible: false }]),
-        { id: 'travel',   time: arriveAirport, dur: `${trafficTime} min` },
-        { id: 'airport',  time: arriveAirport, terminal },
-        ...(hasBaggage
-            ? [{ id: 'baggage', time: dropBaggage, dur: `${baggageTime} min`, visible: true }]
-            : [{ id: 'baggage', visible: false }]),
-        { id: 'security', time: tsaClear,      dur: `${base.tsa} min` },
-        { id: 'walk',     time: arriveGate,    dur: `${base.walking} min` },
-        { id: 'gate',     time: arriveGate,    dur: `on time` },
-    ];
 
     const getTodayStr = () => {
         const today = new Date();
@@ -440,13 +434,13 @@ export default function Engine() {
                                                             whileHover={{ borderColor: '#93c5fd', background: '#eff6ff', transition: { duration: 0.1 } }}>
                                                             <div className="flex items-center justify-between mb-2">
                                                                 <div className="flex items-center gap-3">
-                                                                    <span className="text-xl font-black text-gray-900">{f.departure_time}</span>
+                                                                    <span className="text-xl font-black text-gray-900">{formatLocalTime(f.departure_time)}</span>
                                                                     <div className="flex items-center gap-1">
                                                                         <div className="w-8 h-px bg-gray-300" />
                                                                         <Plane className="w-3 h-3 text-gray-400" />
                                                                         <div className="w-8 h-px bg-gray-300" />
                                                                     </div>
-                                                                    <span className="text-sm font-semibold text-gray-500">{f.arrival_time}</span>
+                                                                    <span className="text-sm font-semibold text-gray-500">{formatLocalTime(f.arrival_time)}</span>
                                                                 </div>
                                                                 <span className="text-[10px] text-gray-400 font-medium">{f.duration}</span>
                                                             </div>
@@ -480,7 +474,7 @@ export default function Engine() {
                                                 <CheckCircle2 className="w-3.5 h-3.5 text-green-500 shrink-0" />
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-xs font-bold text-green-800">
-                                                        {flightNumber.toUpperCase()} · {selectedFlight.departure_time}
+                                                        {flightNumber.toUpperCase()} · {formatLocalTime(selectedFlight.departure_time)}
                                                     </p>
                                                     <p className="text-[10px] text-green-600">{selectedFlight.origin_code} → {selectedFlight.destination_code}</p>
                                                 </div>
@@ -619,7 +613,7 @@ export default function Engine() {
                                         </motion.div>
                                     ) : (
                                         <motion.button key="lock" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                                            onClick={() => { setLocked(true); setJourneyReady(false); }}
+                                            onClick={handleLockIn}
                                             className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-semibold text-white transition-all"
                                             style={{
                                                 background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
@@ -654,12 +648,12 @@ export default function Engine() {
                         <JourneyVisualization
                             key={locked ? 'journey' : 'idle'}
                             locked={locked}
-                            steps={journeySteps}
+                            recommendation={recommendation}
+                            selectedFlight={selectedFlight}
                             transport={transport}
                             profile={profile}
                             confidenceColorMap={confidenceColorMap}
                             onReady={() => setJourneyReady(true)}
-                            boardingTime={boarding}
                         />
                     </AnimatePresence>
                 </div>
