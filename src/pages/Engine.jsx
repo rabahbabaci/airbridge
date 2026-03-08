@@ -684,7 +684,7 @@ export default function Engine() {
                     <div className="absolute bottom-10 left-10 w-60 h-60 rounded-full pointer-events-none"
                         style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.06), transparent)', filter: 'blur(40px)' }} />
 
-                    <div className="flex-1 min-h-0 flex items-center justify-center overflow-y-auto">
+                    <div className="flex-1 min-h-0 overflow-y-auto">
                     <AnimatePresence mode="wait">
                         <JourneyVisualization
                             key={locked ? 'journey' : 'idle'}
