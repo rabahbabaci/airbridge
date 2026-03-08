@@ -203,7 +203,7 @@ function UTurnConnector({ label, delay }) {
             animate={{ opacity: 1, scaleX: 1 }}
             transition={{ delay, duration: 0.4, ease: 'easeOut' }}
             className="w-full relative"
-            style={{ height: VH, transformOrigin: 'right' }}
+            style={{ height: VH + 16, transformOrigin: 'right' }}
         >
             <svg
                 width="100%"
