@@ -119,7 +119,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                             className="w-full"
                         >
                             {/* HERO */}
-                            <div className="flex flex-col items-center text-center px-8 pt-8 pb-6"
+                            <div className="flex flex-col items-center text-center px-8 pt-8 pb-8 mb-2"
                                 style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
                                 <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-blue-400 mb-2">Leave Home By</p>
                                 <p className="font-black text-white leading-none mb-3" style={{ fontSize: 72, letterSpacing: '-2px' }}>
