@@ -171,83 +171,52 @@ function StepNode({ seg, index, stepTime, delay, displayLabel, waitLabel, extraB
 }
 
 // ── Diagonal connector between row 1 and row 2 ───────────────────────────────
-// Starts just left of the right-side icon (row 1), ends just right of the left-side icon (row 2)
-// Icon center in the StepNode is roughly at x=46px from the node's left edge.
-// The connector uses the same solid gradient arrow style as the horizontal Connector.
 function UTurnConnector({ label, delay }) {
-    const VW = 500;
-    const VH = 60;
-    // x1: left edge of right icon = where row 1 arrow tip ends (icon center ~46px from right, icon radius ~23px → left edge at VW - 46 - 23 = VW - 69)
-    // x2: right edge of left icon = where row 2 arrow starts (icon center ~46px from left, right edge at 46 + 23 = 69)
-    const x1 = VW - 69; // left edge of right-side icon
-    const y1 = 4;
-    const x2 = 69;      // right edge of left-side icon (symmetric)
-    const y2 = VH + 60; // extend far down to reach TSA icon level
-
-    // Arrowhead geometry
-    const angle = Math.atan2(y2 - y1, x2 - x1);
-    const aLen = 10;
-    const aSpread = 0.38;
-    const ax1 = x2 - aLen * Math.cos(angle - aSpread);
-    const ay1 = y2 - aLen * Math.sin(angle - aSpread);
-    const ax2 = x2 - aLen * Math.cos(angle + aSpread);
-    const ay2 = y2 - aLen * Math.sin(angle + aSpread);
-
-    // Label at midpoint
-    const lx = ((x1 + x2) / 2 / VW) * 100;
-    const ly = (y1 + y2) / 2;
-
     return (
         <motion.div
-            initial={{ opacity: 0, scaleX: 0 }}
-            animate={{ opacity: 1, scaleX: 1 }}
-            transition={{ delay, duration: 0.4, ease: 'easeOut' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay, duration: 0.4 }}
             className="w-full relative"
-            style={{ height: VH + 76, transformOrigin: 'right', overflow: 'visible' }}
+            style={{ height: 56, marginTop: -4, marginBottom: -4 }}
         >
             <svg
                 width="100%"
-                height={VH + 76}
-                viewBox={`0 0 ${VW} ${VH + 76}`}
-                style={{ position: 'absolute', inset: 0, overflow: 'visible' }}
+                height="100%"
+                viewBox="0 0 100 100"
                 preserveAspectRatio="none"
-                style={{ position: 'absolute', inset: 0 }}
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', overflow: 'visible' }}
             >
-                <defs>
-                    <linearGradient id="diag-grad" x1="1" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="rgba(99,102,241,0.6)" />
-                        <stop offset="100%" stopColor="rgba(139,92,246,0.4)" />
-                    </linearGradient>
-                </defs>
+                {/* Line from top-right (row 1 last icon) to bottom-left (row 2 first icon) */}
                 <line
-                    x1={x1} y1={y1} x2={x2} y2={y2}
-                    stroke="url(#diag-grad)"
+                    x1="88" y1="0"
+                    x2="12" y2="100"
+                    stroke="rgba(119,97,246,0.5)"
                     strokeWidth="1.5"
+                    vectorEffect="non-scaling-stroke"
                 />
+                {/* Arrowhead at bottom-left end */}
                 <polygon
-                    points={`${x2},${y2} ${ax1},${ay1} ${ax2},${ay2}`}
+                    points="12,100 16,88 8,90"
                     fill="rgba(139,92,246,0.5)"
                 />
             </svg>
             {/* Duration label centered on the diagonal */}
-            <div
-                style={{
-                    position: 'absolute',
-                    left: `${lx}%`,
-                    top: ly,
-                    transform: `translate(-50%, -140%) rotate(${(angle * 180) / Math.PI + 180}deg)`,
-                    pointerEvents: 'none',
-                }}
-            >
-                <span
-                    className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
+            <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                pointerEvents: 'none',
+            }}>
+                <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full"
                     style={{
-                        background: 'rgba(99,102,241,0.14)',
-                        border: '1px solid rgba(99,102,241,0.25)',
+                        background: 'rgba(9,9,11,0.85)',
+                        border: '1px solid rgba(99,102,241,0.3)',
                         color: '#a5b4fc',
                         whiteSpace: 'nowrap',
-                    }}
-                >
+                        backdropFilter: 'blur(4px)',
+                    }}>
                     {label}
                 </span>
             </div>
