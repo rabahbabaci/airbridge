@@ -40,37 +40,6 @@ const airportData = {
     DFW: { name: 'Dallas/Fort Worth Intl',  traffic: 51, tsa: 35, walking: 20, baseBuffer: 16 },
 };
 
-const departureWindows = [
-    { id: 'not_sure',   label: 'Not Sure',   range: '',    desc: 'Show all departures', startH: 0,  endH: 24  },
-    { id: 'morning',    label: 'Morning',    range: 'AM',  desc: '6:00–11:59 AM',      startH: 6,  endH: 12  },
-    { id: 'midday',     label: 'Midday',     range: 'PM',  desc: '12:00–2:59 PM',      startH: 12, endH: 15  },
-    { id: 'afternoon',  label: 'Afternoon',  range: 'PM',  desc: '3:00–5:59 PM',       startH: 15, endH: 18  },
-    { id: 'evening',    label: 'Evening',    range: 'PM',  desc: '6:00–9:59 PM',       startH: 18, endH: 22  },
-    { id: 'late_night', label: 'Late Night', range: 'PM',  desc: '10:00 PM–5:59 AM',   startH: 22, endH: 6   },
-];
-
-function parseHour(timeStr) {
-    if (!timeStr) return -1;
-    const m = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
-    if (!m) return -1;
-    let h = parseInt(m[1]);
-    const ampm = m[3].toUpperCase();
-    if (ampm === 'PM' && h !== 12) h += 12;
-    if (ampm === 'AM' && h === 12) h = 0;
-    return h;
-}
-
-function isInWindow(timeStr, windowId) {
-    if (windowId === 'not_sure') return true;
-    const w = departureWindows.find(d => d.id === windowId);
-    if (!w) return true;
-    const h = parseHour(timeStr);
-    if (h === -1) return true;
-    // late_night wraps past midnight (22–6)
-    if (windowId === 'late_night') return h >= 22 || h < 6;
-    return h >= w.startH && h < w.endH;
-}
-
 const confidenceColorMap = {
     green: { badge: 'bg-green-500/20 text-green-400 border-green-500/30', bar: 'from-green-500 to-emerald-400' },
     blue:  { badge: 'bg-blue-500/20 text-blue-400 border-blue-500/30',    bar: 'from-blue-500 to-purple-500'   },
@@ -138,16 +107,11 @@ export default function Engine() {
     const [dir, setDir] = useState(1);
 
     // Step 1
-    const [searchMode, setSearchMode] = useState('flight'); // 'route' | 'flight'
-    const [airline, setAirline] = useState('');
-    const [fromAirport, setFromAirport] = useState('');
-    const [toAirport, setToAirport] = useState('');
     const [departureDate, setDepartureDate] = useState('');
     const [departureTime, setDepartureTime] = useState('');
     const [flightNumber, setFlightNumber] = useState('');
     const [startingAddress, setStartingAddress] = useState('');
     const [calendarOpen, setCalendarOpen] = useState(false);
-    const [departureWindow, setDepartureWindow] = useState('not_sure');
 
     // Step 2
     const [searching, setSearching] = useState(false);
@@ -170,14 +134,11 @@ export default function Engine() {
     };
 
     const handleFindFlight = async () => {
-            if (searchMode === 'route' && (!fromAirport.trim() || !toAirport.trim() || !departureDate)) return;
-            if (searchMode === 'flight' && (!flightNumber.trim() || !departureDate)) return;
+            if (!flightNumber.trim() || !departureDate) return;
             setSearching(true);
             goTo(2);
             const dateStr = new Date(departureDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-            const prompt = searchMode === 'route'
-                ? `You are a flight data API. Find realistic flight options from ${fromAirport.trim().toUpperCase()} to ${toAirport.trim().toUpperCase()} on ${dateStr}. Return 2-4 realistic flights with different departure times, each with flight_number (e.g. AA 452), departure_time, arrival_time, origin_code, origin_name, destination_code, destination_name, duration, and terminal.`
-                : `You are a flight data API. For flight number "${flightNumber.trim()}" on ${dateStr}, return realistic scheduled departure trips for that day. A single flight number typically operates 1-3 trips per day. Return between 1 and 3 trip objects with flight_number, departure_time, arrival_time, origin_code, origin_name, destination_code, destination_name, duration, and terminal.`;
+            const prompt = `You are a flight data API. For flight number "${flightNumber.trim()}" on ${dateStr}, return realistic scheduled departure trips for that day. A single flight number typically operates 1-3 trips per day. Return between 1 and 3 trip objects with flight_number, departure_time, arrival_time, origin_code, origin_name, destination_code, destination_name, duration, and terminal.`;
             const result = await base44.integrations.Core.InvokeLLM({
                 prompt,
             response_json_schema: {
@@ -285,9 +246,7 @@ export default function Engine() {
         return today.toISOString().split('T')[0];
     };
 
-    const canSearch = searchMode === 'route' 
-        ? fromAirport.trim().length > 0 && toAirport.trim().length > 0 && departureDate.length > 0
-        : flightNumber.trim().length > 0 && departureDate.length > 0;
+    const canSearch = flightNumber.trim().length > 0 && departureDate.length > 0;
 
     return (
         <div className="h-screen w-screen flex flex-col overflow-hidden bg-gray-950 font-sans antialiased">
@@ -371,160 +330,58 @@ export default function Engine() {
                                         className="px-6 pt-4 pb-4 flex flex-col gap-4">
                                         <StepDots step={1} />
 
-                                        <AnimatePresence mode="wait">
-                                        {searchMode === 'flight' ? (
-                                            <motion.div key="flight" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }} className="space-y-4">
-                                                    <div>
-                                                             <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Flight Number</label>
-                                                             <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
-                                                                 style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
-                                                                 <Plane className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                                                                 <Input value={flightNumber} onChange={e => setFlightNumber(e.target.value)}
-                                                                     placeholder="e.g. UA 452"
-                                                                     onKeyDown={e => e.key === 'Enter' && canSearch && handleFindFlight()}
-                                                                     className="border-0 p-0 h-auto bg-transparent focus-visible:ring-0 text-sm text-gray-900 font-medium" />
-                                                             </div>
-                                                         </div>
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Flight Number</label>
+                                                <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
+                                                    style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
+                                                    <Plane className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                                                    <Input value={flightNumber} onChange={e => setFlightNumber(e.target.value)}
+                                                        placeholder="e.g. UA 452"
+                                                        onKeyDown={e => e.key === 'Enter' && canSearch && handleFindFlight()}
+                                                        className="border-0 p-0 h-auto bg-transparent focus-visible:ring-0 text-sm text-gray-900 font-medium" />
+                                                </div>
+                                            </div>
 
-                                                         <div>
-                                                             <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Starting Address</label>
-                                                             <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
-                                                                 style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
-                                                                 <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                                                                 <Input value={startingAddress} onChange={e => setStartingAddress(e.target.value)}
-                                                                     placeholder="e.g. 123 Main St, San Francisco"
-                                                                     className="border-0 p-0 h-auto bg-transparent focus-visible:ring-0 text-sm text-gray-900 font-medium" />
-                                                             </div>
-                                                         </div>
+                                            <div>
+                                                <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Starting Address</label>
+                                                <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
+                                                    style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
+                                                    <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                                                    <Input value={startingAddress} onChange={e => setStartingAddress(e.target.value)}
+                                                        placeholder="e.g. 123 Main St, San Francisco"
+                                                        className="border-0 p-0 h-auto bg-transparent focus-visible:ring-0 text-sm text-gray-900 font-medium" />
+                                                </div>
+                                            </div>
 
-                                                         <div>
-                                                             <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Departure Date</label>
-                                                             <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-                                                                 <PopoverTrigger asChild>
-                                                                     <div className="flex items-center gap-2 rounded-xl px-3 py-2.5 cursor-pointer hover:opacity-80 transition-opacity"
-                                                                         style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
-                                                                         <Calendar className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                                                                         <span className="flex-1 text-sm text-gray-900 font-medium">
-                                                                             {departureDate ? new Date(departureDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Select date'}
-                                                                         </span>
-                                                                     </div>
-                                                                 </PopoverTrigger>
-                                                                 <PopoverContent className="w-auto p-0" align="start">
-                                                                     <CalendarComponent
-                                                                         mode="single"
-                                                                         selected={departureDate ? new Date(departureDate + 'T00:00:00') : undefined}
-                                                                         onSelect={(date) => {
-                                                                             if (date) {
-                                                                                 setDepartureDate(date.toISOString().split('T')[0]);
-                                                                                 setCalendarOpen(false);
-                                                                             }
-                                                                         }}
-                                                                         disabled={(date) => date < new Date(getTodayStr())}
-                                                                     />
-                                                                 </PopoverContent>
-                                                             </Popover>
-                                                         </div>
-
-                                                         <button
-                                                             onClick={() => setSearchMode('route')}
-                                                             className="text-xs text-blue-500 hover:text-blue-700 font-medium mt-2 w-full text-center"
-                                                         >
-                                                             No flight number? Search by route.
-                                                         </button>
-                                                             </motion.div>
-                                                             ) : (
-                                                                 <motion.div key="route" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }} className="space-y-4">
-                                                                         <div>
-                                                             <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Airline</label>
-                                                             <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
-                                                                 style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
-                                                                 <Plane className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                                                                 <Input value={airline} onChange={e => setAirline(e.target.value)}
-                                                                     placeholder="e.g. United, Delta, Southwest"
-                                                                     className="border-0 p-0 h-auto bg-transparent focus-visible:ring-0 text-sm text-gray-900 font-medium" />
-                                                             </div>
-                                                         </div>
-
-                                                         <div>
-                                                             <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">From (Airport)</label>
-                                                             <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
-                                                                 style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
-                                                                 <Plane className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                                                                 <Input value={fromAirport} onChange={e => setFromAirport(e.target.value)}
-                                                                     placeholder="e.g. SFO or San Francisco"
-                                                                     className="border-0 p-0 h-auto bg-transparent focus-visible:ring-0 text-sm text-gray-900 font-medium" />
-                                                             </div>
-                                                         </div>
-
-                                                         <div>
-                                                             <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">To (Airport)</label>
-                                                             <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
-                                                                 style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
-                                                                 <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                                                                 <Input value={toAirport} onChange={e => setToAirport(e.target.value)}
-                                                                     placeholder="e.g. JFK or New York"
-                                                                     className="border-0 p-0 h-auto bg-transparent focus-visible:ring-0 text-sm text-gray-900 font-medium" />
-                                                             </div>
-                                                         </div>
-
-                                                         <div>
-                                                             <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Starting Address</label>
-                                                             <div className="flex items-center gap-2 rounded-xl px-3 py-2.5"
-                                                                 style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
-                                                                 <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                                                                 <Input value={startingAddress} onChange={e => setStartingAddress(e.target.value)}
-                                                                     placeholder="e.g. 123 Main St, San Francisco"
-                                                                     className="border-0 p-0 h-auto bg-transparent focus-visible:ring-0 text-sm text-gray-900 font-medium" />
-                                                             </div>
-                                                         </div>
-
-                                                         <div>
-                                                             <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Departure Date</label>
-                                                             <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-                                                                 <PopoverTrigger asChild>
-                                                                     <div className="flex items-center gap-2 rounded-xl px-3 py-2.5 cursor-pointer hover:opacity-80 transition-opacity"
-                                                                         style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
-                                                                         <Calendar className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                                                                         <span className="flex-1 text-sm text-gray-900 font-medium">
-                                                                             {departureDate ? new Date(departureDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Select date'}
-                                                                         </span>
-                                                                     </div>
-                                                                 </PopoverTrigger>
-                                                                 <PopoverContent className="w-auto p-0" align="start">
-                                                                     <CalendarComponent
-                                                                         mode="single"
-                                                                         selected={departureDate ? new Date(departureDate + 'T00:00:00') : undefined}
-                                                                         onSelect={(date) => {
-                                                                             if (date) {
-                                                                                 setDepartureDate(date.toISOString().split('T')[0]);
-                                                                                 setCalendarOpen(false);
-                                                                             }
-                                                                         }}
-                                                                         disabled={(date) => date < new Date(getTodayStr())}
-                                                                     />
-                                                                 </PopoverContent>
-                                                             </Popover>
-                                                         </div>
-
-                                                         <div>
-                                                             <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Departure Time Window</label>
-                                                             <select value={departureWindow} onChange={e => setDepartureWindow(e.target.value)}
-                                                                 className="w-full rounded-xl px-3 py-2.5 text-sm font-medium text-gray-900 bg-[#f9fafb] border border-[#e5e7eb] focus:outline-none focus:ring-1 focus:ring-blue-400">
-                                                                 {departureWindows.map(w => (
-                                                                     <option key={w.id} value={w.id}>{w.label}{w.desc ? ` — ${w.desc}` : ''}</option>
-                                                                 ))}
-                                                             </select>
-                                                         </div>
-
-                                                         <button
-                                                             onClick={() => setSearchMode('flight')}
-                                                             className="text-xs text-blue-500 hover:text-blue-700 font-medium mt-2 w-full text-center"
-                                                         >
-                                                             Have a flight number? Use that instead.
-                                                         </button>
-                                            </motion.div>
-                                        )}
-                                        </AnimatePresence>
+                                            <div>
+                                                <label className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1.5">Departure Date</label>
+                                                <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                                                    <PopoverTrigger asChild>
+                                                        <div className="flex items-center gap-2 rounded-xl px-3 py-2.5 cursor-pointer hover:opacity-80 transition-opacity"
+                                                            style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}>
+                                                            <Calendar className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                                                            <span className="flex-1 text-sm text-gray-900 font-medium">
+                                                                {departureDate ? new Date(departureDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Select date'}
+                                                            </span>
+                                                        </div>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-auto p-0" align="start">
+                                                        <CalendarComponent
+                                                            mode="single"
+                                                            selected={departureDate ? new Date(departureDate + 'T00:00:00') : undefined}
+                                                            onSelect={(date) => {
+                                                                if (date) {
+                                                                    setDepartureDate(date.toISOString().split('T')[0]);
+                                                                    setCalendarOpen(false);
+                                                                }
+                                                            }}
+                                                            disabled={(date) => date < new Date(getTodayStr())}
+                                                        />
+                                                    </PopoverContent>
+                                                </Popover>
+                                            </div>
+                                        </div>
                                     </motion.div>
                                 )}
 
@@ -540,7 +397,7 @@ export default function Engine() {
                                             style={{ background: '#f0f5ff', border: '1px solid #c7d7fd' }}>
                                             <Plane className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                                             <span className="text-xs font-bold text-blue-700">
-                                                {searchMode === 'route' ? `${fromAirport.toUpperCase()} → ${toAirport.toUpperCase()}` : flightNumber.toUpperCase()}
+                                                {flightNumber.toUpperCase()}
                                             </span>
                                             <span className="text-[10px] text-blue-400 ml-1">
                                                 {new Date(departureDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
@@ -572,27 +429,18 @@ export default function Engine() {
                                                 </div>
                                             ) : (
                                                 <div className="flex flex-col gap-2">
-                                                    {[...flightOptions].sort((a, b) => {
-                                                        const aIn = isInWindow(a.departure_time, departureWindow);
-                                                        const bIn = isInWindow(b.departure_time, departureWindow);
-                                                        if (aIn && !bIn) return -1;
-                                                        if (!aIn && bIn) return 1;
-                                                        return 0;
-                                                    }).map((f, i) => (
+                                                    {flightOptions.map((f, i) => (
                                                         <motion.button key={i}
-                                                             initial={{ opacity: 0, y: 12 }}
-                                                             animate={{ opacity: 1, y: 0 }}
-                                                             transition={{ delay: i * 0.08, duration: 0.3 }}
-                                                             onClick={() => handleSelectFlight(f)}
-                                                             className="w-full text-left rounded-xl px-4 py-3.5 transition-all duration-100 hover:scale-[1.01]"
-                                                             style={{ border: `1px solid ${isInWindow(f.departure_time, departureWindow) && departureWindow !== 'not_sure' ? '#bfdbfe' : '#e5e7eb'}`, background: isInWindow(f.departure_time, departureWindow) && departureWindow !== 'not_sure' ? '#f0f7ff' : '#f9fafb' }}
-                                                             whileHover={{ borderColor: '#93c5fd', background: '#eff6ff', transition: { duration: 0.1 } }}>
+                                                            initial={{ opacity: 0, y: 12 }}
+                                                            animate={{ opacity: 1, y: 0 }}
+                                                            transition={{ delay: i * 0.08, duration: 0.3 }}
+                                                            onClick={() => handleSelectFlight(f)}
+                                                            className="w-full text-left rounded-xl px-4 py-3.5 transition-all duration-100 hover:scale-[1.01]"
+                                                            style={{ border: '1px solid #e5e7eb', background: '#f9fafb' }}
+                                                            whileHover={{ borderColor: '#93c5fd', background: '#eff6ff', transition: { duration: 0.1 } }}>
                                                             <div className="flex items-center justify-between mb-2">
                                                                 <div className="flex items-center gap-3">
                                                                     <span className="text-xl font-black text-gray-900">{f.departure_time}</span>
-                                                                    {isInWindow(f.departure_time, departureWindow) && departureWindow !== 'not_sure' && (
-                                                                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-600">Preferred</span>
-                                                                    )}
                                                                     <div className="flex items-center gap-1">
                                                                         <div className="w-8 h-px bg-gray-300" />
                                                                         <Plane className="w-3 h-3 text-gray-400" />
@@ -609,10 +457,10 @@ export default function Engine() {
                                                                 <span className="text-[10px] text-gray-400">→</span>
                                                                 <span className="text-[11px] font-semibold text-gray-600">{f.destination_code}</span>
                                                                 <span className="text-[10px] text-gray-400 ml-2">· {f.terminal}</span>
-                                                                </div>
-                                                                </motion.button>
-                                                                ))}
-                                                                </div>
+                                                            </div>
+                                                        </motion.button>
+                                                    ))}
+                                                </div>
                                             )}
                                         </div>
                                     </motion.div>
