@@ -171,6 +171,8 @@ export default function Engine() {
                 departed: f.departed ?? false,
                 catchable: f.catchable ?? true,
                 time_warning: f.time_warning ?? null,
+                is_delayed: f.is_delayed ?? false,
+                scheduled_departure_local: f.scheduled_departure_local,
                 // Format display strings
                 duration: '', // We can calculate this later
                 terminal: f.departure_terminal ? `Terminal ${f.departure_terminal}` : 'Terminal TBD',
@@ -518,6 +520,11 @@ export default function Engine() {
                                                             <span className="text-[11px] font-semibold text-gray-600">{f.destination_code}</span>
                                                             <span className="text-[10px] text-gray-400 ml-2">· {f.terminal}</span>
                                                         </div>
+                                                        {f.is_delayed && f.scheduled_departure_local && (
+                                                            <p className="text-[10px] text-orange-500 font-medium mt-1">
+                                                                ⚠️ Delayed — originally {formatLocalTime(f.scheduled_departure_local)}
+                                                            </p>
+                                                        )}
                                                         {f.time_warning && !f.departed && (
                                                             <p className="text-[10px] text-amber-600 font-medium mt-1.5">⚠️ {f.time_warning}</p>
                                                         )}
