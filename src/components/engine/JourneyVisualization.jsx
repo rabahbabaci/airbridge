@@ -161,13 +161,21 @@ function SegmentRow({ seg, index, stepTime, isLast, hasNextNode }) {
                         border: '1px solid rgba(255,255,255,0.09)',
                     }}
                 >
-                    {/* Top row: emoji + label + time */}
+                    {/* Top row: icon + label + time */}
                     <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
-                            <span className="text-2xl leading-none">{getIcon(seg)}</span>
+                            <SegIcon seg={seg} size={34} />
                             <span className="text-base font-semibold text-white">{seg.label}</span>
                         </div>
-                        <span className="font-mono text-base font-semibold text-gray-300 shrink-0">{stepTime}</span>
+                        <span
+                            className="font-mono text-sm font-bold px-3 py-1 rounded-lg shrink-0"
+                            style={{
+                                background: 'rgba(96,165,250,0.13)',
+                                border: '1px solid rgba(96,165,250,0.28)',
+                                color: '#93c5fd',
+                                letterSpacing: '0.02em',
+                            }}
+                        >{stepTime}</span>
                     </div>
                     {/* Bottom row: advice + duration pill */}
                     {(seg.advice || seg.duration_minutes > 0) && (
