@@ -138,7 +138,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                             </div>
 
                             {/* TIMELINE */}
-                            <div className="px-6 py-6 flex flex-col">
+                            <div className="px-8 py-6 flex flex-col">
                                 {recommendation.segments.map((seg, i) => {
                                     const cumulativeBefore = recommendation.segments
                                         .slice(0, i)
