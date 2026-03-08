@@ -316,7 +316,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                     const globalOffset = rowIdx * ROW_SIZE;
                                     return (
                                         <div key={rowIdx} className={rowIdx > 0 ? 'mt-6 pt-6' : ''} style={rowIdx > 0 ? { borderTop: '1px solid rgba(255,255,255,0.06)' } : {}}>
-                                            <div className="flex items-start">
+                                            <div className="flex items-center">
                                                 {rowSegs.map((seg, i) => {
                                                     const globalIdx = globalOffset + i;
                                                     const cumulativeBefore = segments
