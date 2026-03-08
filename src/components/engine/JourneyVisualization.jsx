@@ -14,6 +14,16 @@ function addMinutesAndFormat(utcStr, minutes) {
     return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 }
 
+function parseDepartureAndGetBoardingTime(localTimeStr) {
+    if (!localTimeStr) return { boarding: '', departure: '' };
+    const match = localTimeStr.match(/(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})/);
+    if (!match) return { boarding: localTimeStr, departure: localTimeStr };
+    const d = new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3]), parseInt(match[4]), parseInt(match[5]));
+    const boardingDate = new Date(d.getTime() - 30 * 60000);
+    const fmt = (date) => date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    return { boarding: fmt(boardingDate), departure: fmt(d) };
+}
+
 function totalToHM(minutes) {
     const h = Math.floor(minutes / 60);
     const m = minutes % 60;
@@ -193,36 +203,39 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                 })}
 
                                 {/* Boarding final node */}
-                                {selectedFlight && (
-                                    <motion.div
-                                        initial={{ opacity: 0, x: -16 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: recommendation.segments.length * 0.1 + 0.15, duration: 0.35 }}
-                                        className="flex gap-4 relative mt-0"
-                                    >
-                                        {/* Line + Circle column */}
-                                        <div className="flex flex-col items-center" style={{ minWidth: 32 }}>
-                                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-base shrink-0 z-10"
-                                                style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)', boxShadow: '0 0 0 3px rgba(34,197,94,0.2)' }}>
-                                                ✓
-                                            </div>
-                                        </div>
-                                        <div className="flex-1 flex flex-col gap-1 pb-2">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-lg">✈️</span>
-                                                    <span className="text-base font-bold text-green-400">Boarding</span>
+                                {selectedFlight && (() => {
+                                    const { boarding, departure } = parseDepartureAndGetBoardingTime(selectedFlight.departure_time);
+                                    return (
+                                        <motion.div
+                                            initial={{ opacity: 0, x: -16 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: recommendation.segments.length * 0.1 + 0.15, duration: 0.35 }}
+                                            className="flex gap-4 relative mt-0"
+                                        >
+                                            {/* Line + Circle column */}
+                                            <div className="flex flex-col items-center" style={{ minWidth: 32 }}>
+                                                <div className="w-8 h-8 rounded-full flex items-center justify-center text-base shrink-0 z-10"
+                                                    style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)', boxShadow: '0 0 0 3px rgba(34,197,94,0.2)' }}>
+                                                    ✓
                                                 </div>
-                                                <span className="text-base font-bold text-green-300 shrink-0 ml-2">
-                                                    {formatUTCToLocal(selectedFlight.departure_time)}
-                                                </span>
                                             </div>
-                                            <p className="text-xs text-gray-500 ml-8">
-                                                Flight departs {formatUTCToLocal(selectedFlight.departure_time)}
-                                            </p>
-                                        </div>
-                                    </motion.div>
-                                )}
+                                            <div className="flex-1 flex flex-col gap-1 pb-2">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-lg">✈️</span>
+                                                        <span className="text-base font-bold text-green-400">Boarding</span>
+                                                    </div>
+                                                    <span className="text-base font-bold text-green-300 shrink-0 ml-2">
+                                                        {boarding}
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs text-gray-500 ml-8">
+                                                    Flight departs {departure}
+                                                </p>
+                                            </div>
+                                        </motion.div>
+                                    );
+                                })()}
                             </div>
 
                             {/* FOOTER STATS */}
@@ -241,6 +254,15 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                     <p className="text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1">Gate Cushion</p>
                                     <p className="text-2xl font-black text-green-400">{totalToHM(gateCushion)}</p>
                                 </div>
+                                {selectedFlight && (() => {
+                                    const { departure } = parseDepartureAndGetBoardingTime(selectedFlight.departure_time);
+                                    return (
+                                        <div className="text-right">
+                                            <p className="text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1">Departs</p>
+                                            <p className="text-2xl font-black text-white">{departure}</p>
+                                        </div>
+                                    );
+                                })()}
                             </motion.div>
                         </motion.div>
                     )}
