@@ -172,6 +172,7 @@ export default function Engine() {
                 canceled: f.canceled ?? false,
                 catchable: f.catchable ?? true,
                 time_warning: f.time_warning ?? null,
+                revised_departure_local: f.revised_departure_local,
                 is_delayed: f.is_delayed ?? false,
                 scheduled_departure_local: f.scheduled_departure_local,
                 // Format display strings
@@ -528,9 +529,9 @@ export default function Engine() {
                                                                 <span className="text-[11px] font-semibold text-gray-600">{f.destination_code}</span>
                                                                 <span className="text-[10px] text-gray-400 ml-2">· {f.terminal}</span>
                                                             </div>
-                                                            {f.is_delayed && f.scheduled_departure_local && (
+                                                            {f.is_delayed && f.revised_departure_local && (
                                                                 <p className="text-[10px] text-orange-500 font-medium mt-1">
-                                                                    ⚠️ Delayed — originally {formatLocalTime(f.scheduled_departure_local)}
+                                                                    ⚠️ Delayed — now expected {formatLocalTime(f.revised_departure_local)}
                                                                 </p>
                                                             )}
                                                             {f.time_warning && !isDisabled && (
