@@ -356,10 +356,12 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: segments.length * 0.07 + 0.3, duration: 0.4 }}
                                 className="w-full rounded-2xl overflow-hidden"
+                                style={{ border: '1px solid rgba(34,197,94,0.25)' }}
                             >
                                 {/* Boarding row */}
                                 <div
                                     className="flex items-center justify-between px-6 py-4 gap-4"
+                                    style={{ background: 'rgba(34,197,94,0.07)', borderBottom: '1px solid rgba(34,197,94,0.15)' }}
                                 >
                                     <div className="flex items-center gap-4">
                                         <div
