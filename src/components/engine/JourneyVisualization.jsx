@@ -429,23 +429,19 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                             >
                                 {rows.map((rowSegs, rowIdx) => {
                                     const globalOffset = rowIdx === 0 ? 0 : Math.ceil(displaySegments.length / 2);
-                                    // The last seg of row 0 is the "U-turn" segment (its duration connects to first of row 1)
-                                    const lastSegOfRow0 = rows.length > 1 ? rows[0][rows[0].length - 1] : null;
                                     return (
                                         <React.Fragment key={rowIdx}>
                                             {/* U-turn connector between rows */}
-                                            {rowIdx === 1 && lastSegOfRow0 && (() => {
-                                                // For TSA, parse walk time from advice
-                                                let uturnLabel = `${lastSegOfRow0.duration_minutes} min`;
-                                                if (lastSegOfRow0.id === 'tsa' && lastSegOfRow0.advice) {
-                                                    const walkMatch = lastSegOfRow0.advice.match(/walk:(\d+)/);
+                                            {rowIdx === 1 && (() => {
+                                                // The diagonal connects row 1's last step to row 2's first step (usually TSA)
+                                                // Show the walk-to-TSA time parsed from TSA's advice field
+                                                const firstOfRow2 = rowSegs[0];
+                                                let uturnLabel = '5 min'; // fallback
+                                                if (firstOfRow2?.id === 'tsa' && firstOfRow2.advice) {
+                                                    const walkMatch = firstOfRow2.advice.match(/walk:(\d+)/);
                                                     if (walkMatch) {
                                                         uturnLabel = `${walkMatch[1]} min`;
                                                     }
-                                                }
-                                                // For bag_drop, show its duration
-                                                if (lastSegOfRow0.id === 'bag_drop') {
-                                                    uturnLabel = `${lastSegOfRow0.duration_minutes} min`;
                                                 }
                                                 return <UTurnConnector label={uturnLabel} delay={globalOffset * 0.07 + 0.1} />;
                                             })()}
@@ -457,6 +453,11 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                                             .slice(0, globalIdx)
                                                             .reduce((sum, s) => sum + (s.duration_minutes || 0), 0);
                                                         const stepTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore);
+                                                        // For the last step (Gate), show arrival time (start + walk duration)
+                                                        const isLastStep = globalIdx === displaySegments.length - 1;
+                                                        const displayStepTime = isLastStep
+                                                            ? addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + seg.duration_minutes)
+                                                            : stepTime;
                                                         const delay = globalIdx * 0.07 + 0.15;
                                                         const isLastInRow = i === rowSegs.length - 1;
                                                         // For row 0, the last step connects via U-turn so no horizontal connector needed
@@ -466,6 +467,10 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                                         let displayLabel = seg.label;
                                                         if (seg.id === 'curb_to_checkin' && !hasBags) {
                                                             displayLabel = 'Curb to security';
+                                                        }
+                                                        // Rename Gate to "At Gate" to clarify it's arrival time
+                                                        if (seg.id === 'walk_to_gate') {
+                                                            displayLabel = 'At Gate';
                                                         }
 
                                                         // Parse TSA advice for walk/wait split (walk on arrow TO TSA, wait under TSA icon)
@@ -509,7 +514,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                                                 <StepNode
                                                                     seg={seg}
                                                                     index={globalIdx}
-                                                                    stepTime={stepTime}
+                                                                    stepTime={displayStepTime}
                                                                     delay={delay}
                                                                     displayLabel={displayLabel}
                                                                     waitLabel={waitLabel}
