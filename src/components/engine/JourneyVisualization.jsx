@@ -132,7 +132,7 @@ function StepNode({ seg, index, stepTime, delay, displayLabel, waitLabel, extraB
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay, duration: 0.35, ease: 'easeOut' }}
             className="flex flex-col items-center"
-            style={{ flex: '0 0 auto', width: 100 }}
+            style={{ flex: '0 0 auto', width: stepTime.includes('→') ? 140 : 100 }}
         >
             {/* Badge number */}
             <div
@@ -151,13 +151,14 @@ function StepNode({ seg, index, stepTime, delay, displayLabel, waitLabel, extraB
             <p className="text-[11px] font-semibold text-gray-300 mt-1.5 text-center leading-tight" style={{ maxWidth: 92 }}>{displayLabel}</p>
             {/* Shiny time chip */}
             <span
-                className="mt-1.5 font-mono text-[13px] font-bold px-2 py-0.5 rounded-lg"
+                className="mt-1.5 font-mono text-[11px] font-bold px-2 py-0.5 rounded-lg"
                 style={{
                     background: 'linear-gradient(135deg, rgba(96,165,250,0.22), rgba(139,92,246,0.18))',
                     border: '1px solid rgba(147,197,253,0.4)',
                     color: '#e0f2fe',
                     textShadow: '0 0 10px rgba(147,197,253,0.6)',
                     boxShadow: '0 0 8px rgba(96,165,250,0.15)',
+                    whiteSpace: 'nowrap',
                 }}
             >{stepTime}</span>
             {extraBadge && (
