@@ -387,6 +387,14 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                                             displayLabel = 'Curb to security';
                                                         }
 
+                                                        // TSA: show wait time under the node; connector shows next seg's duration
+                                                        const isTSA = seg.id === 'tsa';
+                                                        const nextSeg = rowSegs[i + 1] || segments[globalIdx + 1];
+                                                        const connectorLabel = isTSA && nextSeg
+                                                            ? `${nextSeg.duration_minutes} min`
+                                                            : `${seg.duration_minutes} min`;
+                                                        const waitLabel = isTSA ? `${seg.duration_minutes} min wait` : undefined;
+
                                                         return (
                                                             <React.Fragment key={seg.id || seg.label}>
                                                                 <StepNode
@@ -395,10 +403,11 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                                                     stepTime={stepTime}
                                                                     delay={delay}
                                                                     displayLabel={displayLabel}
+                                                                    waitLabel={waitLabel}
                                                                 />
                                                                 {showConnector && (
                                                                     <Connector
-                                                                        label={`${seg.duration_minutes} min`}
+                                                                        label={connectorLabel}
                                                                         delay={delay + 0.05}
                                                                     />
                                                                 )}
