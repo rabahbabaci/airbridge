@@ -371,6 +371,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
 
             </AnimatePresence>
             </div>
+            </div>
         </div>
     );
 }
