@@ -44,7 +44,7 @@ export default function JourneyVisualization({
 
     if (!showTimeline) {
         return (
-            <div className="text-center">
+            <div className="w-full max-w-lg mx-auto h-full flex flex-col items-center justify-center text-center min-h-0">
                 <h2 className="text-2xl font-bold text-white mb-2">Your journey<br />starts here</h2>
                 <p className="text-sm text-gray-500">Configure your trip on the left.<br />Your departure timeline will appear here.</p>
             </div>
@@ -67,8 +67,10 @@ export default function JourneyVisualization({
         ? formatDepartureDisplay(selectedFlight.departure_time)
         : '';
 
+    const timelineKey = recommendation?.computed_at ?? recommendation?.leave_home_at ?? 'timeline';
+
     return (
-        <div className="w-full max-w-lg mx-auto flex flex-col">
+        <div className="w-full max-w-lg mx-auto h-full flex flex-col min-h-0 overflow-y-auto" key={timelineKey}>
             {/* Hero */}
             <motion.div
                 initial={{ opacity: 0, y: 12 }}
