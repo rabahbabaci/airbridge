@@ -455,6 +455,12 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                                         const displayStepTime = isLastStep
                                                             ? addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + seg.duration_minutes)
                                                             : stepTime;
+                                                        // For TSA: show "arrival → exit" time range so user can follow the math
+                                                        let displayTimeLabel = displayStepTime;
+                                                        if (seg.id === 'tsa') {
+                                                            const tsaExitTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + seg.duration_minutes);
+                                                            displayTimeLabel = `${stepTime} → ${tsaExitTime}`;
+                                                        }
                                                         const delay = globalIdx * 0.07 + 0.15;
                                                         const isLastInRow = i === rowSegs.length - 1;
                                                         // For row 0, the last step connects via U-turn so no horizontal connector needed
@@ -513,7 +519,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                                                 <StepNode
                                                                     seg={seg}
                                                                     index={globalIdx}
-                                                                    stepTime={displayStepTime}
+                                                                    stepTime={displayTimeLabel}
                                                                     delay={delay}
                                                                     displayLabel={displayLabel}
                                                                     waitLabel={waitLabel}
