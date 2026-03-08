@@ -182,7 +182,7 @@ function UTurnConnector({ label, delay }) {
     const x1 = VW - 69; // left edge of right-side icon
     const y1 = 4;
     const x2 = 69;      // right edge of left-side icon (symmetric)
-    const y2 = VH + 60; // extend far down to reach TSA icon level
+    const y2 = VH + 160; // tip reaches down into the next row's icon level
 
     // Arrowhead geometry
     const angle = Math.atan2(y2 - y1, x2 - x1);
@@ -197,21 +197,22 @@ function UTurnConnector({ label, delay }) {
     const lx = ((x1 + x2) / 2 / VW) * 100;
     const ly = (y1 + y2) / 2;
 
+    const totalH = VH + 176;
+
     return (
         <motion.div
             initial={{ opacity: 0, scaleX: 0 }}
             animate={{ opacity: 1, scaleX: 1 }}
             transition={{ delay, duration: 0.4, ease: 'easeOut' }}
             className="w-full relative"
-            style={{ height: VH + 76, transformOrigin: 'right', overflow: 'visible' }}
+            style={{ height: totalH, transformOrigin: 'right', overflow: 'visible' }}
         >
             <svg
                 width="100%"
-                height={VH + 76}
-                viewBox={`0 0 ${VW} ${VH + 76}`}
-                style={{ position: 'absolute', inset: 0, overflow: 'visible' }}
+                height={totalH}
+                viewBox={`0 0 ${VW} ${totalH}`}
                 preserveAspectRatio="none"
-                style={{ position: 'absolute', inset: 0 }}
+                style={{ position: 'absolute', inset: 0, overflow: 'visible' }}
             >
                 <defs>
                     <linearGradient id="diag-grad" x1="1" y1="0" x2="0" y2="1">
