@@ -462,6 +462,13 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                                             const tsaExitTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + seg.duration_minutes);
                                                             displayTimeLabel = `${stepTime} → ${tsaExitTime}`;
                                                         }
+                                                        // For Bag Drop: show arrival → departure time range
+                                                        if (seg.id === 'bag_drop') {
+                                                            const dropMatch = seg.advice?.match(/drop:(\d+)/);
+                                                            const dropMin = dropMatch ? parseInt(dropMatch[1], 10) : seg.duration_minutes;
+                                                            const exitTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + dropMin);
+                                                            displayTimeLabel = `${stepTime} → ${exitTime}`;
+                                                        }
                                                         const delay = globalIdx * 0.07 + 0.15;
                                                         const isLastInRow = i === rowSegs.length - 1;
                                                         // For row 0, the last step connects via U-turn so no horizontal connector needed
@@ -489,10 +496,11 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                                             }
                                                         }
 
-                                                        // Bag Drop: show drop time under the step, walk_to_next on the connector after
+                                                        // Bag Drop: show drop time under the step, walk_to_next on the diagonal
                                                         if (seg.id === 'bag_drop') {
-                                                            waitLabel = `${seg.duration_minutes} min`;
+                                                            const dropMatch = seg.advice?.match(/drop:(\d+)/);
                                                             const walkMatch = seg.advice?.match(/walk_to_next:(\d+)/);
+                                                            waitLabel = dropMatch ? `${dropMatch[1]} min` : `${seg.duration_minutes} min`;
                                                             if (walkMatch) {
                                                                 connectorLabel = `${walkMatch[1]} min`;
                                                             }
