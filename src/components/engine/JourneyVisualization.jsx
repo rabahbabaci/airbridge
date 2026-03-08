@@ -69,8 +69,8 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
         : 0;
 
     return (
-        <div className="w-full min-h-full flex items-center justify-center py-8 px-4">
-            <div className="w-full max-w-md">
+        <div className="w-full min-h-full py-8 px-8">
+            <div className="w-full max-w-2xl mx-auto">
                 <AnimatePresence mode="wait">
 
                     {/* ── IDLE STATE ── */}
