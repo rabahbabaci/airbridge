@@ -312,7 +312,6 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1, duration: 0.4 }}
                                 className="w-full rounded-2xl px-5 py-4"
-                                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)' }}
                             >
                                 {rows.map((rowSegs, rowIdx) => {
                                     const globalOffset = rowIdx === 0 ? 0 : Math.ceil(segments.length / 2);
