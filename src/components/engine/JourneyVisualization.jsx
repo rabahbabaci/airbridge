@@ -235,7 +235,7 @@ function UTurnConnector({ label, delay }) {
                     position: 'absolute',
                     left: `${lx}%`,
                     top: ly,
-                    transform: 'translate(-50%, -50%)',
+                    transform: `translate(-50%, -50%) rotate(${(angle * 180) / Math.PI}deg)`,
                     pointerEvents: 'none',
                 }}
             >
