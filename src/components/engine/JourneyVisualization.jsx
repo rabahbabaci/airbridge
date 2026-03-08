@@ -152,7 +152,7 @@ function Connector({ label, delay }) {
             animate={{ opacity: 1, scaleX: 1 }}
             transition={{ delay, duration: 0.4, ease: 'easeOut' }}
             className="flex-1 relative"
-            style={{ transformOrigin: 'left', minHeight: 120 }}
+            style={{ transformOrigin: 'left', minHeight: 130 }}
         >
             {/* Centered connector group: label above, arrow line below */}
             <div
