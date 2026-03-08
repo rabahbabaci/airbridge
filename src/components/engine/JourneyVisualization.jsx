@@ -283,6 +283,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.45, ease: 'easeOut' }}
                                 className="w-full rounded-2xl px-6 py-4"
+                                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
                             >
                                 <p className="text-xs font-bold uppercase mb-0.5" style={{ color: '#60a5fa', letterSpacing: '0.22em' }}>
                                     Leave Home By
