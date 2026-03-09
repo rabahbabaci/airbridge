@@ -335,9 +335,8 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
         : [];
 
     return (
-        <div className="w-full h-full px-6 py-5 flex flex-col items-center relative" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1600&q=80)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
-            <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0, background: 'linear-gradient(to bottom, rgba(9,9,11,0.72) 0%, rgba(9,9,11,0.55) 50%, rgba(9,9,11,0.80) 100%)' }} />
-            <div className="w-full flex flex-col flex-1 relative z-10" style={{ maxWidth: 960 }}>
+        <div className="w-full h-full px-6 py-5 flex flex-col items-center">
+            <div className="w-full flex flex-col flex-1" style={{ maxWidth: 960 }}>
                 <AnimatePresence mode="wait">
 
                     {/* ── IDLE ── */}
@@ -349,7 +348,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                             exit={{ opacity: 0, scale: 0.97 }}
                             transition={{ duration: 0.5 }}
                             className="flex flex-col items-center justify-center text-center gap-7 flex-1 h-full"
-                            style={{ position: 'relative', zIndex: 10, minHeight: '60vh' }}
+                            style={{ minHeight: '60vh' }}
                         >
                             <motion.div
                                 animate={{ y: [0, -12, 0] }}
