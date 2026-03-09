@@ -39,6 +39,15 @@ function totalToHM(minutes) {
     return h > 0 ? `${h}h ${String(m).padStart(2, '0')}m` : `${m}m`;
 }
 
+function formatDuration(minutes) {
+    if (minutes >= 60) {
+        const h = Math.floor(minutes / 60);
+        const m = minutes % 60;
+        return m > 0 ? `${h}h ${m}m` : `${h}h`;
+    }
+    return `${minutes} min`;
+}
+
 // Parse TSA advice "walk:3|wait:45|peak" → { walkMin, waitMin, period }
 function parseTsaAdvice(advice) {
     if (!advice) return null;
@@ -124,219 +133,82 @@ function AnimatedTime({ value }) {
     );
 }
 
-// ── Horizontal step node ──────────────────────────────────────────────────────
-function StepNode({ seg, index, stepTime, delay, displayLabel, waitLabel, extraBadge }) {
+// ── Vertical step and connector ───────────────────────────────────────────────
+function VerticalStep({ seg, index, stepTime, delay, displayLabel, waitLabel, extraBadge, isLast, subtitle }) {
     return (
         <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10, height: 0, marginBottom: 0 }}
             transition={{ delay, duration: 0.35, ease: 'easeOut' }}
-            className="flex flex-col items-center"
-            style={{ flex: '0 0 auto', width: stepTime.includes('→') ? 140 : 100 }}
+            layout
+            className="w-full rounded-xl px-5 py-5 flex items-center gap-4"
+            style={{
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.08)',
+            }}
         >
-            {/* Badge number */}
-            <div
-                className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white mb-1.5 shrink-0"
-                style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', boxShadow: '0 0 0 2px rgba(99,102,241,0.3)' }}
-            >
-                {index + 1}
+            {/* Left: number + icon side by side */}
+            <div className="flex items-center gap-2 shrink-0">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                    style={{ background: isLast ? 'linear-gradient(135deg,#22c55e,#16a34a)' : 'linear-gradient(135deg,#6366f1,#8b5cf6)', boxShadow: '0 0 0 2px rgba(99,102,241,0.2)' }}>
+                    {isLast ? '✓' : index + 1}
+                </div>
+                <SegIcon seg={seg} size={48} />
             </div>
-            {/* Icon */}
-            <SegIcon seg={seg} size={56} />
-            {/* Wait time under icon (e.g. TSA wait, bag drop) */}
-            {waitLabel && (
-                <p className="text-[10px] font-semibold text-amber-400/90 mt-1 text-center leading-tight" style={{ maxWidth: 92 }}>{waitLabel}</p>
-            )}
-            {/* Label */}
-            <p className="text-[11px] font-semibold text-gray-300 mt-1.5 text-center leading-tight" style={{ maxWidth: 92 }}>{displayLabel}</p>
-            {/* Shiny time chip */}
-            <span
-                className="mt-1.5 font-mono text-[11px] font-bold px-2 py-0.5 rounded-lg"
-                style={{
-                    background: 'linear-gradient(135deg, rgba(96,165,250,0.22), rgba(139,92,246,0.18))',
-                    border: '1px solid rgba(147,197,253,0.4)',
-                    color: '#e0f2fe',
-                    textShadow: '0 0 10px rgba(147,197,253,0.6)',
-                    boxShadow: '0 0 8px rgba(96,165,250,0.15)',
-                    whiteSpace: 'nowrap',
-                }}
-            >{stepTime}</span>
-            {extraBadge && (
-                <span className="mt-1 text-[9px] font-semibold px-2 py-0.5 rounded-full"
-                    style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', color: '#4ade80' }}>
-                    {extraBadge}
-                </span>
-            )}
-        </motion.div>
-    );
-}
 
-// ── Diagonal connector between row 1 and row 2 ───────────────────────────────
-// Starts just left of the right-side icon (row 1), ends just right of the left-side icon (row 2)
-// Icon center in the StepNode is roughly at x=46px from the node's left edge.
-// The connector uses the same solid gradient arrow style as the horizontal Connector.
-function UTurnConnector({ label, delay }) {
-    const VW = 500;
-    const VH = 60;
-    // x1: left edge of right icon = where row 1 arrow tip ends (icon center ~46px from right, icon radius ~23px → left edge at VW - 46 - 23 = VW - 69)
-    // x2: right edge of left icon = where row 2 arrow starts (icon center ~46px from left, right edge at 46 + 23 = 69)
-    const x1 = VW - 69; // left edge of right-side icon
-    const y1 = 4;
-    const x2 = 69;      // right edge of left-side icon (symmetric)
-    const y2 = VH + 60; // extend far down to reach TSA icon level
+            {/* Center: label + details */}
+            <div className="flex-1 min-w-0">
+                <p className="text-base font-semibold text-white">{displayLabel}</p>
+                {subtitle && <p className="text-[11px] text-gray-500 mt-0.5">{subtitle}</p>}
+                {waitLabel && (
+                    <p className="text-xs font-medium text-amber-400 mt-0.5">{waitLabel}</p>
+                )}
+                {extraBadge && (
+                    <span className="inline-block mt-1 text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                        style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', color: '#4ade80' }}>
+                        {extraBadge}
+                    </span>
+                )}
+            </div>
 
-    // Arrowhead geometry
-    const angle = Math.atan2(y2 - y1, x2 - x1);
-    const aLen = 10;
-    const aSpread = 0.38;
-    const ax1 = x2 - aLen * Math.cos(angle - aSpread);
-    const ay1 = y2 - aLen * Math.sin(angle - aSpread);
-    const ax2 = x2 - aLen * Math.cos(angle + aSpread);
-    const ay2 = y2 - aLen * Math.sin(angle + aSpread);
-
-    // Label at midpoint
-    const lx = ((x1 + x2) / 2 / VW) * 100;
-    const ly = (y1 + y2) / 2;
-
-    return (
-        <motion.div
-            initial={{ opacity: 0, scaleX: 0 }}
-            animate={{ opacity: 1, scaleX: 1 }}
-            transition={{ delay, duration: 0.4, ease: 'easeOut' }}
-            className="w-full relative"
-            style={{ height: VH + 76, transformOrigin: 'right', overflow: 'visible' }}
-        >
-            <svg
-                width="100%"
-                height={VH + 76}
-                viewBox={`0 0 ${VW} ${VH + 76}`}
-                style={{ position: 'absolute', inset: 0, overflow: 'visible' }}
-                preserveAspectRatio="none"
-                style={{ position: 'absolute', inset: 0 }}
-            >
-                <defs>
-                    <linearGradient id="diag-grad" x1="1" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="rgba(99,102,241,0.6)" />
-                        <stop offset="100%" stopColor="rgba(139,92,246,0.4)" />
-                    </linearGradient>
-                </defs>
-                <line
-                    x1={x1} y1={y1} x2={x2} y2={y2}
-                    stroke="url(#diag-grad)"
-                    strokeWidth="1.5"
-                />
-                <polygon
-                    points={`${x2},${y2} ${ax1},${ay1} ${ax2},${ay2}`}
-                    fill="rgba(139,92,246,0.5)"
-                />
-            </svg>
-            {/* Duration label centered on the diagonal */}
-            <div
-                style={{
-                    position: 'absolute',
-                    left: `${lx}%`,
-                    top: ly,
-                    transform: `translate(-50%, -140%) rotate(${(angle * 180) / Math.PI + 180}deg)`,
-                    pointerEvents: 'none',
-                }}
-            >
-                <span
-                    className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
+            {/* Right: time */}
+            <div className="shrink-0 text-right">
+                <p className="font-mono text-base font-bold px-2.5 py-1 rounded-lg"
                     style={{
-                        background: 'rgba(99,102,241,0.14)',
-                        border: '1px solid rgba(99,102,241,0.25)',
-                        color: '#a5b4fc',
+                        background: 'linear-gradient(135deg, rgba(96,165,250,0.18), rgba(139,92,246,0.14))',
+                        border: '1px solid rgba(147,197,253,0.3)',
+                        color: '#e0f2fe',
                         whiteSpace: 'nowrap',
-                    }}
-                >
-                    {label}
-                </span>
+                    }}>
+                    {stepTime}
+                </p>
             </div>
         </motion.div>
     );
 }
 
-// ── Connector line between steps (vertically centered at icon level) ──────────
-// StepNode layout: badge(24) + mb(6) + icon(46) → icon center at 24+6+23 = 53px
-// We use absolute positioning to center the connector at that exact vertical position.
-function Connector({ label, delay }) {
+function VerticalConnector({ label, delay }) {
     return (
         <motion.div
-            initial={{ opacity: 0, scaleX: 0 }}
-            animate={{ opacity: 1, scaleX: 1 }}
-            transition={{ delay, duration: 0.4, ease: 'easeOut' }}
-            className="flex-1 relative"
-            style={{ transformOrigin: 'left', minHeight: 130 }}
-        >
-            {/* Centered connector group: label above, arrow line below */}
-            <div
-                className="absolute left-0 right-0 flex flex-col items-center"
-                style={{ top: 58, transform: 'translateY(-50%)' }}
-            >
-                <span
-                    className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full mb-1"
-                    style={{
-                        background: 'rgba(99,102,241,0.14)',
-                        border: '1px solid rgba(99,102,241,0.25)',
-                        color: '#a5b4fc',
-                        whiteSpace: 'nowrap',
-                    }}
-                >
-                    {label}
-                </span>
-                <div className="flex items-center w-full">
-                    <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, rgba(99,102,241,0.6), rgba(139,92,246,0.4))' }} />
-                    <div style={{ width: 0, height: 0, borderTop: '4px solid transparent', borderBottom: '4px solid transparent', borderLeft: '6px solid rgba(139,92,246,0.5)' }} />
-                </div>
-            </div>
-        </motion.div>
-    );
-}
-
-// ── Mobile step card and connector ───────────────────────────────────────────
-function MobileStepCard({ seg, index, stepTime, delay, displayLabel, waitLabel, extraBadge }) {
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay, duration: 0.3 }}
-            className="w-full rounded-xl px-4 py-3 flex items-center gap-3"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
-        >
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-                <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-                    style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)' }}>
-                    {index + 1}
-                </div>
-                <SegIcon seg={seg} size={40} />
-                <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-white">{displayLabel}</p>
-                    {waitLabel && <p className="text-xs font-medium text-amber-400">{waitLabel}</p>}
-                    {extraBadge && <p className="text-xs font-medium text-green-400">{extraBadge}</p>}
-                </div>
-            </div>
-            <div className="text-right shrink-0">
-                <p className="font-mono text-sm font-bold text-blue-200">{stepTime}</p>
-            </div>
-        </motion.div>
-    );
-}
-
-function MobileConnector({ label, delay }) {
-    return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay, duration: 0.3 }}
+            initial={{ opacity: 0, scaleY: 0 }}
+            animate={{ opacity: 1, scaleY: 1 }}
+            transition={{ delay, duration: 0.25 }}
             className="flex items-center justify-center py-1"
+            style={{ transformOrigin: 'top' }}
         >
-            <div className="flex flex-col items-center gap-0.5">
-                <div className="w-px h-3" style={{ background: 'rgba(139,92,246,0.4)' }} />
-                <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full"
-                    style={{ background: 'rgba(99,102,241,0.14)', border: '1px solid rgba(99,102,241,0.25)', color: '#a5b4fc' }}>
-                    {label}
+            <div className="flex flex-col items-center">
+                <div className="w-px h-4" style={{ background: 'linear-gradient(to bottom, rgba(99,102,241,0.5), rgba(139,92,246,0.3))' }} />
+                <span className="text-[10px] font-semibold px-3 py-1 rounded-full my-0.5"
+                    style={{
+                        background: 'rgba(99,102,241,0.1)',
+                        border: '1px solid rgba(99,102,241,0.2)',
+                        color: '#a5b4fc',
+                        whiteSpace: 'nowrap',
+                    }}>
+                    ↓ {label}
                 </span>
-                <div className="w-px h-3" style={{ background: 'rgba(139,92,246,0.4)' }} />
+                <div className="w-px h-4" style={{ background: 'linear-gradient(to bottom, rgba(139,92,246,0.3), rgba(99,102,241,0.5))' }} />
             </div>
         </motion.div>
     );
@@ -344,13 +216,6 @@ function MobileConnector({ label, delay }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 export default function JourneyVisualization({ locked, recommendation, selectedFlight, transport, profile, confidenceColorMap, onReady }) {
-
-    const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
-    useEffect(() => {
-        const handleResize = () => setIsMobile(window.innerWidth < 768);
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
 
     useEffect(() => {
         if (locked && recommendation && onReady) {
@@ -384,15 +249,10 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
     const segments = recommendation?.segments || [];
     const comfortBuffer = segments.find(s => s.id === 'comfort_buffer');
     const displaySegments = segments.filter(s => s.id !== 'comfort_buffer');
-    const hasBags = displaySegments.some(s => s.id === 'bag_drop');
-    const topCount = Math.ceil(displaySegments.length / 2);
-    const rows = displaySegments.length > 0
-        ? [displaySegments.slice(0, topCount), displaySegments.slice(topCount)].filter(r => r.length > 0)
-        : [];
 
     return (
         <div className="w-full h-full px-6 py-5 flex flex-col items-center">
-            <div className="w-full flex flex-col flex-1" style={{ maxWidth: 960 }}>
+            <div className="w-full mx-auto flex flex-col flex-1" style={{ maxWidth: 720 }}>
                 <AnimatePresence mode="wait">
 
                     {/* ── IDLE ── */}
@@ -504,217 +364,101 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                 </motion.div>
                             )}
 
-                            {/* ── STEPS ── */}
+                            {/* ── VERTICAL STEPS ── */}
                             <motion.div
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1, duration: 0.4 }}
-                                className="w-full rounded-2xl px-3 md:px-5 py-4"
+                                className="w-full py-2"
                             >
-                                {isMobile ? (
-                                    /* ── MOBILE VERTICAL LAYOUT ── */
-                                    <div className="flex flex-col gap-0">
-                                        {displaySegments.map((seg, globalIdx) => {
-                                            const cumulativeBefore = displaySegments
-                                                .slice(0, globalIdx)
-                                                .reduce((sum, s) => sum + (s.duration_minutes || 0), 0);
-                                            const stepTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore);
-                                            const delay = globalIdx * 0.06 + 0.15;
+                                <AnimatePresence mode="sync">
+                                    {displaySegments.map((seg, globalIdx) => {
+                                        const cumulativeBefore = displaySegments
+                                            .slice(0, globalIdx)
+                                            .reduce((sum, s) => sum + (s.duration_minutes || 0), 0);
+                                        const stepTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore);
+                                        const delay = globalIdx * 0.06 + 0.15;
 
-                                            let displayLabel = seg.label;
-                                            if (seg.id === 'walk_to_gate') displayLabel = 'At Gate';
+                                        let displayLabel = seg.label;
+                                        if (seg.id === 'walk_to_gate') displayLabel = 'At Gate';
 
-                                            // Last step shows arrival time
-                                            const isLastStep = globalIdx === displaySegments.length - 1;
-                                            let displayStepTime = isLastStep
-                                                ? addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + seg.duration_minutes)
-                                                : stepTime;
+                                        // Last step shows arrival time (after walk)
+                                        const isLastStep = globalIdx === displaySegments.length - 1;
+                                        let displayStepTime = isLastStep
+                                            ? addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + seg.duration_minutes)
+                                            : stepTime;
 
-                                            let waitLabel = undefined;
+                                        let waitLabel = undefined;
 
-                                            // TSA time range
-                                            if (seg.id === 'tsa') {
-                                                const waitMatch = seg.advice?.match(/wait:(\d+)/);
-                                                const periodMatch = seg.advice?.match(/\|([^|]+)$/);
-                                                const waitMin = waitMatch ? parseInt(waitMatch[1], 10) : seg.duration_minutes;
-                                                const period = periodMatch ? periodMatch[1].trim() : '';
-                                                waitLabel = `${waitMin} min${period ? ' · ' + period : ''}`;
-                                                const tsaExitTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + seg.duration_minutes);
-                                                displayStepTime = `${stepTime} → ${tsaExitTime}`;
+                                        // TSA: show time range and wait info
+                                        if (seg.id === 'tsa') {
+                                            const waitMatch = seg.advice?.match(/wait:(\d+)/);
+                                            const periodMatch = seg.advice?.match(/\|([^|]+)$/);
+                                            const waitMin = waitMatch ? parseInt(waitMatch[1], 10) : seg.duration_minutes;
+                                            const period = periodMatch ? periodMatch[1].trim() : '';
+                                            waitLabel = `${formatDuration(waitMin)} wait${period ? ' · ' + period : ''}`;
+                                            const tsaExitTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + seg.duration_minutes);
+                                            displayStepTime = `${stepTime} → ${tsaExitTime}`;
+                                        }
+
+                                        // Bag Drop: show time range and drop time
+                                        if (seg.id === 'bag_drop') {
+                                            const dropMatch = seg.advice?.match(/drop:(\d+)/);
+                                            const dropMin = dropMatch ? parseInt(dropMatch[1], 10) : seg.duration_minutes;
+                                            waitLabel = `${formatDuration(dropMin)} drop`;
+                                            const exitTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + dropMin);
+                                            displayStepTime = `${stepTime} → ${exitTime}`;
+                                        }
+
+                                        // Gate: comfort buffer badge
+                                        const isGateStep = seg.id === 'walk_to_gate';
+                                        const extraBadge = (isGateStep && comfortBuffer)
+                                            ? `+${formatDuration(comfortBuffer.duration_minutes)} buffer`
+                                            : undefined;
+
+                                        // Subtitle for transport / at_airport
+                                        let subtitle = undefined;
+                                        if (seg.id === 'transport') {
+                                            subtitle = seg.advice; // e.g. "31 mins — 23.8 mi"
+                                        }
+                                        if (seg.id === 'at_airport') {
+                                            subtitle = seg.advice?.replace(/walk_to_next:\d+/, '').replace(/\|/g, '').trim() || undefined;
+                                        }
+
+                                        // Connector label to NEXT step
+                                        let connectorLabel = null;
+                                        if (globalIdx < displaySegments.length - 1) {
+                                            if (seg.id === 'at_airport' || seg.id === 'bag_drop') {
+                                                const walkMatch = seg.advice?.match(/walk_to_next:(\d+)/);
+                                                connectorLabel = walkMatch ? `${formatDuration(parseInt(walkMatch[1], 10))} walk` : null;
+                                            } else if (seg.id === 'tsa') {
+                                                const nextSeg = displaySegments[globalIdx + 1];
+                                                connectorLabel = nextSeg ? `${formatDuration(nextSeg.duration_minutes)} walk to gate` : null;
+                                            } else if (seg.id === 'transport') {
+                                                connectorLabel = formatDuration(seg.duration_minutes);
                                             }
+                                        }
 
-                                            // Bag Drop time range
-                                            if (seg.id === 'bag_drop') {
-                                                const dropMatch = seg.advice?.match(/drop:(\d+)/);
-                                                const dropMin = dropMatch ? parseInt(dropMatch[1], 10) : seg.duration_minutes;
-                                                waitLabel = `${dropMin} min`;
-                                                const exitTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + dropMin);
-                                                displayStepTime = `${stepTime} → ${exitTime}`;
-                                            }
-
-                                            // Gate: comfort buffer badge
-                                            const isGateStep = seg.id === 'walk_to_gate';
-                                            const extraBadge = (isGateStep && comfortBuffer)
-                                                ? `+${comfortBuffer.duration_minutes} min buffer`
-                                                : undefined;
-
-                                            // Connector label (walking time to next step)
-                                            let connectorLabel = null;
-                                            if (globalIdx < displaySegments.length - 1) {
-                                                if (seg.id === 'at_airport' || seg.id === 'bag_drop') {
-                                                    const walkMatch = seg.advice?.match(/walk_to_next:(\d+)/);
-                                                    connectorLabel = walkMatch ? `${walkMatch[1]} min walk` : `${seg.duration_minutes} min`;
-                                                } else if (seg.id === 'tsa') {
-                                                    const nextSeg = displaySegments[globalIdx + 1];
-                                                    connectorLabel = nextSeg ? `${nextSeg.duration_minutes} min walk` : null;
-                                                } else {
-                                                    connectorLabel = `${seg.duration_minutes} min`;
-                                                }
-                                            }
-
-                                            return (
-                                                <React.Fragment key={seg.id || seg.label}>
-                                                    <MobileStepCard
-                                                        seg={seg}
-                                                        index={globalIdx}
-                                                        stepTime={displayStepTime}
-                                                        delay={delay}
-                                                        displayLabel={displayLabel}
-                                                        waitLabel={waitLabel}
-                                                        extraBadge={extraBadge}
-                                                    />
-                                                    {connectorLabel && globalIdx < displaySegments.length - 1 && (
-                                                        <MobileConnector label={connectorLabel} delay={delay + 0.03} />
-                                                    )}
-                                                </React.Fragment>
-                                            );
-                                        })}
-                                    </div>
-                                ) : (
-                                    /* ── DESKTOP HORIZONTAL LAYOUT ── */
-                                    <>
-                                        {rows.map((rowSegs, rowIdx) => {
-                                            const globalOffset = rowIdx === 0 ? 0 : Math.ceil(displaySegments.length / 2);
-                                            return (
-                                                <React.Fragment key={rowIdx}>
-                                                    {/* U-turn connector between rows */}
-                                                    {rowIdx === 1 && (() => {
-                                                        // Diagonal connector: get walk_to_next from the last segment of row 1
-                                                        const lastOfRow1 = rows[0][rows[0].length - 1];
-                                                        let uturnLabel = '3 min'; // fallback
-                                                        const walkMatch = lastOfRow1?.advice?.match(/walk_to_next:(\d+)/);
-                                                        if (walkMatch) {
-                                                            uturnLabel = `${walkMatch[1]} min`;
-                                                        }
-                                                        return <UTurnConnector label={uturnLabel} delay={globalOffset * 0.07 + 0.1} />;
-                                                    })()}
-                                                    <div className={rowIdx > 0 ? 'mt-1' : ''}>
-                                                        <div className="flex items-center">
-                                                            {rowSegs.map((seg, i) => {
-                                                                const globalIdx = globalOffset + i;
-                                                                const cumulativeBefore = displaySegments
-                                                                    .slice(0, globalIdx)
-                                                                    .reduce((sum, s) => sum + (s.duration_minutes || 0), 0);
-                                                                const stepTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore);
-                                                                // Last step (Gate): show arrival time (after walk) not start time
-                                                                const isLastStep = globalIdx === displaySegments.length - 1;
-                                                                const displayStepTime = isLastStep
-                                                                    ? addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + seg.duration_minutes)
-                                                                    : stepTime;
-                                                                // For TSA: show "arrival → exit" time range so user can follow the math
-                                                                let displayTimeLabel = displayStepTime;
-                                                                if (seg.id === 'tsa') {
-                                                                    const tsaExitTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + seg.duration_minutes);
-                                                                    displayTimeLabel = `${stepTime} → ${tsaExitTime}`;
-                                                                }
-                                                                // For Bag Drop: show arrival → departure time range
-                                                                if (seg.id === 'bag_drop') {
-                                                                    const dropMatch = seg.advice?.match(/drop:(\d+)/);
-                                                                    const dropMin = dropMatch ? parseInt(dropMatch[1], 10) : seg.duration_minutes;
-                                                                    const exitTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + dropMin);
-                                                                    displayTimeLabel = `${stepTime} → ${exitTime}`;
-                                                                }
-                                                                const delay = globalIdx * 0.07 + 0.15;
-                                                                const isLastInRow = i === rowSegs.length - 1;
-                                                                // For row 0, the last step connects via U-turn so no horizontal connector needed
-                                                                const showConnector = !isLastInRow || rowIdx < rows.length - 1 ? !isLastInRow : false;
-
-                                                                // Rename curb_to_checkin if no bags
-                                                                let displayLabel = seg.label;
-                                                                if (seg.id === 'curb_to_checkin' && !hasBags) {
-                                                                    displayLabel = 'Curb to security';
-                                                                }
-                                                                // Rename Gate to "At Gate" to clarify it's arrival time
-                                                                if (seg.id === 'walk_to_gate') {
-                                                                    displayLabel = 'At Gate';
-                                                                }
-
-                                                                // Default connector label
-                                                                let connectorLabel = `${seg.duration_minutes} min`;
-                                                                let waitLabel = undefined;
-
-                                                                // At Airport: walk_to_next goes on the connector after this step
-                                                                if (seg.id === 'at_airport') {
-                                                                    const walkMatch = seg.advice?.match(/walk_to_next:(\d+)/);
-                                                                    if (walkMatch) {
-                                                                        connectorLabel = `${walkMatch[1]} min`;
-                                                                    }
-                                                                }
-
-                                                                // Bag Drop: show drop time under the step, walk_to_next on the diagonal
-                                                                if (seg.id === 'bag_drop') {
-                                                                    const dropMatch = seg.advice?.match(/drop:(\d+)/);
-                                                                    const walkMatch = seg.advice?.match(/walk_to_next:(\d+)/);
-                                                                    waitLabel = dropMatch ? `${dropMatch[1]} min` : `${seg.duration_minutes} min`;
-                                                                    if (walkMatch) {
-                                                                        connectorLabel = `${walkMatch[1]} min`;
-                                                                    }
-                                                                }
-
-                                                                // TSA: show wait time under the step, connector after shows walk to gate
-                                                                if (seg.id === 'tsa') {
-                                                                    const waitMatch = seg.advice?.match(/wait:(\d+)/);
-                                                                    const periodMatch = seg.advice?.match(/\|([^|]+)$/);
-                                                                    const waitMin = waitMatch ? parseInt(waitMatch[1], 10) : seg.duration_minutes;
-                                                                    const period = periodMatch ? periodMatch[1].trim() : '';
-                                                                    waitLabel = `${waitMin} min${period ? ' · ' + period : ''}`;
-                                                                    // Connector after TSA shows next segment's duration (walk to gate)
-                                                                    const nextSeg = displaySegments[globalIdx + 1];
-                                                                    connectorLabel = nextSeg ? `${nextSeg.duration_minutes} min` : '';
-                                                                }
-                                                                // Gate step: show comfort buffer as extra badge if present
-                                                                const isGateStep = seg.id === 'walk_to_gate';
-                                                                const extraBadge = (isGateStep && comfortBuffer)
-                                                                    ? `+${comfortBuffer.duration_minutes} min buffer`
-                                                                    : undefined;
-
-                                                                return (
-                                                                    <React.Fragment key={seg.id || seg.label}>
-                                                                        <StepNode
-                                                                            seg={seg}
-                                                                            index={globalIdx}
-                                                                            stepTime={displayTimeLabel}
-                                                                            delay={delay}
-                                                                            displayLabel={displayLabel}
-                                                                            waitLabel={waitLabel}
-                                                                            extraBadge={extraBadge}
-                                                                        />
-                                                                        {showConnector && (
-                                                                            <Connector
-                                                                                label={connectorLabel}
-                                                                                delay={delay + 0.05}
-                                                                            />
-                                                                        )}
-                                                                    </React.Fragment>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    </div>
-                                                </React.Fragment>
-                                            );
-                                        })}
-                                    </>
-                                )}
+                                        return (
+                                            <React.Fragment key={seg.id || seg.label}>
+                                                <VerticalStep
+                                                    seg={seg}
+                                                    index={globalIdx}
+                                                    stepTime={displayStepTime}
+                                                    delay={delay}
+                                                    displayLabel={displayLabel}
+                                                    waitLabel={waitLabel}
+                                                    extraBadge={extraBadge}
+                                                    isLast={isLastStep}
+                                                    subtitle={subtitle}
+                                                />
+                                                {connectorLabel && globalIdx < displaySegments.length - 1 && (
+                                                    <VerticalConnector label={connectorLabel} delay={delay + 0.03} />
+                                                )}
+                                            </React.Fragment>
+                                        );
+                                    })}
+                                </AnimatePresence>
                             </motion.div>
 
                             {/* ── BOARDING + STATS CARD ── */}
