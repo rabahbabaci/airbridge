@@ -335,7 +335,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
         : [];
 
     return (
-        <div className="w-full h-full px-6 py-5 flex flex-col items-center">
+        <div className="w-full h-full px-6 py-5 flex flex-col items-center" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1600&q=80)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
             <div className="w-full flex flex-col flex-1" style={{ maxWidth: 960 }}>
                 <AnimatePresence mode="wait">
 
