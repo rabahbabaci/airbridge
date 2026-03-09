@@ -339,7 +339,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                     )}
 
                     {/* ── RESULT ── */}
-                    {showResult && (
+                    {locked && recommendation && (
                         <motion.div
                             key="result"
                             initial={{ opacity: 0, y: 12 }}
