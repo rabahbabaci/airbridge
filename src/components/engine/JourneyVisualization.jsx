@@ -120,7 +120,7 @@ function AnimatedTime({ value }) {
             transition={{ duration: 0.35, ease: 'easeInOut' }}
             className="font-extrabold leading-none mb-2"
             style={{
-                fontSize: 64,
+                fontSize: 'clamp(36px, 9vw, 64px)',
                 letterSpacing: '-3px',
                 background: 'linear-gradient(135deg, #ffffff 40%, #93c5fd 100%)',
                 WebkitBackgroundClip: 'text',
@@ -142,7 +142,7 @@ function VerticalStep({ seg, index, stepTime, delay, displayLabel, waitLabel, ex
             exit={{ opacity: 0, y: -10, height: 0, marginBottom: 0 }}
             transition={{ delay, duration: 0.35, ease: 'easeOut' }}
             layout
-            className="w-full rounded-xl px-6 py-5 flex items-center gap-4"
+            className="w-full rounded-xl px-3 md:px-6 py-3 md:py-5 flex items-center gap-2 md:gap-4"
             style={{
                 background: 'rgba(255,255,255,0.03)',
                 border: '1px solid rgba(255,255,255,0.08)',
@@ -150,16 +150,16 @@ function VerticalStep({ seg, index, stepTime, delay, displayLabel, waitLabel, ex
         >
             {/* Left: number + icon side by side */}
             <div className="flex items-center gap-2 shrink-0">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                <div className="w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-[10px] md:text-xs font-bold text-white"
                     style={{ background: isLast ? 'linear-gradient(135deg,#22c55e,#16a34a)' : 'linear-gradient(135deg,#6366f1,#8b5cf6)', boxShadow: '0 0 0 2px rgba(99,102,241,0.2)' }}>
                     {isLast ? '✓' : index + 1}
                 </div>
-                <SegIcon seg={seg} size={48} />
+                <SegIcon seg={seg} size={42} />
             </div>
 
             {/* Center: label + details */}
             <div className="flex-1 min-w-0">
-                <p className="text-base font-semibold text-white">{displayLabel}</p>
+                <p className="text-[15px] md:text-base font-semibold text-white">{displayLabel}</p>
                 {subtitle && <p className="text-[11px] text-gray-500 mt-0.5">{subtitle}</p>}
                 {waitLabel && (
                     <p className="text-xs font-medium text-amber-400 mt-0.5">{waitLabel}</p>
@@ -174,7 +174,7 @@ function VerticalStep({ seg, index, stepTime, delay, displayLabel, waitLabel, ex
 
             {/* Right: time */}
             <div className="shrink-0 text-right">
-                <p className="font-mono text-base font-bold px-2.5 py-1 rounded-lg"
+                <p className="font-mono text-[13px] md:text-sm font-bold px-2 md:px-2.5 py-0.5 md:py-1 rounded-lg"
                     style={{
                         background: 'linear-gradient(135deg, rgba(96,165,250,0.18), rgba(139,92,246,0.14))',
                         border: '1px solid rgba(147,197,253,0.3)',
@@ -194,12 +194,12 @@ function VerticalConnector({ label, delay }) {
             initial={{ opacity: 0, scaleY: 0 }}
             animate={{ opacity: 1, scaleY: 1 }}
             transition={{ delay, duration: 0.25 }}
-            className="flex items-center justify-center py-1"
+            className="flex items-center justify-center py-0.5 md:py-1"
             style={{ transformOrigin: 'top' }}
         >
             <div className="flex flex-col items-center">
                 <div className="w-px h-4" style={{ background: 'linear-gradient(to bottom, rgba(99,102,241,0.5), rgba(139,92,246,0.3))' }} />
-                <span className="text-[10px] font-semibold px-3 py-1 rounded-full my-0.5"
+                <span className="text-[9px] md:text-[10px] font-semibold px-2 md:px-3 py-0.5 md:py-1 rounded-full my-0.5"
                     style={{
                         background: 'rgba(99,102,241,0.1)',
                         border: '1px solid rgba(99,102,241,0.2)',
@@ -251,8 +251,8 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
     const displaySegments = segments.filter(s => s.id !== 'comfort_buffer');
 
     return (
-        <div className="w-full h-full px-6 py-5 flex flex-col items-center">
-            <div className="w-full mx-auto px-4 md:px-8 flex flex-col flex-1" style={{ maxWidth: 860 }}>
+        <div className="w-full px-3 md:px-6 pt-4 md:pt-5 flex flex-col items-center" style={{ paddingBottom: 20 }}>
+            <div className="w-full mx-auto px-1 md:px-8 flex flex-col flex-1" style={{ maxWidth: 860 }}>
                 <AnimatePresence mode="wait">
 
                     {/* ── IDLE ── */}
@@ -313,7 +313,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                 initial={{ opacity: 0, scale: 0.97 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.45, ease: 'easeOut' }}
-                                className="w-full rounded-2xl px-6 py-4"
+                                className="w-full rounded-2xl px-4 md:px-6 py-3 md:py-4"
                                 style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
                             >
                                 <p className="text-xs font-bold uppercase mb-0.5" style={{ color: '#60a5fa', letterSpacing: '0.22em' }}>
@@ -332,10 +332,10 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
 
                                         {selectedFlight && (
                                             <div className="flex flex-col items-end gap-1">
-                                                <p className="text-gray-500 text-xs font-medium">
+                                                <p className="text-gray-500 text-[10px] md:text-xs font-medium">
                                                     {selectedFlight.flight_number} · {selectedFlight.origin_code} → {selectedFlight.destination_code} · {totalToHM(totalMinutes)} door-to-gate
                                                 </p>
-                                                <p className="text-xs font-semibold" style={{ color: '#60a5fa' }}>
+                                                <p className="text-[10px] md:text-xs font-semibold" style={{ color: '#60a5fa' }}>
                                                     {selectedFlight.departure_terminal ? `Terminal ${selectedFlight.departure_terminal}` : 'Terminal TBD'}
                                                     {' · '}
                                                     {selectedFlight.departure_gate ? `Gate ${selectedFlight.departure_gate}` : 'Gate not assigned yet'}
@@ -466,7 +466,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: displaySegments.length * 0.07 + 0.3, duration: 0.4 }}
-                                className="w-full rounded-2xl overflow-hidden mb-5"
+                                className="w-full rounded-2xl overflow-hidden"
                                 style={{ border: '1px solid rgba(34,197,94,0.25)' }}
                             >
                                 {/* Boarding row */}
@@ -486,7 +486,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                             <p
                                                 className="font-extrabold"
                                                 style={{
-                                                    fontSize: 30,
+                                                    fontSize: 'clamp(22px, 5vw, 30px)',
                                                     letterSpacing: '-0.5px',
                                                     background: 'linear-gradient(135deg, #ffffff, #86efac)',
                                                     WebkitBackgroundClip: 'text',
@@ -502,7 +502,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                         <p
                                             className="font-extrabold"
                                             style={{
-                                                fontSize: 24,
+                                                fontSize: 'clamp(18px, 4vw, 24px)',
                                                 letterSpacing: '-0.5px',
                                                 background: 'linear-gradient(135deg, #e2e8f0, #93c5fd)',
                                                 WebkitBackgroundClip: 'text',
@@ -524,7 +524,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                     ].map(({ label, value, color }) => (
                                         <div key={label} className="flex flex-col items-center gap-0.5 px-5 py-3 text-center" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
                                             <p className="text-[10px] uppercase tracking-wider font-semibold text-gray-500">{label}</p>
-                                            <p className="text-2xl font-bold" style={{ color }}>{value}</p>
+                                            <p className="text-lg md:text-2xl font-bold" style={{ color }}>{value}</p>
                                         </div>
                                     ))}
                                 </div>

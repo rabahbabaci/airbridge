@@ -338,14 +338,14 @@ export default function Engine() {
         <div className="h-screen w-screen flex flex-col overflow-hidden bg-gray-950 font-sans antialiased">
 
             {/* ── Topbar ── */}
-            <header className="flex items-center justify-between px-6 py-3 shrink-0 z-10"
+            <header className="flex items-center justify-between px-4 md:px-6 py-3.5 md:py-3 shrink-0 z-10"
                 style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', background: 'rgba(9,9,11,0.85)', backdropFilter: 'blur(20px)' }}>
                 <div className="flex items-center gap-6">
                     <Link to={createPageUrl('Home')} className="flex items-center gap-2">
                         <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                             <Plane className="w-3.5 h-3.5 text-white" />
                         </div>
-                        <span className="font-semibold text-white text-sm">AirBridge</span>
+                        <span className="font-semibold text-white text-sm md:text-sm">AirBridge</span>
                     </Link>
                     <nav className="hidden md:flex items-center gap-5">
                         <Link to={createPageUrl('Home')} className="text-sm text-gray-500 hover:text-white transition-colors">Home</Link>
@@ -356,22 +356,22 @@ export default function Engine() {
                     <AnimatePresence mode="wait">
                         {locked ? (
                             <motion.div key="live" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+                                className="flex items-center gap-1 md:gap-1.5 px-2 md:px-3 py-1 md:py-1.5 rounded-full"
                                 style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)' }}>
                                 <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                                <span className="text-xs text-green-400 font-medium">Live · Reactive</span>
+                                <span className="text-[11px] md:text-xs text-green-400 font-medium">Live · Reactive</span>
                             </motion.div>
                         ) : (
                             <motion.div key="active" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+                                className="flex items-center gap-1 md:gap-1.5 px-2 md:px-3 py-1 md:py-1.5 rounded-full"
                                 style={{ background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)' }}>
                                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-                                <span className="text-xs text-blue-400 font-medium">Engine Active</span>
+                                <span className="text-[11px] md:text-xs text-blue-400 font-medium">Engine Active</span>
                             </motion.div>
                         )}
                     </AnimatePresence>
-                    <button className="text-sm text-gray-500 hover:text-white transition-colors">Sign In</button>
-                    <button className="text-sm bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1.5 rounded-full font-medium">
+                    <button className="text-xs md:text-sm text-gray-500 hover:text-white transition-colors">Sign In</button>
+                    <button className="text-xs md:text-sm bg-gradient-to-r from-blue-600 to-purple-600 text-white px-3 md:px-4 py-1 md:py-1.5 rounded-full font-medium">
                         Get Started
                     </button>
                 </div>
