@@ -140,6 +140,7 @@ export default function Engine() {
     const [withChildren, setWithChildren] = useState(false);
     const [extraTime, setExtraTime] = useState('none');
     const [locked, setLocked] = useState(false);
+    const [showMobileResults, setShowMobileResults] = useState(false);
     const [recommendation, setRecommendation] = useState(null);
 
     const goTo = (next) => {
@@ -206,6 +207,12 @@ export default function Engine() {
     };
 
     const [journeyReady, setJourneyReady] = useState(false);
+
+    useEffect(() => {
+        if (locked && recommendation && window.innerWidth < 768) {
+            setShowMobileResults(true);
+        }
+    }, [locked, recommendation]);
 
     const handleLockIn = async () => {
         setLocked(true);
@@ -297,6 +304,7 @@ export default function Engine() {
         setFlightOptions([]);
         setDir(-1);
         setStep(1);
+        setShowMobileResults(false);
     };
 
     const profile = confidenceProfiles.find(p => p.id === selectedProfile);
@@ -354,8 +362,8 @@ export default function Engine() {
             {/* ── Main Split ── */}
             <div className="flex flex-1 min-h-0">
 
-                {/* LEFT — Input Panel */}
-                <div className="w-[380px] shrink-0 flex flex-col overflow-hidden relative"
+                {/* LEFT — Input Panel (hidden on mobile when showing results) */}
+                <div className={`${showMobileResults ? 'hidden md:flex' : 'flex'} w-full md:w-[380px] shrink-0 flex-col overflow-hidden relative`}
                     style={{ background: '#ffffff', borderRight: '1px solid #f1f5f9' }}>
                     {locked && !journeyReady && (
                         <div className="absolute inset-0 z-20 bg-white/70 backdrop-blur-sm flex items-center justify-center">
@@ -744,9 +752,18 @@ export default function Engine() {
                     </div>
                 </div>
 
-                {/* RIGHT — Visualization Panel */}
-                <div className="flex-1 flex flex-col min-h-0 relative overflow-hidden"
+                {/* RIGHT — Visualization Panel (hidden on mobile before lock-in) */}
+                <div className={`${!showMobileResults && 'hidden md:flex'} ${showMobileResults && 'flex'} md:flex flex-1 flex-col min-h-0 relative overflow-hidden`}
                     style={{ background: 'radial-gradient(ellipse at 60% 40%, rgba(59,130,246,0.07) 0%, rgba(9,9,11,1) 60%)' }}>
+                    {/* Mobile back button */}
+                    <div className="md:hidden flex items-center px-4 py-2 shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                        <button 
+                            onClick={() => setShowMobileResults(false)}
+                            className="flex items-center gap-1.5 text-sm text-blue-400 font-medium">
+                            <ArrowLeft className="w-4 h-4" />
+                            Edit Settings
+                        </button>
+                    </div>
                     <div className="absolute top-10 right-10 w-80 h-80 rounded-full pointer-events-none"
                         style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.08), transparent)', filter: 'blur(60px)' }} />
                     <div className="absolute bottom-10 left-10 w-60 h-60 rounded-full pointer-events-none"
