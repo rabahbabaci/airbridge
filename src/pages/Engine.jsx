@@ -436,7 +436,13 @@ export default function Engine() {
                                                                     setCalendarOpen(false);
                                                                 }
                                                             }}
-                                                            disabled={(date) => date < new Date(getTodayStr())}
+                                                            disabled={(date) => {
+                                                                const today = new Date();
+                                                                today.setHours(0, 0, 0, 0);
+                                                                const compareDate = new Date(date);
+                                                                compareDate.setHours(0, 0, 0, 0);
+                                                                return compareDate < today;
+                                                            }}
                                                         />
                                                     </PopoverContent>
                                                 </Popover>
