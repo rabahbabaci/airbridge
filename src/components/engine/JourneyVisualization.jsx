@@ -347,7 +347,8 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.97 }}
                             transition={{ duration: 0.5 }}
-                            className="flex flex-col items-center justify-center text-center gap-7 py-32"
+                            className="flex flex-col items-center justify-center text-center gap-7 flex-1 h-full"
+                            style={{ minHeight: '60vh' }}
                         >
                             <motion.div
                                 animate={{ y: [0, -12, 0] }}
