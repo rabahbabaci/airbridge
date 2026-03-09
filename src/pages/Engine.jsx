@@ -142,6 +142,7 @@ export default function Engine() {
     const [locked, setLocked] = useState(false);
     const [showMobileResults, setShowMobileResults] = useState(false);
     const [recommendation, setRecommendation] = useState(null);
+    const [settingsChanged, setSettingsChanged] = useState(false);
 
     const goTo = (next) => {
         setDir(next > step ? 1 : -1);
@@ -214,7 +215,21 @@ export default function Engine() {
         }
     }, [locked, recommendation]);
 
+    useEffect(() => {
+        if (!locked) {
+            setSettingsChanged(true);
+        }
+    }, [transport, selectedProfile, hasBaggage, baggageCount, withChildren, extraTime]);
+
     const handleLockIn = async () => {
+        // If on mobile and nothing changed, just show existing results
+        if (!settingsChanged && recommendation && window.innerWidth < 768) {
+            setLocked(true);
+            setJourneyReady(true);
+            setShowMobileResults(true);
+            return;
+        }
+
         setLocked(true);
         setJourneyReady(false);
         try {
@@ -249,6 +264,7 @@ export default function Engine() {
             const rec = await recRes.json();
             setRecommendation(rec);
             setJourneyReady(true);
+            setSettingsChanged(false);
         } catch (err) {
             console.error('Recommendation failed:', err);
             setJourneyReady(true);
@@ -308,6 +324,7 @@ export default function Engine() {
         setDir(-1);
         setStep(1);
         setShowMobileResults(false);
+        setSettingsChanged(false);
     };
 
     const profile = confidenceProfiles.find(p => p.id === selectedProfile);
@@ -765,6 +782,7 @@ export default function Engine() {
                                 setShowMobileResults(false);
                                 setLocked(false);
                                 setJourneyReady(false);
+                                setSettingsChanged(false);
                             }}
                             className="flex items-center gap-1.5 text-sm text-blue-400 font-medium">
                             <ArrowLeft className="w-4 h-4" />
