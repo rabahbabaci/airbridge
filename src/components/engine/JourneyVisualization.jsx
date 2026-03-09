@@ -255,8 +255,48 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
             <div className="w-full mx-auto px-1 md:px-8 flex flex-col flex-1" style={{ maxWidth: 860 }}>
                 <AnimatePresence mode="wait">
 
+                    {/* ── LOADING ── */}
+                    {locked && !recommendation && (
+                        <motion.div
+                            key="loading"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.97 }}
+                            transition={{ duration: 0.4 }}
+                            className="flex flex-col items-center justify-center text-center gap-6 flex-1 h-full"
+                            style={{ minHeight: '60vh' }}
+                        >
+                            <motion.div
+                                animate={{ rotate: 360 }}
+                                transition={{ repeat: Infinity, duration: 1.2, ease: 'linear' }}
+                                className="w-16 h-16 rounded-full"
+                                style={{
+                                    border: '3px solid rgba(99,102,241,0.15)',
+                                    borderTop: '3px solid #6366f1',
+                                }}
+                            />
+                            <div>
+                                <h2 className="text-xl font-bold text-white mb-2">Calculating your journey</h2>
+                                <p className="text-gray-500 text-sm max-w-xs mx-auto">
+                                    Analyzing traffic, TSA wait times,<br />and airport conditions…
+                                </p>
+                            </div>
+                            <div className="flex gap-3">
+                                {[0, 1, 2].map(i => (
+                                    <motion.div
+                                        key={i}
+                                        animate={{ opacity: [0.2, 0.8, 0.2] }}
+                                        transition={{ repeat: Infinity, duration: 1.4, delay: i * 0.25 }}
+                                        className="w-2 h-2 rounded-full"
+                                        style={{ background: 'rgba(99,102,241,0.7)' }}
+                                    />
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
+
                     {/* ── IDLE ── */}
-                    {!showResult && (
+                    {!locked && (
                         <motion.div
                             key="idle"
                             initial={{ opacity: 0, y: 20 }}
