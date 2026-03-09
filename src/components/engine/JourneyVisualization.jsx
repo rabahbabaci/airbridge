@@ -337,7 +337,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
     return (
         <div className="w-full h-full px-6 py-5 flex flex-col items-center relative" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1600&q=80)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
             <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, rgba(9,9,11,0.72) 0%, rgba(9,9,11,0.55) 50%, rgba(9,9,11,0.80) 100%)' }} />
-            <div className="w-full flex flex-col flex-1" style={{ maxWidth: 960 }}>
+            <div className="w-full flex flex-col flex-1 relative z-10" style={{ maxWidth: 960 }}>
                 <AnimatePresence mode="wait">
 
                     {/* ── IDLE ── */}
