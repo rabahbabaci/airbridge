@@ -142,6 +142,7 @@ export default function Engine() {
     const [locked, setLocked] = useState(false);
     const [showMobileResults, setShowMobileResults] = useState(false);
     const [recommendation, setRecommendation] = useState(null);
+    const [mobileEditing, setMobileEditing] = useState(false);
 
     const goTo = (next) => {
         setDir(next > step ? 1 : -1);
@@ -209,14 +210,15 @@ export default function Engine() {
     const [journeyReady, setJourneyReady] = useState(false);
 
     useEffect(() => {
-        if (locked && recommendation && window.innerWidth < 768) {
+        if (locked && recommendation && window.innerWidth < 768 && !mobileEditing) {
             setShowMobileResults(true);
         }
-    }, [locked, recommendation]);
+    }, [locked, recommendation, mobileEditing]);
 
     const handleLockIn = async () => {
         setLocked(true);
         setJourneyReady(false);
+        setMobileEditing(false);
         try {
             // Step 1: Create trip
             const tripRes = await fetch(`${API_BASE}/v1/trips`, {
@@ -288,6 +290,10 @@ export default function Engine() {
                 });
                 const rec = await recRes.json();
                 setRecommendation(rec);
+                if (window.innerWidth < 768) {
+                    setShowMobileResults(true);
+                    setMobileEditing(false);
+                }
             } catch (err) {
                 console.error('Recompute failed:', err);
             }
@@ -305,6 +311,7 @@ export default function Engine() {
         setDir(-1);
         setStep(1);
         setShowMobileResults(false);
+        setMobileEditing(false);
     };
 
     const profile = confidenceProfiles.find(p => p.id === selectedProfile);
@@ -719,25 +726,34 @@ export default function Engine() {
                                     </motion.button>
                                 )}
 
-                                {step === 3 && (
-                                    locked ? (
+                                {step === 3 && !locked && (
+                                    <motion.button key="lock" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                                        onClick={handleLockIn}
+                                        className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-semibold text-white transition-all"
+                                        style={{
+                                            background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
+                                            boxShadow: '0 4px 24px rgba(37,99,235,0.3)',
+                                        }}>
+                                        <Lock className="w-4 h-4" />
+                                        Lock In My Departure Time
+                                    </motion.button>
+                                )}
+
+                                {step === 3 && locked && (
+                                    mobileEditing && window.innerWidth < 768 ? (
+                                        <motion.button key="view-results" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                                            onClick={() => { setShowMobileResults(true); setMobileEditing(false); }}
+                                            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold text-white transition-all md:hidden"
+                                            style={{ background: 'linear-gradient(135deg, #2563eb, #7c3aed)', boxShadow: '0 4px 24px rgba(37,99,235,0.3)' }}>
+                                            View Results →
+                                        </motion.button>
+                                    ) : (
                                         <motion.div key="locked" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                                             className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold"
                                             style={{ background: 'linear-gradient(135deg,#16a34a22,#16a34a11)', border: '1px solid rgba(34,197,94,0.3)', color: '#16a34a' }}>
                                             <CheckCircle2 className="w-4 h-4" />
                                             Departure Time Locked ✓
                                         </motion.div>
-                                    ) : (
-                                        <motion.button key="lock" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                                            onClick={handleLockIn}
-                                            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-semibold text-white transition-all"
-                                            style={{
-                                                background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
-                                                boxShadow: '0 4px 24px rgba(37,99,235,0.3)',
-                                            }}>
-                                            <Lock className="w-4 h-4" />
-                                            Lock In My Departure Time
-                                        </motion.button>
                                     )
                                 )}
                             </AnimatePresence>
@@ -758,7 +774,10 @@ export default function Engine() {
                     {/* Mobile back button */}
                     <div className="md:hidden flex items-center px-4 py-2 shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
                         <button 
-                            onClick={() => setShowMobileResults(false)}
+                            onClick={() => {
+                                setShowMobileResults(false);
+                                setMobileEditing(true);
+                            }}
                             className="flex items-center gap-1.5 text-sm text-blue-400 font-medium">
                             <ArrowLeft className="w-4 h-4" />
                             Edit Settings
