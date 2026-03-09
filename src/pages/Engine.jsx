@@ -335,7 +335,7 @@ export default function Engine() {
     const canSearch = flightNumber.trim().length > 0 && departureDate.length > 0;
 
     return (
-        <div className="h-screen w-screen flex flex-col overflow-hidden bg-gray-950 font-sans antialiased">
+        <div className="w-screen flex flex-col overflow-hidden bg-gray-950 font-sans antialiased" style={{ height: '100dvh' }}>
 
             {/* ── Topbar ── */}
             <header className="flex items-center justify-between px-4 md:px-6 py-3.5 md:py-3 shrink-0 z-10"
@@ -792,7 +792,7 @@ export default function Engine() {
                     <div className="absolute bottom-10 left-10 w-60 h-60 rounded-full pointer-events-none"
                         style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.06), transparent)', filter: 'blur(40px)' }} />
 
-                    <div className="flex-1 min-h-0 overflow-y-auto pb-8">
+                    <div className="flex-1 min-h-0 overflow-y-auto">
                     <AnimatePresence mode="wait">
                         <JourneyVisualization
                             key={locked ? 'journey' : 'idle'}
