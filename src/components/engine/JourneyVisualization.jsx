@@ -120,7 +120,7 @@ function AnimatedTime({ value }) {
             transition={{ duration: 0.35, ease: 'easeInOut' }}
             className="font-extrabold leading-none mb-2"
             style={{
-                fontSize: 58,
+                fontSize: 64,
                 letterSpacing: '-3px',
                 background: 'linear-gradient(135deg, #ffffff 40%, #93c5fd 100%)',
                 WebkitBackgroundClip: 'text',
@@ -142,7 +142,7 @@ function VerticalStep({ seg, index, stepTime, delay, displayLabel, waitLabel, ex
             exit={{ opacity: 0, y: -10, height: 0, marginBottom: 0 }}
             transition={{ delay, duration: 0.35, ease: 'easeOut' }}
             layout
-            className="w-full rounded-xl px-5 py-5 flex items-center gap-4"
+            className="w-full rounded-xl px-6 py-5 flex items-center gap-4"
             style={{
                 background: 'rgba(255,255,255,0.03)',
                 border: '1px solid rgba(255,255,255,0.08)',
@@ -252,7 +252,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
 
     return (
         <div className="w-full h-full px-6 py-5 flex flex-col items-center">
-            <div className="w-full mx-auto flex flex-col flex-1" style={{ maxWidth: 720 }}>
+            <div className="w-full mx-auto px-4 md:px-8 flex flex-col flex-1" style={{ maxWidth: 860 }}>
                 <AnimatePresence mode="wait">
 
                     {/* ── IDLE ── */}
@@ -486,7 +486,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                             <p
                                                 className="font-extrabold"
                                                 style={{
-                                                    fontSize: 26,
+                                                    fontSize: 30,
                                                     letterSpacing: '-0.5px',
                                                     background: 'linear-gradient(135deg, #ffffff, #86efac)',
                                                     WebkitBackgroundClip: 'text',
@@ -502,7 +502,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                         <p
                                             className="font-extrabold"
                                             style={{
-                                                fontSize: 22,
+                                                fontSize: 24,
                                                 letterSpacing: '-0.5px',
                                                 background: 'linear-gradient(135deg, #e2e8f0, #93c5fd)',
                                                 WebkitBackgroundClip: 'text',
@@ -524,7 +524,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                     ].map(({ label, value, color }) => (
                                         <div key={label} className="flex flex-col items-center gap-0.5 px-5 py-3 text-center" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
                                             <p className="text-[10px] uppercase tracking-wider font-semibold text-gray-500">{label}</p>
-                                            <p className="text-xl font-bold" style={{ color }}>{value}</p>
+                                            <p className="text-2xl font-bold" style={{ color }}>{value}</p>
                                         </div>
                                     ))}
                                 </div>
