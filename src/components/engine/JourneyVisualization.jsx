@@ -293,8 +293,64 @@ function Connector({ label, delay }) {
     );
 }
 
+// ── Mobile step card and connector ───────────────────────────────────────────
+function MobileStepCard({ seg, index, stepTime, delay, displayLabel, waitLabel, extraBadge }) {
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay, duration: 0.3 }}
+            className="w-full rounded-xl px-4 py-3 flex items-center gap-3"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+        >
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+                <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+                    style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)' }}>
+                    {index + 1}
+                </div>
+                <SegIcon seg={seg} size={40} />
+                <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-white">{displayLabel}</p>
+                    {waitLabel && <p className="text-xs font-medium text-amber-400">{waitLabel}</p>}
+                    {extraBadge && <p className="text-xs font-medium text-green-400">{extraBadge}</p>}
+                </div>
+            </div>
+            <div className="text-right shrink-0">
+                <p className="font-mono text-sm font-bold text-blue-200">{stepTime}</p>
+            </div>
+        </motion.div>
+    );
+}
+
+function MobileConnector({ label, delay }) {
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay, duration: 0.3 }}
+            className="flex items-center justify-center py-1"
+        >
+            <div className="flex flex-col items-center gap-0.5">
+                <div className="w-px h-3" style={{ background: 'rgba(139,92,246,0.4)' }} />
+                <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full"
+                    style={{ background: 'rgba(99,102,241,0.14)', border: '1px solid rgba(99,102,241,0.25)', color: '#a5b4fc' }}>
+                    {label}
+                </span>
+                <div className="w-px h-3" style={{ background: 'rgba(139,92,246,0.4)' }} />
+            </div>
+        </motion.div>
+    );
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 export default function JourneyVisualization({ locked, recommendation, selectedFlight, transport, profile, confidenceColorMap, onReady }) {
+
+    const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         if (locked && recommendation && onReady) {
@@ -448,133 +504,217 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                 </motion.div>
                             )}
 
-                            {/* ── HORIZONTAL STEPS CARD ── */}
+                            {/* ── STEPS ── */}
                             <motion.div
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1, duration: 0.4 }}
-                                className="w-full rounded-2xl px-5 py-4"
+                                className="w-full rounded-2xl px-3 md:px-5 py-4"
                             >
-                                {rows.map((rowSegs, rowIdx) => {
-                                    const globalOffset = rowIdx === 0 ? 0 : Math.ceil(displaySegments.length / 2);
-                                    return (
-                                        <React.Fragment key={rowIdx}>
-                                            {/* U-turn connector between rows */}
-                                            {rowIdx === 1 && (() => {
-                                                // Diagonal connector: get walk_to_next from the last segment of row 1
-                                                const lastOfRow1 = rows[0][rows[0].length - 1];
-                                                let uturnLabel = '3 min'; // fallback
-                                                const walkMatch = lastOfRow1?.advice?.match(/walk_to_next:(\d+)/);
-                                                if (walkMatch) {
-                                                    uturnLabel = `${walkMatch[1]} min`;
+                                {isMobile ? (
+                                    /* ── MOBILE VERTICAL LAYOUT ── */
+                                    <div className="flex flex-col gap-0">
+                                        {displaySegments.map((seg, globalIdx) => {
+                                            const cumulativeBefore = displaySegments
+                                                .slice(0, globalIdx)
+                                                .reduce((sum, s) => sum + (s.duration_minutes || 0), 0);
+                                            const stepTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore);
+                                            const delay = globalIdx * 0.06 + 0.15;
+
+                                            let displayLabel = seg.label;
+                                            if (seg.id === 'walk_to_gate') displayLabel = 'At Gate';
+
+                                            // Last step shows arrival time
+                                            const isLastStep = globalIdx === displaySegments.length - 1;
+                                            let displayStepTime = isLastStep
+                                                ? addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + seg.duration_minutes)
+                                                : stepTime;
+
+                                            let waitLabel = undefined;
+
+                                            // TSA time range
+                                            if (seg.id === 'tsa') {
+                                                const waitMatch = seg.advice?.match(/wait:(\d+)/);
+                                                const periodMatch = seg.advice?.match(/\|([^|]+)$/);
+                                                const waitMin = waitMatch ? parseInt(waitMatch[1], 10) : seg.duration_minutes;
+                                                const period = periodMatch ? periodMatch[1].trim() : '';
+                                                waitLabel = `${waitMin} min${period ? ' · ' + period : ''}`;
+                                                const tsaExitTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + seg.duration_minutes);
+                                                displayStepTime = `${stepTime} → ${tsaExitTime}`;
+                                            }
+
+                                            // Bag Drop time range
+                                            if (seg.id === 'bag_drop') {
+                                                const dropMatch = seg.advice?.match(/drop:(\d+)/);
+                                                const dropMin = dropMatch ? parseInt(dropMatch[1], 10) : seg.duration_minutes;
+                                                waitLabel = `${dropMin} min`;
+                                                const exitTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + dropMin);
+                                                displayStepTime = `${stepTime} → ${exitTime}`;
+                                            }
+
+                                            // Gate: comfort buffer badge
+                                            const isGateStep = seg.id === 'walk_to_gate';
+                                            const extraBadge = (isGateStep && comfortBuffer)
+                                                ? `+${comfortBuffer.duration_minutes} min buffer`
+                                                : undefined;
+
+                                            // Connector label (walking time to next step)
+                                            let connectorLabel = null;
+                                            if (globalIdx < displaySegments.length - 1) {
+                                                if (seg.id === 'at_airport' || seg.id === 'bag_drop') {
+                                                    const walkMatch = seg.advice?.match(/walk_to_next:(\d+)/);
+                                                    connectorLabel = walkMatch ? `${walkMatch[1]} min walk` : `${seg.duration_minutes} min`;
+                                                } else if (seg.id === 'tsa') {
+                                                    const nextSeg = displaySegments[globalIdx + 1];
+                                                    connectorLabel = nextSeg ? `${nextSeg.duration_minutes} min walk` : null;
+                                                } else {
+                                                    connectorLabel = `${seg.duration_minutes} min`;
                                                 }
-                                                return <UTurnConnector label={uturnLabel} delay={globalOffset * 0.07 + 0.1} />;
-                                            })()}
-                                            <div className={rowIdx > 0 ? 'mt-1' : ''}>
-                                                <div className="flex items-center">
-                                                    {rowSegs.map((seg, i) => {
-                                                        const globalIdx = globalOffset + i;
-                                                        const cumulativeBefore = displaySegments
-                                                            .slice(0, globalIdx)
-                                                            .reduce((sum, s) => sum + (s.duration_minutes || 0), 0);
-                                                        const stepTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore);
-                                                        // Last step (Gate): show arrival time (after walk) not start time
-                                                        const isLastStep = globalIdx === displaySegments.length - 1;
-                                                        const displayStepTime = isLastStep
-                                                            ? addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + seg.duration_minutes)
-                                                            : stepTime;
-                                                        // For TSA: show "arrival → exit" time range so user can follow the math
-                                                        let displayTimeLabel = displayStepTime;
-                                                        if (seg.id === 'tsa') {
-                                                            const tsaExitTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + seg.duration_minutes);
-                                                            displayTimeLabel = `${stepTime} → ${tsaExitTime}`;
-                                                        }
-                                                        // For Bag Drop: show arrival → departure time range
-                                                        if (seg.id === 'bag_drop') {
-                                                            const dropMatch = seg.advice?.match(/drop:(\d+)/);
-                                                            const dropMin = dropMatch ? parseInt(dropMatch[1], 10) : seg.duration_minutes;
-                                                            const exitTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + dropMin);
-                                                            displayTimeLabel = `${stepTime} → ${exitTime}`;
-                                                        }
-                                                        const delay = globalIdx * 0.07 + 0.15;
-                                                        const isLastInRow = i === rowSegs.length - 1;
-                                                        // For row 0, the last step connects via U-turn so no horizontal connector needed
-                                                        const showConnector = !isLastInRow || rowIdx < rows.length - 1 ? !isLastInRow : false;
+                                            }
 
-                                                        // Rename curb_to_checkin if no bags
-                                                        let displayLabel = seg.label;
-                                                        if (seg.id === 'curb_to_checkin' && !hasBags) {
-                                                            displayLabel = 'Curb to security';
+                                            return (
+                                                <React.Fragment key={seg.id || seg.label}>
+                                                    <MobileStepCard
+                                                        seg={seg}
+                                                        index={globalIdx}
+                                                        stepTime={displayStepTime}
+                                                        delay={delay}
+                                                        displayLabel={displayLabel}
+                                                        waitLabel={waitLabel}
+                                                        extraBadge={extraBadge}
+                                                    />
+                                                    {connectorLabel && globalIdx < displaySegments.length - 1 && (
+                                                        <MobileConnector label={connectorLabel} delay={delay + 0.03} />
+                                                    )}
+                                                </React.Fragment>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    /* ── DESKTOP HORIZONTAL LAYOUT ── */
+                                    <>
+                                        {rows.map((rowSegs, rowIdx) => {
+                                            const globalOffset = rowIdx === 0 ? 0 : Math.ceil(displaySegments.length / 2);
+                                            return (
+                                                <React.Fragment key={rowIdx}>
+                                                    {/* U-turn connector between rows */}
+                                                    {rowIdx === 1 && (() => {
+                                                        // Diagonal connector: get walk_to_next from the last segment of row 1
+                                                        const lastOfRow1 = rows[0][rows[0].length - 1];
+                                                        let uturnLabel = '3 min'; // fallback
+                                                        const walkMatch = lastOfRow1?.advice?.match(/walk_to_next:(\d+)/);
+                                                        if (walkMatch) {
+                                                            uturnLabel = `${walkMatch[1]} min`;
                                                         }
-                                                        // Rename Gate to "At Gate" to clarify it's arrival time
-                                                        if (seg.id === 'walk_to_gate') {
-                                                            displayLabel = 'At Gate';
-                                                        }
+                                                        return <UTurnConnector label={uturnLabel} delay={globalOffset * 0.07 + 0.1} />;
+                                                    })()}
+                                                    <div className={rowIdx > 0 ? 'mt-1' : ''}>
+                                                        <div className="flex items-center">
+                                                            {rowSegs.map((seg, i) => {
+                                                                const globalIdx = globalOffset + i;
+                                                                const cumulativeBefore = displaySegments
+                                                                    .slice(0, globalIdx)
+                                                                    .reduce((sum, s) => sum + (s.duration_minutes || 0), 0);
+                                                                const stepTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore);
+                                                                // Last step (Gate): show arrival time (after walk) not start time
+                                                                const isLastStep = globalIdx === displaySegments.length - 1;
+                                                                const displayStepTime = isLastStep
+                                                                    ? addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + seg.duration_minutes)
+                                                                    : stepTime;
+                                                                // For TSA: show "arrival → exit" time range so user can follow the math
+                                                                let displayTimeLabel = displayStepTime;
+                                                                if (seg.id === 'tsa') {
+                                                                    const tsaExitTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + seg.duration_minutes);
+                                                                    displayTimeLabel = `${stepTime} → ${tsaExitTime}`;
+                                                                }
+                                                                // For Bag Drop: show arrival → departure time range
+                                                                if (seg.id === 'bag_drop') {
+                                                                    const dropMatch = seg.advice?.match(/drop:(\d+)/);
+                                                                    const dropMin = dropMatch ? parseInt(dropMatch[1], 10) : seg.duration_minutes;
+                                                                    const exitTime = addMinutesAndFormat(recommendation.leave_home_at, cumulativeBefore + dropMin);
+                                                                    displayTimeLabel = `${stepTime} → ${exitTime}`;
+                                                                }
+                                                                const delay = globalIdx * 0.07 + 0.15;
+                                                                const isLastInRow = i === rowSegs.length - 1;
+                                                                // For row 0, the last step connects via U-turn so no horizontal connector needed
+                                                                const showConnector = !isLastInRow || rowIdx < rows.length - 1 ? !isLastInRow : false;
 
-                                                        // Default connector label
-                                                        let connectorLabel = `${seg.duration_minutes} min`;
-                                                        let waitLabel = undefined;
+                                                                // Rename curb_to_checkin if no bags
+                                                                let displayLabel = seg.label;
+                                                                if (seg.id === 'curb_to_checkin' && !hasBags) {
+                                                                    displayLabel = 'Curb to security';
+                                                                }
+                                                                // Rename Gate to "At Gate" to clarify it's arrival time
+                                                                if (seg.id === 'walk_to_gate') {
+                                                                    displayLabel = 'At Gate';
+                                                                }
 
-                                                        // At Airport: walk_to_next goes on the connector after this step
-                                                        if (seg.id === 'at_airport') {
-                                                            const walkMatch = seg.advice?.match(/walk_to_next:(\d+)/);
-                                                            if (walkMatch) {
-                                                                connectorLabel = `${walkMatch[1]} min`;
-                                                            }
-                                                        }
+                                                                // Default connector label
+                                                                let connectorLabel = `${seg.duration_minutes} min`;
+                                                                let waitLabel = undefined;
 
-                                                        // Bag Drop: show drop time under the step, walk_to_next on the diagonal
-                                                        if (seg.id === 'bag_drop') {
-                                                            const dropMatch = seg.advice?.match(/drop:(\d+)/);
-                                                            const walkMatch = seg.advice?.match(/walk_to_next:(\d+)/);
-                                                            waitLabel = dropMatch ? `${dropMatch[1]} min` : `${seg.duration_minutes} min`;
-                                                            if (walkMatch) {
-                                                                connectorLabel = `${walkMatch[1]} min`;
-                                                            }
-                                                        }
+                                                                // At Airport: walk_to_next goes on the connector after this step
+                                                                if (seg.id === 'at_airport') {
+                                                                    const walkMatch = seg.advice?.match(/walk_to_next:(\d+)/);
+                                                                    if (walkMatch) {
+                                                                        connectorLabel = `${walkMatch[1]} min`;
+                                                                    }
+                                                                }
 
-                                                        // TSA: show wait time under the step, connector after shows walk to gate
-                                                        if (seg.id === 'tsa') {
-                                                            const waitMatch = seg.advice?.match(/wait:(\d+)/);
-                                                            const periodMatch = seg.advice?.match(/\|([^|]+)$/);
-                                                            const waitMin = waitMatch ? parseInt(waitMatch[1], 10) : seg.duration_minutes;
-                                                            const period = periodMatch ? periodMatch[1].trim() : '';
-                                                            waitLabel = `${waitMin} min${period ? ' · ' + period : ''}`;
-                                                            // Connector after TSA shows next segment's duration (walk to gate)
-                                                            const nextSeg = displaySegments[globalIdx + 1];
-                                                            connectorLabel = nextSeg ? `${nextSeg.duration_minutes} min` : '';
-                                                        }
-                                                        // Gate step: show comfort buffer as extra badge if present
-                                                        const isGateStep = seg.id === 'walk_to_gate';
-                                                        const extraBadge = (isGateStep && comfortBuffer)
-                                                            ? `+${comfortBuffer.duration_minutes} min buffer`
-                                                            : undefined;
+                                                                // Bag Drop: show drop time under the step, walk_to_next on the diagonal
+                                                                if (seg.id === 'bag_drop') {
+                                                                    const dropMatch = seg.advice?.match(/drop:(\d+)/);
+                                                                    const walkMatch = seg.advice?.match(/walk_to_next:(\d+)/);
+                                                                    waitLabel = dropMatch ? `${dropMatch[1]} min` : `${seg.duration_minutes} min`;
+                                                                    if (walkMatch) {
+                                                                        connectorLabel = `${walkMatch[1]} min`;
+                                                                    }
+                                                                }
 
-                                                        return (
-                                                            <React.Fragment key={seg.id || seg.label}>
-                                                                <StepNode
-                                                                    seg={seg}
-                                                                    index={globalIdx}
-                                                                    stepTime={displayTimeLabel}
-                                                                    delay={delay}
-                                                                    displayLabel={displayLabel}
-                                                                    waitLabel={waitLabel}
-                                                                    extraBadge={extraBadge}
-                                                                />
-                                                                {showConnector && (
-                                                                    <Connector
-                                                                        label={connectorLabel}
-                                                                        delay={delay + 0.05}
-                                                                    />
-                                                                )}
-                                                            </React.Fragment>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </div>
-                                        </React.Fragment>
-                                    );
-                                })}
+                                                                // TSA: show wait time under the step, connector after shows walk to gate
+                                                                if (seg.id === 'tsa') {
+                                                                    const waitMatch = seg.advice?.match(/wait:(\d+)/);
+                                                                    const periodMatch = seg.advice?.match(/\|([^|]+)$/);
+                                                                    const waitMin = waitMatch ? parseInt(waitMatch[1], 10) : seg.duration_minutes;
+                                                                    const period = periodMatch ? periodMatch[1].trim() : '';
+                                                                    waitLabel = `${waitMin} min${period ? ' · ' + period : ''}`;
+                                                                    // Connector after TSA shows next segment's duration (walk to gate)
+                                                                    const nextSeg = displaySegments[globalIdx + 1];
+                                                                    connectorLabel = nextSeg ? `${nextSeg.duration_minutes} min` : '';
+                                                                }
+                                                                // Gate step: show comfort buffer as extra badge if present
+                                                                const isGateStep = seg.id === 'walk_to_gate';
+                                                                const extraBadge = (isGateStep && comfortBuffer)
+                                                                    ? `+${comfortBuffer.duration_minutes} min buffer`
+                                                                    : undefined;
+
+                                                                return (
+                                                                    <React.Fragment key={seg.id || seg.label}>
+                                                                        <StepNode
+                                                                            seg={seg}
+                                                                            index={globalIdx}
+                                                                            stepTime={displayTimeLabel}
+                                                                            delay={delay}
+                                                                            displayLabel={displayLabel}
+                                                                            waitLabel={waitLabel}
+                                                                            extraBadge={extraBadge}
+                                                                        />
+                                                                        {showConnector && (
+                                                                            <Connector
+                                                                                label={connectorLabel}
+                                                                                delay={delay + 0.05}
+                                                                            />
+                                                                        )}
+                                                                    </React.Fragment>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                </React.Fragment>
+                                            );
+                                        })}
+                                    </>
+                                )}
                             </motion.div>
 
                             {/* ── BOARDING + STATS CARD ── */}
@@ -582,7 +722,7 @@ export default function JourneyVisualization({ locked, recommendation, selectedF
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: displaySegments.length * 0.07 + 0.3, duration: 0.4 }}
-                                className="w-full rounded-2xl overflow-hidden"
+                                className="w-full rounded-2xl overflow-hidden mb-5"
                                 style={{ border: '1px solid rgba(34,197,94,0.25)' }}
                             >
                                 {/* Boarding row */}
