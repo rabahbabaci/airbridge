@@ -381,7 +381,7 @@ export default function Engine() {
             <div className="flex flex-1 min-h-0">
 
                 {/* LEFT — Input Panel (hidden on mobile when showing results) */}
-                <div className={`${showMobileResults ? 'hidden md:flex' : 'flex'} w-full md:w-[380px] shrink-0 flex-col overflow-hidden relative`}
+                <div className={`${showMobileResults ? 'hidden md:flex' : 'flex'} w-full md:w-[440px] shrink-0 flex-col overflow-hidden relative`}
                     style={{ background: '#ffffff', borderRight: '1px solid #f1f5f9' }}>
                     {locked && !journeyReady && (
                         <div className="absolute inset-0 z-20 bg-white/70 backdrop-blur-sm flex items-center justify-center">
@@ -395,7 +395,7 @@ export default function Engine() {
 
                     <div className="flex flex-col flex-1 overflow-hidden">
                         {/* Fixed header */}
-                        <div className="px-6 pt-6 pb-2 shrink-0">
+                        <div className="px-7 pt-6 pb-2 shrink-0">
                             <h1 className="text-lg font-bold text-gray-900">Departure Setup</h1>
                             <p className="text-xs text-gray-400 mt-0.5">
                                 {step === 1 && 'Enter your flight details'}
@@ -413,7 +413,7 @@ export default function Engine() {
                                     <motion.div key="step1" custom={dir}
                                         variants={slideVariants} initial="enter" animate="center" exit="exit"
                                         transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-                                        className="px-6 pt-4 pb-4 flex flex-col gap-4">
+                                        className="px-7 pt-4 pb-4 flex flex-col gap-4">
                                         <StepDots step={1} />
 
                                         <div className="space-y-4">
@@ -482,7 +482,7 @@ export default function Engine() {
                                     <motion.div key="step2" custom={dir}
                                         variants={slideVariants} initial="enter" animate="center" exit="exit"
                                         transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-                                        className="px-6 pt-4 pb-4 flex flex-col gap-4">
+                                        className="px-7 pt-4 pb-4 flex flex-col gap-4">
                                         <StepDots step={2} />
 
                                         <div className="flex items-center gap-2 px-3 py-2 rounded-xl"
@@ -599,7 +599,7 @@ export default function Engine() {
                                     <motion.div key="step3" custom={dir}
                                         variants={slideVariants} initial="enter" animate="center" exit="exit"
                                         transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-                                        className="px-6 pt-4 pb-10 flex flex-col gap-4">
+                                        className="px-7 pt-4 pb-10 flex flex-col gap-4">
                                         <StepDots step={3} />
 
                                         {selectedFlight && (
@@ -711,7 +711,7 @@ export default function Engine() {
                         </div>
 
                         {/* CTA — pinned */}
-                        <div className="px-6 py-4 pb-6 md:pb-4 shrink-0" style={{ borderTop: '1px solid #f1f5f9' }}>
+                        <div className="px-7 py-4 pb-6 md:pb-4 shrink-0" style={{ borderTop: '1px solid #f1f5f9' }}>
                             <AnimatePresence mode="wait">
                                 {step === 1 && (
                                     <motion.button key="search" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
