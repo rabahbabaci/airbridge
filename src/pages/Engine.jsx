@@ -210,12 +210,6 @@ export default function Engine() {
     const [journeyReady, setJourneyReady] = useState(false);
 
     useEffect(() => {
-        if (locked && recommendation && window.innerWidth < 768) {
-            setShowMobileResults(true);
-        }
-    }, [locked, recommendation]);
-
-    useEffect(() => {
         if (!locked) {
             setSettingsChanged(true);
         }
@@ -265,6 +259,10 @@ export default function Engine() {
             setRecommendation(rec);
             setJourneyReady(true);
             setSettingsChanged(false);
+            // Switch to results on mobile
+            if (window.innerWidth < 768) {
+                setShowMobileResults(true);
+            }
         } catch (err) {
             console.error('Recommendation failed:', err);
             setJourneyReady(true);
@@ -794,7 +792,7 @@ export default function Engine() {
                     <div className="absolute bottom-10 left-10 w-60 h-60 rounded-full pointer-events-none"
                         style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.06), transparent)', filter: 'blur(40px)' }} />
 
-                    <div className="flex-1 min-h-0 overflow-y-auto">
+                    <div className="flex-1 min-h-0 overflow-y-auto pb-8">
                     <AnimatePresence mode="wait">
                         <JourneyVisualization
                             key={locked ? 'journey' : 'idle'}
